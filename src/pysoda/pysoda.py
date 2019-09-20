@@ -10,7 +10,6 @@ from time import strftime, localtime
 from shutil import copy2
 from blackfynn import Blackfynn
 from configparser import ConfigParser
-from bs4 import BeautifulSoup
 import threading
 
 ### Global variables
@@ -27,8 +26,8 @@ submitprintstatus = ' '
 ### FEATURE #1: SPARC dataset organizer
 # Organize dataset
 def savefileorganization(table, pathsavefileorganization):
-    # tablepd = pd.read_html(table)[0] 
-    # tablepd.to_excel("test.xlsx") 
+    # tablepd = pd.read_html(table)[0]
+    # tablepd.to_excel("test.xlsx")
     try:
         # soup = BeautifulSoup(table, 'lxml')
         # f = open("dict.txt","w")
@@ -36,7 +35,7 @@ def savefileorganization(table, pathsavefileorganization):
         # f.close()
         return table
     except Exception as e:
-        raise e 
+        raise e
 
 ### FEATURE #2: SPARC metadata generator
 
