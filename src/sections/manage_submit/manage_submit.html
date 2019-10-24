@@ -32,7 +32,7 @@
               <input id="selectAccount" name="blackfynn-account" type="radio" class="with-style" />
               <label for="selectAccount" class=labelradio> Select account </label>
                 <div class="tooltipnew">( ? )
-                  <span class="tooltiptext">Added account(s) will be displayed in this drop-down list. <br>
+                  <span class="tooltiptext">Added account(s) will be displayed in this drop-down list (click on the 'Load existing account(s)' button).
                   Select one one before continuing</span>
                 </div>
             </div>
@@ -60,7 +60,7 @@
           </div>
 
           <div id="div-select-account" class="datasetsaveoption"><br>
-            <button id="button-check-bf-account-details" class="demo-button"> Load existing acount(s) </button>
+            <button id="button-check-bf-account-details" class="demo-button"> Load existing account(s) </button>
             <h5> Select account </h5>
             <div class="demo-controls">
               <select class="my_dropdown" id=bfaccountlist>
@@ -82,7 +82,7 @@
 
           <h5> Enter name
             <div class="tooltipnew">( ? )
-              <span class="tooltiptext">Enter the name of the Dataset you want to create</span>
+              <span class="tooltiptext">Enter the name of the dataset you want to create</span>
             </div>
           </h5>
           <div class="demo-controls">
@@ -116,9 +116,9 @@
             <textarea class="demo-response" id="selected-submit-dataset"></textarea>
           </div>
 
-          <h5> Select Blackfynn Dataset for uploading
+          <h5> Select Blackfynn bataset 
             <div class="tooltipnew">( ? )
-              <span class="tooltiptext">Select the target dataset on your Blackfynn (sorted by alphabetically)</span>
+              <span class="tooltiptext">Select the target dataset on your Blackfynn (sorted alphabetically)</span>
             </div>
           </h5>
           <div class="demo-controls">
@@ -135,8 +135,7 @@
           <div>
             <h5> Submit
               <div class="tooltipnew">( ? )
-                <span class="tooltiptext">Click on 'Submit dataset' to push all the files/folders from the selected local folder into the selected Blackfynn folder. <br>
-                Local folder structure will be preserved</span>
+                <span class="tooltiptext">Click on 'Submit dataset' to push all the files/folders from the selected local folder into the selected Blackfynn dataset folder. Local folder structure will be preserved. The progress bar below will provide a live update of the upload progress. </span>
               </div>
             </h5>
             <button id="button-submit-dataset" class="demo-button"> Submit dataset </button>
@@ -181,9 +180,9 @@
           <h5> Add/edit permission
             <div class="tooltipnew">( ? )
               <span class="tooltiptext">Select name of user and the role you want to give for the selected dataset and click on  'Add permission'
-              <br>
+              <br><br>
               To share your dataset with the Curation Team for review select 'SPARC Data Curation Team' under user and 'manager' under role
-              <br>
+              <br><br>
               To remove a permission select name of user and 'remove current permission'</span>
             </div>
           </h5>
@@ -217,7 +216,7 @@
     <div class="demo">
       <div class="demo-wrapper">
         <button id="button-new-window-crashes-demo-toggle" class="js-container-target demo-toggle-button"> Annotate dataset
-          <div class="demo-meta u-avoid-clicks"> Inform the model properties for your dataset </div>
+          <div class="demo-meta u-avoid-clicks"> Inform the model properties for your dataset to include an additional layer of metadata</div>
         </button>
         <div class="demo-box">
           <p> </p>
