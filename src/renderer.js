@@ -12,7 +12,10 @@ const remote = require('electron').remote;
 const app = remote.app;
 const imageDataURI = require("image-data-uri");
 const log  = require("electron-log");
-require('v8-compile-cache')
+var Airtable = require('airtable');
+require('v8-compile-cache');
+var Tagify = require('@yaireo/tagify');
+const https = require('https')
 
 //////////////////////////////////
 // Connect to Python back-end
@@ -45,6 +48,7 @@ document.getElementById("add-edit-subtitle").click()
 document.getElementById("pi-owner").click()
 document.getElementById("cloud-dataset").click()
 document.getElementById("organize-dataset").click()
+document.getElementById("shareConsortium").click()
 
 //log user's OS version //
 log.info("User OS:", os.type(), os.platform(), "version:", os.release())
@@ -95,7 +99,7 @@ function checkNewAppVersion() {
 }
 
 //////////////////////////////////
-// Get html elements from UI 
+// Get html elements from UI
 //////////////////////////////////
 
 // Navigator button //
@@ -109,8 +113,34 @@ const downloadSamples = document.getElementById("a-samples")
 const downloadSubjects = document.getElementById("a-subjects")
 const downloadDescription = document.getElementById("a-description")
 const downloadManifest = document.getElementById("a-manifest")
-const homedir = os.homedir()
-const userDownloadFolder = path.join(homedir, "Downloads")
+
+/// save airtable api key
+const addAirtableKeyBtn = document.getElementById("button-add-airtable-key")
+
+// Save grant information
+const milestoneArray = document.getElementById("table-current-milestones")
+const awardArray = document.getElementById("select-grant-info-list")
+const presavedAwardArray1 = document.getElementById("select-presaved-grant-info-list")
+const addAwardBtn = document.getElementById("button-add-award")
+const deleteMilestoneBtn = document.getElementById("button-delete-milestone")
+const editMilestoneBtn = document.getElementById("button-edit-milestone")
+const addMilestoneBtn = document.getElementById("button-add-milestone")
+const deleteAwardBtn = document.getElementById("button-delete-award")
+const addNewMilestoneBtn = document.getElementById("button-default-save-milestone")
+const saveInformationBtn = document.getElementById("button-save-milestone")
+
+// Prepare Submission File
+const presavedAwardArray2 = document.getElementById("presaved-award-list")
+const generateSubmissionBtn = document.getElementById("generate-submission")
+
+// Prepare Dataset Description File
+const dsAwardArray = document.getElementById("ds-description-award-list")
+const dsContributorArray = document.getElementById("ds-description-contributor-list")
+const addCurrentContributorsBtn = document.getElementById("button-ds-add-contributor")
+const contactPerson = document.getElementById("ds-contact-person")
+const currentConTable = document.getElementById("table-current-contributors")
+const generateDSBtn = document.getElementById("button-generate-ds-description")
+const addAdditionalLinkBtn = document.getElementById("button-ds-add-link")
 
 // Organize dataset //
 const bfAccountCheckBtn = document.getElementById('button-check-bf-account-details')
@@ -228,6 +258,23 @@ const bfCurrentDatasetStatusProgress = document.querySelector('#div-bf-current-d
 const bfListDatasetStatus = document.querySelector('#bf_list_dataset_status')
 const datasetStatusStatus = document.querySelector('#para-dataset-status-status')
 const bfRefreshDatasetStatusBtn = document.getElementById('button-refresh-dataset-status')
+
+//Blackfynn post curation
+const bfPostCurationForm = document.querySelector('#blackfynn-post-curation')
+const bfDatasetListPostCuration = document.querySelector('#bfdatasetlist_postcuration')
+const bfPostCurationProgress = document.querySelector('#div-bf-post-curation-progress')
+
+const bfShareConsortiumBtn = document.querySelector('#button-share-consortium')
+const sharedWithConsortiumStatus = document.querySelector('#shared-with-consortium-status')
+const shareConsortiumStatus = document.querySelector('#para-share-consortium-status')
+
+const bfReserveDOIBtn = document.querySelector('#button-reserve-doi')
+const currentDOI = document.querySelector('#input-current-doi')
+const reserveDOIStatus = document.querySelector('#para-reserve-doi-status')
+
+const bfPublishDatasetBtn = document.querySelector('#publishDataset')
+const publishDatasetStatus = document.querySelector('#para-publish-dataset-status')
+
 //////////////////////////////////
 // Constant parameters
 //////////////////////////////////
@@ -289,7 +336,69 @@ document.getElementById('button-validate-dataset-next-step').addEventListener('c
   }
 })
 
-// Download Metadata Templates //
+///////////////////// Prepare Metadata Section ////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+///// Global variables for this section
+
+/////// Save and load award and milestone info
+var metadataPath = path.join(homeDirectory,"SODA", "METADATA");
+var awardFileName = "awards.json";
+var milestoneFileName = "milestones.json";
+var defaultAwardFileName = "default-awards.json";
+var airtableConfigFileName = "airtable-config.json";
+var awardPath = path.join(metadataPath, awardFileName);
+var milestonePath = path.join(metadataPath, milestoneFileName);
+var defaultAwardPath = path.join(metadataPath, defaultAwardFileName);
+var airtableConfigPath = path.join(metadataPath, airtableConfigFileName);
+
+///////////////////// Airtable Authentication /////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+/////// Load SPARC airtable data
+var airtableHostname = 'api.airtable.com'
+
+///// Upon clicking "Connect" to Airtable
+addAirtableKeyBtn.addEventListener("click", function() {
+  document.getElementById("div-airtable-connect-load-progress").style.display = "block"
+  document.getElementById("para-add-airtable-key-status").innerHTML = ""
+  var apiKeyInput = document.getElementById("airtable-api-key").value;
+  // test connection
+  const options = {
+    hostname: airtableHostname,
+    port: 443,
+    path: '/v0/appiYd1Tz9Sv857GZ/sparc_members',
+    headers: {'Authorization': `Bearer ${apiKeyInput}`}
+  }
+  https.get(options, res => {
+    // console.log(`statusCode: ${res.statusCode}`)
+    if (res.statusCode === 200) {
+      /// updating api key in SODA's storage
+      createMetadataDir();
+      var content = parseJson(airtableConfigPath);
+      content["api-key"] = apiKeyInput;
+      fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
+      document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: black;'>Successfully connected to Airtable!</span>";
+      document.getElementById('para-save-award-info').innerHTML = ""
+      loadAwardData()
+    } else {
+      log.error(res)
+      console.error(res) //// todo: html error message
+      document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key!</span>";
+    }
+    document.getElementById("div-airtable-connect-load-progress").style.display = "none"
+    document.getElementById("para-add-airtable-key-status").style.display = "block"
+
+    res.on('error', error => {
+      log.error(error)
+      console.error(error) //// todo: html error message
+      document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key!</span>";
+      document.getElementById("para-add-airtable-key-status").style.display = "block"
+    })
+  })
+})
+
+/////////////////////// Download Metadata Templates ////////////////////////////
 templateArray = ["submission.xlsx", "dataset_description.xlsx", "subjects.xlsx", "samples.xlsx", "manifest.xlsx"]
 function downloadTemplates(templateItem, destinationFolder) {
   var templatePath = path.join(__dirname, "file_templates", templateItem)
@@ -303,6 +412,7 @@ function downloadTemplates(templateItem, destinationFolder) {
     ipcRenderer.send('open-info-metadata-file-donwloaded', emessage)
   }
 }
+
 downloadSubmission.addEventListener('click', (event) => {
   ipcRenderer.send('open-folder-dialog-save-metadata', templateArray[0])
 });
@@ -324,12 +434,828 @@ ipcRenderer.on('selected-metadata-download-folder', (event, path, filename) => {
   }
 })
 
+/////////////////// Provide Grant Information section /////////////////////////
+//////////////// //////////////// //////////////// //////////////// ///////////
+
+////////////////////////Import Milestone Info//////////////////////////////////
+
+//// when users click on Import but haven't specified a path
+document.getElementById("button-import-milestone").addEventListener("click", function() {
+  document.getElementById("para-milestone-document-info").innerHTML = "";
+  var filepath = document.getElementById("input-milestone-select").placeholder;
+  if (filepath === "Select a file") {
+    document.getElementById("para-milestone-document-info").innerHTML = "<span style='color: red ;'>" + "Please select a data deliverables document first!</span>"
+  } else {
+    var award = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
+    client.invoke("api_extract_milestone_info", filepath, (error, res) => {
+    if(error) {
+      var emessage = userError(error)
+      log.error(error)
+      console.error(error)
+      document.getElementById("para-milestone-document-info").innerHTML = "<span style='color: red;'> " + emessage + "</span>";
+    }
+    else {
+      milestoneObj = res;
+      createMetadataDir();
+      var informationJson = {};
+      informationJson = parseJson(milestonePath);
+      informationJson[award] = milestoneObj;
+      fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
+      document.getElementById("para-milestone-document-info").innerHTML = "<span style='color: black ;'>" + "Imported!</span>"
+      //// after saving data to json file, load the table right after.
+      /// clear old table before loading new entries
+      while (milestoneArray.rows.length>1) {
+        milestoneArray.deleteRow(1)
+      };
+      if (award in informationJson) {
+        document.getElementById("para-current-milestones").style.display = "none";
+        /// check how many data description rows there are for each milestone (to set number of rowspans)
+
+        var rowIndex = 1;
+        var milestoneKey = Object.keys(milestoneObj)
+        for (var i=0;i<milestoneKey.length;i++){
+          var milestone = milestoneObj[milestoneKey[i]];
+          // var span = milestoneObj[milestoneKey[i]].length
+          for (var j=0;j<milestone.length;j++) {
+            var description = milestone[j]["Description of data"]
+            var date = milestone[j]["Expected date of completion"]
+            var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneKey[i] +"</td><td id='name-row-description"+rowIndex+"'>"+ description +"</td><td id='name-row-date"+rowIndex+"'>"+ date +"</td></tr>"
+          }
+          rowIndex++;
+        }
+      document.getElementById("table-current-milestones").style.display = "block";
+      document.getElementById("presaved-award-list").value = "Select"
+      removeOptions(document.getElementById("selected-milestone"));
+      removeOptions(document.getElementById("selected-description-data"));
+      document.getElementById("selected-milestone-date").value =
+      document.getElementById("input-milestone-select").placeholder = "Select a file"
+      return milestoneArray
+    }
+  }
+})
+}
+})
+
+document.getElementById("input-milestone-select").addEventListener("click", function() {
+  ipcRenderer.send('open-file-dialog-milestone-doc')
+})
+ipcRenderer.on('selected-milestonedoc', (event, filepath) => {
+  if (filepath.length > 0) {
+    if (filepath != null){
+      // used to communicate value to button-import-milestone click event-listener
+      document.getElementById("input-milestone-select").placeholder = filepath[0];
+  }
+}
+})
+
+/// clear p messages upon changing awards
+// awardArray.addEventListener('change', function() {
+//   document.getElementById("para-save-award-info").innerHTML = "";
+// })
+presavedAwardArray1.addEventListener('change', function() {
+  document.getElementById("div-show-milestone-info-no-existing").style.display = "block";
+  document.getElementById("para-delete-award-status").innerHTML = ""
+})
+
+// load and parse json file
+function parseJson(path) {
+  if (!fs.existsSync(path)) {
+    return {}
+  }
+  try {
+    var content = fs.readFileSync(path);
+    contentJson = JSON.parse(content);
+    return contentJson
+  } catch (error) {
+    log.error(error)
+    console.log(error);
+    return {}
+  }
+}
+
+// function to make directory if metadata path does not exist
+function createMetadataDir() {
+  try {
+  fs.mkdirSync(metadataPath, { recursive: true } );
+  } catch (error) {
+    log.error(error)
+    console.log(error)
+  }
+}
+
+// Function to add options to dropdown list
+function addOption(selectbox, text, value) {
+    var opt = document.createElement("OPTION");
+    opt.text = text;
+    opt.value = value;
+    selectbox.options.add(opt);
+}
+
+// Function to auto load existing awards
+function loadAwards() {
+  if (!fs.existsSync(awardPath)) {
+    return {}
+  }
+  var contents = fs.readFileSync(awardPath, "utf8");
+  var awards = JSON.parse(contents);
+  for (var key in awards) {
+    // Add options to dropdown lists
+    addOption(presavedAwardArray1, eval(JSON.stringify(awards[key])), key);
+    addOption(presavedAwardArray2, eval(JSON.stringify(awards[key])), key);
+    addOption(dsAwardArray, eval(JSON.stringify(awards[key])), key);
+  }
+}
+loadAwards()
+
+/// function to grab row index
+function getRowIndex(table) {
+  var rowcount = table.rows.length;
+  if (rowcount===2) {
+    // start at 1 to skip the header
+    var rowIndex = 1;
+  } else {
+    /// append row to table from the bottom
+    var rowIndex = rowcount-1;
+  }
+  return rowIndex
+}
+
+// Save grant information
+addAwardBtn.addEventListener('click', function() {
+  var inputVal = document.getElementById("input-grant-info").value;
+  if (inputVal.length === 0) {
+    document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>Please choose an award key!</span>";
+  }
+  var awardVal;
+  for (var i = 0; i < awardArray.options.length; i++) {
+    if (awardArray.options[i].value === inputVal) {
+      awardVal = awardArray.options[i].value
+    }
+  }
+  var awardNo = awardVal.slice(0, awardVal.indexOf(" ("));
+  // create empty milestone json files for newly added award
+  createMetadataDir();
+  var awardsJson = {};
+  awardsJson = parseJson(awardPath);
+  if (awardNo in awardsJson) {
+    document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>Award already added!</span>";
+  } else {
+    awardsJson[awardNo] = awardVal;
+    fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
+    addOption(presavedAwardArray1, awardVal, awardNo);
+    addOption(presavedAwardArray2, awardVal, awardNo);
+    addOption(dsAwardArray, awardVal, awardNo);
+    document.getElementById("para-save-award-info").innerHTML = "<span style='color: black;'> " + "Added!" + smileyCan + "</span>";
+  }
+})
+
+/////// Delete an Award///////////
+function deleteOptionByValue (dropdown, value) {
+    for (var i = 0; i < dropdown.length; i++) {
+        if (dropdown.options[i].value === value) {
+            dropdown.remove(i)
+        }
+    }
+    return null
+}
+
+deleteAwardBtn.addEventListener('click', function() {
+  ipcRenderer.send('warning-delete-award')
+});
+ipcRenderer.on('warning-delete-award-selection', (event, index) => {
+  if (index === 0) {
+    award = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
+    if (award==="Select") {
+      document.getElementById("para-delete-award-status").innerHTML = "<span style='color: red;'>Please select an award number to delete</span>"
+    } else {
+      var milestoneJson = parseJson(milestonePath);
+      var awardsJson = parseJson(awardPath)
+      var defaultedAwardJson = parseJson(defaultAwardPath)
+      // check if award is default award
+      if (award === defaultedAwardJson["default"]) {
+        delete defaultedAwardJson["default"];
+        }
+      // check if award is in list
+      if (award in awardsJson) {
+        delete awardsJson[award];
+        }
+      // check if award is in list of milestones
+      if (award in milestoneJson) {
+        delete milestoneJson[award];
+      }
+      fs.writeFileSync(defaultAwardPath, JSON.stringify(defaultedAwardJson));
+      fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
+      presavedAwardArray1.remove(presavedAwardArray1.selectedIndex);
+      fs.writeFileSync(milestonePath, JSON.stringify(milestoneJson));
+      // delete award in the next two award arrays
+      deleteOptionByValue(presavedAwardArray2,award);
+      deleteOptionByValue(dsAwardArray,award);
+      document.getElementById("div-show-milestone-info-no-existing").style.display = "none";
+      document.getElementById("div-show-current-milestones").style.display = "none";
+      document.getElementById("para-delete-award-status").innerHTML = "<span style='color: black'>Deleted award number: " + award + "!" + "</span>"
+    }
+  }
+})
+
+//// function to make a selected award the default award
+function makeDefaultAward(award) {
+  var defaultObj = {};
+  var defaultObj = parseJson(defaultAwardPath);
+  defaultObj["default"] = award
+  fs.writeFileSync(defaultAwardPath, JSON.stringify(defaultObj));
+}
+
+/// When SODA launches, load default award
+function loadDefaultAward() {
+  var award;
+  var defaultObj = parseJson(defaultAwardPath);
+  try {
+    award = defaultObj["default"]
+    return award
+  }
+  catch (error) {
+    log.error(error)
+    console.log(error);
+    return ""
+  }
+}
+
+var defaultAward = loadDefaultAward()
+loadMilestoneInfo(defaultAward)
+
+function loadMilestoneInfo(awardNumber) {
+  document.getElementById("para-milestone-document-info").innerHTML = ""
+  document.getElementById("input-milestone-select").placeholder = "Select a file"
+
+  ///// first, make the selected award the default so next time SODA will auto-load it.
+  makeDefaultAward(awardNumber)
+
+  //// Start loading milestone table
+  /// clear old table before loading new entries
+  while (milestoneArray.rows.length>1) {
+    milestoneArray.deleteRow(1)
+  };
+  var awardJson = parseJson(awardPath);
+  if (awardNumber in awardJson) {
+    presavedAwardArray1.value = awardNumber
+    ///// populate submission award drop-down
+    for (var i = 0; i < presavedAwardArray2.length; i++) {
+        if (presavedAwardArray2.options[i].value === awardNumber) {
+            presavedAwardArray2.value = presavedAwardArray2.options[i].value
+            changeAwardInput()
+            break
+        }
+    };
+    //// populate dataset contribution award drop-down
+    for (var i = 0; i < dsAwardArray.length; i++) {
+        if (dsAwardArray.options[i].value === awardNumber) {
+            dsAwardArray.value = dsAwardArray.options[i].value
+            changeAwardInputDsDescription()
+            break
+        }
+    }
+    document.getElementById("div-show-milestone-info-no-existing").style.display = "block";
+    document.getElementById("div-show-current-milestones").style.display = "block";
+    document.getElementById("table-current-milestones").style.display = "block";
+    document.getElementById("para-current-milestones").style.display = "none";
+  }
+
+  //// get content from milestone.json file and load it up
+  var milestoneJson = parseJson(milestonePath);
+  if (awardNumber in milestoneJson) {
+    var milestoneObj = milestoneJson[awardNumber];
+    // start at 1 to skip the header
+    var rowIndex = 1;
+    var milestoneKey = Object.keys(milestoneObj)
+    for (var i=0;i<milestoneKey.length;i++){
+      var milestone = milestoneObj[milestoneKey[i]];
+      // var span = milestoneObj[milestoneKey[i]].length
+      for (var j=0;j<milestone.length;j++) {
+        // console.log(milestoneObj[milestoneKey[i]])
+        var description = milestone[j]["Description of data"]
+        var date = milestone[j]["Expected date of completion"]
+        var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneKey[i] +"</td><td id='name-row-description"+rowIndex+"'>"+ description +"</td><td id='name-row-date"+rowIndex+"'>"+ date +"</td></tr>"
+      }
+      rowIndex++;
+      }
+    return milestoneArray
+  } else {
+     document.getElementById("div-show-current-milestones").style.display = "block";
+     document.getElementById("table-current-milestones").style.display = "none";
+     document.getElementById("para-current-milestones").style.display = "block";
+     document.getElementById("para-current-milestones").innerHTML = "There is no existing milestone information. Please import your data deliverable document!";
+ }
+}
+
+/// check if no award is selected, then show no current milestones.
+if (presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value === "Select") {
+  document.getElementById("div-show-milestone-info-no-existing").style.display = "none"
+  document.getElementById("div-show-current-milestones").style.display = "none"
+}
+
+///// Load Milestone info
+presavedAwardArray1.addEventListener('change', function() {
+  var currentAward = presavedAwardArray1.value
+  loadMilestoneInfo(currentAward)
+})
+
+// indicate to user that airtable records are being retrieved
+function loadAwardData() {
+  document.getElementById("div-awards-load-progress").style.display = 'block'
+  ///// Construct table from data
+  var awardResultArray = [];
+  ///// config and load live data from Airtable
+  var airKeyContent = parseJson(airtableConfigPath)
+  if (Object.keys(airKeyContent).length === 0) {
+    document.getElementById("div-awards-load-progress").style.display = 'none';
+    document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>No Airtable API key found! Please connect to Airtable first!</span>";
+  } else {
+    var airKeyInput = airKeyContent["api-key"]
+    Airtable.configure({
+        endpointUrl: 'https://' + airtableHostname,
+        apiKey: airKeyInput
+    });
+    var base = Airtable.base('appiYd1Tz9Sv857GZ');
+    base("sparc_members").select({
+        view: 'Grid view'
+    }).eachPage(function page(records, fetchNextPage) {
+        records.forEach(function(record) {
+          item = record.get('SPARC_Award_#').concat(" (", record.get('Project_title'), ")");
+          awardResultArray.push(item);
+        }),
+      fetchNextPage();
+    },
+    function done(err) {
+        document.getElementById("div-awards-load-progress").style.display = 'none';
+        if (err) {
+          document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>Failed to load awards from Airtable. Please check your internet connection or API Key.</span>";
+          log.error(err);
+          console.log(err);
+          return;
+        }
+        else {
+          // create set to remove duplicates
+          var awardSet = new Set(awardResultArray)
+          var options = ""
+          for (element of awardSet) {
+            options += '<option value="'+element+'" />';
+          }
+          awardArray.innerHTML = options
+        }
+    });
+  }
+}
+loadAwardData()
+
+///////////////// //////////////// //////////////// ////////////////
+///////////////////////Submission file //////////////// ////////////////
+
+function changeAwardInput() {
+  document.getElementById("selected-milestone").value = "";
+  document.getElementById("selected-milestone-date").value = "";
+  document.getElementById("selected-description-data").value = "";
+  document.getElementById("para-save-submission-status").innerHTML = "";
+
+  removeOptions(document.getElementById("selected-milestone"))
+  removeOptions(document.getElementById("selected-description-data"))
+  addOption(document.getElementById('selected-milestone'), "Select an option", "Select")
+  addOption(document.getElementById('selected-description-data'), "Select an option", "Select")
+
+  award = presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
+  var informationJson = parseJson(milestonePath);
+  var milestoneInput = document.getElementById("selected-milestone");
+  var descriptionInput = document.getElementById("selected-description-data");
+  var dateInput = document.getElementById("selected-milestone-date");
+  if (award in informationJson) {
+    var milestoneObj = informationJson[award];
+    // Load milestone values once users choose an award number
+    var milestoneKey = Object.keys(milestoneObj)
+    for (var i=0;i<milestoneKey.length;i++) {
+      addOption(document.getElementById('selected-milestone'), milestoneKey[i], milestoneKey[i]);
+    }
+    // populate description field based on milestone selected
+    milestoneInput.addEventListener('input', function() {
+    removeOptions(descriptionInput);
+    document.getElementById("selected-milestone-date").value = "";
+    addOption(document.getElementById('selected-description-data'), "Select an option", "Select")
+      for (var i=0;i<milestoneKey.length; i++) {
+        if (milestoneKey[i] === milestoneInput.value) {
+          //// Add description data to dropdowns
+          for (var j=0;j<milestoneObj[milestoneKey[i]].length;j++){
+            addOption(descriptionInput, milestoneObj[milestoneKey[i]][j]["Description of data"], milestoneObj[milestoneKey[i]][j]["Description of data"])
+          }
+        }
+      }
+    });
+    //// populate date field
+    descriptionInput.addEventListener('input', function() {
+      document.getElementById("selected-milestone-date").value = "";
+      for (var i=0;i<milestoneKey.length; i++) {
+        for (var j=0;j<milestoneObj[milestoneKey[i]].length;j++){
+          if (milestoneObj[milestoneKey[i]][j]["Description of data"] === descriptionInput.value) {
+            //// stringify date object
+            var dateStrings = milestoneObj[milestoneKey[i]][j]["Expected date of completion"].toString()
+            dateInput.value = dateStrings
+        }
+      }
+    }
+  })
+}
+}
+
+
+
+/////// Populate Submission file fields from presaved information
+presavedAwardArray2.addEventListener('change', changeAwardInput)
+
+/// Generate submission file
+generateSubmissionBtn.addEventListener('click', (event) => {
+  document.getElementById("para-save-submission-status").innerHTML = ""
+  awardVal = document.getElementById("presaved-award-list").value;
+  milestoneVal = document.getElementById("selected-milestone").value;
+  descriptionVal = document.getElementById("selected-description-data").value;
+  dateVal = document.getElementById("selected-milestone-date").value;
+  if (descriptionVal==='Select'|| dateVal==='' || awardVal==='Select' || milestoneVal==='Select') {
+    document.getElementById("para-save-submission-status").innerHTML = "<span style='color: red;'>Please fill in all fields to generate!</span>"
+  } else {
+    ipcRenderer.send('open-folder-dialog-save-submission', "submission.xlsx")
+  }
+});
+ipcRenderer.on('selected-metadata-submission', (event, dirpath, filename) => {
+  if (dirpath.length > 0) {
+    var destinationPath = path.join(dirpath[0], filename)
+    if (fs.existsSync(destinationPath)) {
+      var emessage = "File " + filename +  " already exists in " +  dirpath[0]
+      ipcRenderer.send('open-error-metadata-file-exits', emessage)
+    }
+    else {
+      var award = presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
+      var milestone = document.getElementById("selected-milestone").value;
+      var date = document.getElementById("selected-milestone-date").value;
+      var json_arr = [];
+      json_arr.push(award);
+      json_arr.push(milestone);
+      json_arr.push(date);
+      json_str = JSON.stringify(json_arr)
+      if (dirpath != null){
+        client.invoke("api_save_submission_file", destinationPath, json_str, (error, res) => {
+          if(error) {
+            var emessage = userError(error)
+            log.error(error)
+            console.error(error)
+            document.getElementById("para-save-submission-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>";
+          }
+          else {
+            document.getElementById("para-save-submission-status").innerHTML = "<span style='color: black ;'>" + "Done!" + smileyCan + "</span>"
+          }
+        })
+    }
+  }}
+});
+
+//////////////// Dataset description file ///////////////////////
+//////////////// //////////////// //////////////// ////////////////
+
+var doiInput = createTagsInput(document.getElementById('input-misc-DOI'));
+var urlInput = createTagsInput(document.getElementById('input-misc-protocol'));
+var keywordInput = document.getElementById('ds-keywords'),
+  keywordTagify = new Tagify(keywordInput, {
+    duplicates: false,
+    maxTags  : 5
+})
+var contributorRoles = document.getElementById("input-con-role"),
+  currentContributortagify = new Tagify(contributorRoles, {
+    whitelist : ["PrincipleInvestigator", "Creator", "CoInvestigator", "ContactPerson", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RelatedPerson", "Researcher", "ResearchGroup", "Sponsor", "Supervisor", "WorkPackageLeader", "Other"],
+    dropdown : {
+        classname : "color-blue",
+        enabled   : 0,         // show the dropdown immediately on focus
+        maxItems  : 25,
+        // position  : "text",    // place the dropdown near the typed text
+        closeOnSelect : true, // keep the dropdown open after selecting a suggestion
+    },
+    duplicates: false
+});
+
+function clearCurrentConInfo() {
+  document.getElementById("input-con-ID").value = "";
+  document.getElementById("input-con-role").value = "";
+  document.getElementById("input-con-affiliation").value = "";
+  if (currentContributortagify !== undefined) {
+    currentContributortagify.removeAllTags()
+  }
+  contactPerson.checked = false;
+}
+
+function changeAwardInputDsDescription() {
+  clearCurrentConInfo()
+  /// delete old table
+  while (currentConTable.rows.length>1) {
+    currentConTable.deleteRow(1)
+  };
+  removeOptions(dsContributorArray)
+  addOption(dsContributorArray, "Select", "Select an option")
+  var awardVal = dsAwardArray.options[dsAwardArray.selectedIndex].value
+  var airKeyContent = parseJson(airtableConfigPath)
+    // document.getElementById("div-awards-load-progress").style.display = 'none';
+    // document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>No Airtable API key found! Please connect to Airtable first!</span>";
+  if (Object.keys(airKeyContent).length !== 0) {
+    var airKeyInput = airKeyContent["api-key"]
+    Airtable.configure({
+        endpointUrl: 'https://' + airtableHostname,
+        apiKey: airKeyInput
+    });
+    var base = Airtable.base('appiYd1Tz9Sv857GZ');
+    base("sparc_members").select({
+      filterByFormula: `({SPARC_Award_#} = "${awardVal}")`
+    }).eachPage(function page(records, fetchNextPage) {
+        var awardValArray = [];
+        records.forEach(function(record) {
+          var item = record.get('Name');
+          awardValArray.push(item);
+        }),
+      fetchNextPage();
+      for (var i = 0; i < awardValArray.length; i++) {
+          var opt = awardValArray[i];
+          addOption(dsContributorArray, opt, opt)
+      }
+    }),
+      function done(err) {
+          if (err) {
+            log.error(err)
+            console.error(err); return;
+          }
+      }
+  }
+}
+
+// Show current contributors
+function createCurrentConTable(table) {
+  var name = dsContributorArray.options[dsContributorArray.selectedIndex].value
+  var id = document.getElementById("input-con-ID").value
+  var affiliation = document.getElementById("input-con-affiliation").value
+  var role = currentContributortagify.value
+  var roleVal = []
+  for (var i=0;i<role.length;i++) {
+    roleVal.push(role[i].value)
+  }
+  var contactPersonStatus = "No"
+  if (contactPerson.checked) {
+    var contactPersonStatus = "Yes"
+  }
+  /// Construct table
+  var rowcount = table.rows.length;
+  if (rowcount===1) {
+    // start at 1 to skip the header
+    var rowIndex = 1;
+  } else {
+    /// append row to table from the bottom
+    var rowIndex = rowcount;
+  }
+  var duplicate = false
+  for (var i=0; i<rowcount;i++){
+    if (table.rows[i].cells[0].innerHTML===name) {
+      duplicate = true
+      break
+    }
+  } if (!duplicate) {
+    var row = table.insertRow(rowIndex).outerHTML="<tr id='row-current-name"+rowIndex+"'style='color: #000000;'><td id='name-row"+rowIndex+"'>"+ name+"</td><td id='orcid-id-row"+rowIndex+"'>"+ id +"</td><td id='affiliation-row"+rowIndex+"'>"+ affiliation +"</td><td id='role-row"+rowIndex+"'>"+ roleVal+"</td><td id='contact-person-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
+    return table
+  } else {
+    document.getElementById("para-save-contributor-status").innerHTML = "<span style='color: red;'>Contributor already added!</span>"
+  }
+}
+
+// Show additional links and desciption
+function createAdditionalLinksTable() {
+  document.getElementById("para-save-link-status").innerHTML = ""
+  var myTable = document.getElementById("table-addl-links")
+  var link = document.getElementById("input-misc-addl-links").value
+  var description = document.getElementById("input-misc-link-description").value
+  /// Construct table
+  var rowcount = myTable.rows.length;
+  if (rowcount===1) {
+    // start at 1 to skip the header
+    var rowIndex = 1;
+  } else {
+    /// append row to table from the bottom
+    var rowIndex = rowcount;
+  }
+  /// Check for empty entry before adding to table
+  var empty = false
+  if (link==="" && description==="") {
+    empty = true
+  }
+  /// Check for duplicate links
+  var duplicate = false
+  for (var i=0; i<rowcount;i++){
+    if (myTable.rows[i].cells[0].innerHTML===link) {
+      duplicate = true
+      break
+    }
+  }
+  if (!empty) {
+    if (!duplicate) {
+      var row = myTable.insertRow(rowIndex).outerHTML="<tr id='row-current-link"+rowIndex+"'style='color: #000000;'><td id='link-row"+rowIndex+"'>"+ link+"</td><td id='link-description-row"+rowIndex+"'>"+ description +"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_link("+rowIndex+")'></td></tr>";
+      document.getElementById("div-current-additional-links").style.display = "block";
+      return myTable
+    } else {
+      document.getElementById("para-save-link-status").innerHTML = "<span style='color: red;'>The link already exists below!</span>"
+    }
+  } else {
+    document.getElementById("para-save-link-status").innerHTML = "<span style='color: red;'>Please fill in at least 1 field to add!</span>"
+  }
+}
+
+//// function to leave fields empty if no data is found on Airtable
+function leaveFieldsEmpty(field, element) {
+  if (field!==undefined) {
+    element.value = field;
+  } else {
+    element.innerHTML = ''
+  }
+}
+
+/// Create tags input for multi-answer fields
+function createTagsInput(field) {
+    return new Tagify(field)
+}
+
+//// When users click on adding description for each additional link
+addAdditionalLinkBtn.addEventListener("click", function() {
+  createAdditionalLinksTable()
+})
+
+//// When users click on "Add" to current contributors table
+addCurrentContributorsBtn.addEventListener("click", function() {
+  document.getElementById("para-save-contributor-status").innerHTML = "";
+  if (dsContributorArray.options[dsContributorArray.selectedIndex].value === "Select an option") {
+    document.getElementById("para-save-contributor-status").innerHTML = "<span style='color:red'>Please choose a contributor!</span>";
+  } else {
+    createCurrentConTable(currentConTable);
+    document.getElementById("div-current-contributors").style.display = "block"
+  }
+})
+
+/// load Airtable Contributor data
+dsAwardArray.addEventListener("change", changeAwardInputDsDescription)
+
+/// Auto populate once a contributor is selected
+dsContributorArray.addEventListener("change", function(e) {
+  ///clear old entries once a contributor option is changed
+  document.getElementById("para-save-contributor-status").innerHTML = '';
+  document.getElementById("input-con-ID").value = '';
+  document.getElementById("input-con-affiliation").value = '';
+  currentContributortagify.removeAllTags();
+  contactPerson.checked = false;
+
+  var contributorVal = dsContributorArray.options[dsContributorArray.selectedIndex].value;
+
+  var airKeyContent = parseJson(airtableConfigPath)
+  var airKeyInput = airKeyContent["api-key"]
+  var airtableConfig = Airtable.configure({
+      endpointUrl: 'https://' + airtableHostname,
+      apiKey: airKeyInput
+  });
+  var base = Airtable.base('appiYd1Tz9Sv857GZ');
+  base('sparc_members').select({
+    filterByFormula: `({Name} = "${contributorVal}")`
+  }).eachPage(function page(records, fetchNextPage) {
+      var conInfoObj = {};
+      records.forEach(function(record) {
+        conInfoObj["ID"] = record.get('ORCID');
+        // conInfoObj["Role"] = record.get('Project_Role');
+        conInfoObj["Affiliation"] = record.get('Institution');
+      }),
+    fetchNextPage();
+    leaveFieldsEmpty(conInfoObj["ID"],document.getElementById("input-con-ID"));
+    leaveFieldsEmpty(conInfoObj["Affiliation"],document.getElementById("input-con-affiliation"));
+  }),
+  function done(err) {
+      if (err) {
+        log.error(err)
+        console.error(err); return;
+      }
+  }
+})
+
+///// Generate ds description file
+generateDSBtn.addEventListener('click', (event) => {
+  ipcRenderer.send('open-folder-dialog-save-ds-description',"dataset_description.xlsx")
+})
+
+ipcRenderer.on('selected-metadata-ds-description', (event, dirpath, filename) => {
+  if (dirpath.length > 0) {
+    var destinationPath = path.join(dirpath[0],filename)
+    if (fs.existsSync(destinationPath)) {
+      var emessage = "File " + filename +  " already exists in " +  dirpath[0]
+      ipcRenderer.send('open-error-metadata-file-exits', emessage)
+    } else {
+      /// grab entries from dataset info section
+      var name = document.getElementById("ds-name").value;
+      var description = document.getElementById("ds-description").value;
+      var keywordArray = keywordTagify.value;
+      var keywordVal = []
+      for (var i=0;i<keywordArray.length;i++) {
+        keywordVal.push(keywordArray[i].value)
+      }
+      var samplesNo = document.getElementById("ds-samples-no").value;
+      var subjectsNo = document.getElementById("ds-subjects-no").value;
+      var dsSectionArray = [];
+      for (let elementDS of [name,description,keywordVal,samplesNo,subjectsNo]) {
+        dsSectionArray.push(elementDS)
+      }
+      /// grab entries from contributor info section -- table
+      var rowcountCon = currentConTable.rows.length;
+      var currentConInfo = [];
+      for (i=1; i<rowcountCon; i++) {
+        var myCurrentCon = {"conName": currentConTable.rows[i].cells[0].innerHTML,
+                              "conID": currentConTable.rows[i].cells[1].innerHTML,
+                              "conAffliation": currentConTable.rows[i].cells[2].innerHTML,
+                              "conRole": currentConTable.rows[i].cells[3].innerHTML,
+                              "conContact": currentConTable.rows[i].cells[4].innerHTML}
+        currentConInfo.push(myCurrentCon);
+      };
+      var acknowlegdment = document.getElementById("ds-description-acknowlegdment").value;
+      var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
+      var contributorObj = {}
+      if (funding==="Select") {
+        contributorObj["funding"] = "N/A"
+      } else {
+        contributorObj["funding"] = funding
+      }
+      contributorObj["acknowlegdment"] = acknowlegdment
+      contributorObj["contributors"] = currentConInfo
+
+      /// grab entries from other misc info section
+      var miscObj = {}
+      var originatingDOIArray = doiInput.value
+      doiArray = [];
+      for (var i=0;i<originatingDOIArray.length;i++) {
+        doiArray.push(originatingDOIArray[i].value)
+      }
+      urlArray = [];
+      var protocolURLArray = urlInput.value
+      for (var i=0;i<protocolURLArray.length;i++) {
+        urlArray.push(protocolURLArray[i].value)
+      }
+      /// Additional link description
+      var rowcountLink = document.getElementById("table-addl-links").rows.length;
+      var addlLinkInfo = [];
+      for (i=1; i<rowcountLink; i++) {
+        var addlLink = {"link": document.getElementById("table-addl-links").rows[i].cells[0].innerHTML,
+                        "description": document.getElementById("table-addl-links").rows[i].cells[1].innerHTML}
+        addlLinkInfo.push(addlLink)
+      }
+      miscObj["doi"] = doiArray;
+      miscObj["url"] = urlArray;
+      miscObj["additional links"] = addlLinkInfo;
+
+      /// grab entries from other optional info section
+      var completeness = document.getElementById("input-completeness").options[document.getElementById("input-completeness").selectedIndex].value;
+      var parentDS = document.getElementById("input-parent-ds").value;
+      var completeDSTitle = document.getElementById("input-completeds-title").value;
+      var optionalSectionObj = {};
+      if (completeness==="Select") {
+        optionalSectionObj["completeness"] = "N/A"
+      } else {
+        optionalSectionObj["completeness"] = completeness
+      }
+      optionalSectionObj["parentDS"] = parentDS;
+      optionalSectionObj["completeDSTitle"] = completeDSTitle;
+
+      //// stringiy arrays
+      json_str_ds = JSON.stringify(dsSectionArray);
+      json_str_misc = JSON.stringify(miscObj);
+      json_str_optional = JSON.stringify(optionalSectionObj);
+      json_str_con = JSON.stringify(contributorObj);
+
+      /// call python function to save file
+      if (dirpath != null){
+        client.invoke("api_save_ds_description_file", destinationPath, json_str_ds, json_str_misc, json_str_optional, json_str_con, (error, res) => {
+          if(error) {
+            var emessage = userError(error)
+            log.error(error)
+            console.error(error)
+            document.getElementById("para-generate-description-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>";
+          }
+          else {
+            document.getElementById("para-generate-description-status").innerHTML = "<span style='color: black ;'>" + "Done!" + smileyCan + "</span>"
+          }
+        })
+       }
+     }
+    }
+});
+
+//////////////////////////End of Ds description section ///////////////////////
+//////////////// //////////////// //////////////// //////////////// ////////////////
 
 // Select organized dataset folder and populate table //
 selectDatasetBtn.addEventListener('click', (event) => {
   clearStrings()
   ipcRenderer.send('open-file-dialog-dataset')
 })
+
 ipcRenderer.on('selected-dataset', (event, path) => {
   if (path.length > 0) {
     clearTable(tableOrganized)
@@ -1008,6 +1934,7 @@ bfRefreshDatasetRenameDatasetBtn.addEventListener('click', () => {
   refreshAllBfDatasetLists()
 })
 
+
 // Add new dataset folder (empty) on bf //
 bfCreateNewDatasetBtn.addEventListener('click', () => {
   bfCreateNewDatasetBtn.disabled = true
@@ -1147,7 +2074,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
         console.log('Done submit track')
         document.getElementById("para-please-wait-manage-dataset").innerHTML = ""
         clearInterval(timerProgress)
-        bfSubmitDatasetBtn.disabled = false       
+        bfSubmitDatasetBtn.disabled = false
       }
     }
   }
@@ -1168,6 +2095,8 @@ bfUploadDatasetList.addEventListener('change', () => {
   datasetStatusListChange()
   bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
   renameDatasetlistChange()
+  bfDatasetListPostCuration.selectedIndex = listSelectedIndex
+  postCurationListChange()
 })
 
 // Upload local dataset
@@ -1182,6 +2111,8 @@ bfDatasetList.addEventListener('change', () => {
   datasetStatusListChange()
   bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
   renameDatasetlistChange()
+  bfDatasetListPostCuration.selectedIndex = listSelectedIndex
+  postCurationListChange()
 })
 
 // Rename dataset
@@ -1220,6 +2151,8 @@ bfDatasetListMetadata.addEventListener('change', () => {
   datasetStatusListChange()
   bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
   renameDatasetlistChange()
+  bfDatasetListPostCuration.selectedIndex = listSelectedIndex
+  postCurationListChange()
 })
 
 function metadataDatasetlistChange(){
@@ -1247,6 +2180,8 @@ bfDatasetListPermission.addEventListener('change', () => {
   datasetStatusListChange()
   bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
   renameDatasetlistChange()
+  bfDatasetListPostCuration.selectedIndex = listSelectedIndex
+  postCurationListChange()
 })
 
 function permissionDatasetlistChange(){
@@ -1266,12 +2201,37 @@ bfDatasetListDatasetStatus.addEventListener('change', () => {
   datasetStatusListChange()
   bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
   renameDatasetlistChange()
+  bfDatasetListPostCuration.selectedIndex = listSelectedIndex
+  postCurationListChange()
 })
 
 function datasetStatusListChange(){
   bfCurrentDatasetStatusProgress.style.display = 'block'
   showCurrentDatasetStatus()
 }
+
+// Post-curation
+bfDatasetListPostCuration.addEventListener('change', () => {
+  var listSelectedIndex = bfDatasetListPostCuration.selectedIndex
+  bfDatasetListMetadata.selectedIndex = listSelectedIndex
+  metadataDatasetlistChange()
+  bfUploadDatasetList.selectedIndex = listSelectedIndex
+  bfDatasetList.selectedIndex = listSelectedIndex
+  bfDatasetListPermission.selectedIndex = listSelectedIndex
+  permissionDatasetlistChange()
+  bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex
+  datasetStatusListChange()
+  bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
+  renameDatasetlistChange()
+  postCurationListChange()
+})
+
+function postCurationListChange(){
+  reserveDOIStatus.innerHTML = ""
+  publishDatasetStatus.innerHTML = ""
+  showCurrentDOI()
+}
+
 
 // Change dataset status option change
 bfListDatasetStatus.addEventListener('change', () => {
@@ -1296,7 +2256,7 @@ bfListDatasetStatus.addEventListener('change', () => {
       bfCurrentDatasetStatusProgress.style.display = 'none'
       datasetStatusStatus.innerHTML = res
     }
-  })  
+  })
 })
 
 // Add substitle //
@@ -1518,31 +2478,6 @@ ipcRenderer.on('warning-add-permission-owner-selection-PI', (event, index) => {
   }
 })
 
-// Share with Curation Team //
-bfAddPermissionCurationTeamBtn.addEventListener('click', () => {
-  datasetPermissionStatusCurationTeam.innerHTML = ''
-  bfCurrentPermissionProgress.style.display = 'block'
-  disableform(bfPermissionForm)
-  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
-  var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text
-  var selectedTeam = 'SPARC Data Curation Team'
-  var selectedRole = 'manager'
-  client.invoke("api_bf_add_permission_team", selectedBfAccount, selectedBfDataset, selectedTeam, selectedRole,
-    (error, res) => {
-    if(error) {
-      log.error(error)
-      console.error(error)
-      var emessage = userError(error)
-      datasetPermissionStatusCurationTeam.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-      bfCurrentPermissionProgress.style.display = 'none'
-      enableform(bfPermissionForm)
-    } else {
-      datasetPermissionStatusCurationTeam.innerHTML = 'Shared with Curation Team'
-      showCurrentPermission()
-      enableform(bfPermissionForm)
-    }
-  })
-})
 
 // Add permission for user //
 bfAddPermissionBtn.addEventListener('click', () => {
@@ -1598,6 +2533,136 @@ bfAddPermissionTeamBtn.addEventListener('click', () => {
     }
   })
 })
+
+// Share with Curation Team //
+bfAddPermissionCurationTeamBtn.addEventListener('click', () => {
+  datasetPermissionStatusCurationTeam.innerHTML = ''
+  ipcRenderer.send('warning-share-with-curation-team', formBannerHeight.value)
+})
+
+ipcRenderer.on('warning-share-with-curation-team-selection', (event, index) => {
+  if (index === 0) {
+    shareWithCurationTeam()
+  }
+})
+
+function shareWithCurationTeam(){
+  datasetPermissionStatusCurationTeam.innerHTML = 'Please wait...'
+  bfCurrentPermissionProgress.style.display = 'block'
+  disableform(bfPermissionForm)
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text
+  var selectedTeam = 'SPARC Data Curation Team'
+  var selectedRole = 'manager'
+  client.invoke("api_bf_add_permission_team", selectedBfAccount, selectedBfDataset, selectedTeam, selectedRole,
+    (error, res) => {
+    if(error) {
+      log.error(error)
+      console.error(error)
+      var emessage = userError(error)
+      datasetPermissionStatusCurationTeam.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+      bfCurrentPermissionProgress.style.display = 'none'
+      enableform(bfPermissionForm)
+    } else {
+      showCurrentPermission()
+      var selectedStatusOption = '03. Ready for Curation (Investigator)'
+      client.invoke("api_bf_change_dataset_status", selectedBfAccount, selectedBfDataset, selectedStatusOption,
+        (error, res) => {
+        if(error) {
+          log.error(error)
+          console.error(error)
+          var emessage = userError(error)
+          datasetPermissionStatusCurationTeam.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+          bfCurrentPermissionProgress.style.display = 'none'
+        } else {
+          datasetPermissionStatusCurationTeam.innerHTML = 'Success - Shared with Curation Team: provided them manager permissions and set dataset status to "Ready for Curation"'
+          enableform(bfPermissionForm)
+          showCurrentDatasetStatus()
+          bfCurrentPermissionProgress.style.display = 'none'
+        }
+      })
+    }
+  })
+}
+
+// Share with Consortium
+bfShareConsortiumBtn.addEventListener('click', () => {
+  shareConsortiumStatus.innerHTML = ""
+  ipcRenderer.send('warning-share-with-consortium', formBannerHeight.value)
+})
+
+ipcRenderer.on('warning-share-with-consortium-selection', (event, index) => {
+  if (index === 0) {
+    shareWithConsortium()
+  }
+})
+
+function shareWithConsortium(){
+  shareConsortiumStatus.innerHTML = 'Please wait...'
+  bfPostCurationProgress.style.display = 'block'
+  disableform(bfPostCurationForm)
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = bfDatasetListPostCuration.options[bfDatasetListPostCuration.selectedIndex].text
+  var selectedTeam = 'SPARC Embargoed Data Sharing Group'
+  var selectedRole = 'viewer'
+  client.invoke("api_bf_add_permission_team", selectedBfAccount, selectedBfDataset, selectedTeam, selectedRole,
+    (error, res) => {
+    if(error) {
+      log.error(error)
+      console.error(error)
+      var emessage = userError(error)
+      shareConsortiumStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+      bfPostCurationProgress.style.display = 'none'
+      enableform(bfPostCurationForm)
+    } else {
+      showCurrentPermission()
+      var selectedStatusOption = '11. Complete, Under Embargo (Investigator)'
+      client.invoke("api_bf_change_dataset_status", selectedBfAccount, selectedBfDataset, selectedStatusOption,
+        (error, res) => {
+        if(error) {
+          log.error(error)
+          console.error(error)
+          var emessage = userError(error)
+          shareConsortiumStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+          bbfPostCurationProgress.style.display = 'none'
+        } else {
+          shareConsortiumStatus.innerHTML = 'Success - Shared with Consortium: provided viewer permissions to Consortium members and set dataset status to "Under Embargo"'
+          enableform(bfPostCurationForm)
+          showCurrentDatasetStatus()
+          bfPostCurationProgress.style.display = 'none'
+        }
+      })
+    }
+  })
+}
+
+
+// Reserve DOI
+bfReserveDOIBtn.addEventListener('click', () => {
+  disableform(bfPostCurationForm)
+  reserveDOIStatus.innerHTML = "Please wait..."
+  bfPostCurationProgress.style.display = 'block'
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = bfDatasetListPostCuration.options[bfDatasetListPostCuration.selectedIndex].text
+  client.invoke("api_bf_reserve_doi", selectedBfAccount, selectedBfDataset,
+    (error, res) => {
+    if(error) {
+      log.error(error)
+      console.error(error)
+      var emessage = userError(error)
+      reserveDOIStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+      bfPostCurationProgress.style.display = 'none'
+      enableform(bfPostCurationForm)
+    } else {
+      reserveDOIStatus.innerHTML = res
+      showCurrentDOI()
+      enableform(bfPostCurationForm)
+    }
+  })
+})
+
+// Publish dataset
+
 
 //////////////////////////////////
 // Helper functions
@@ -1679,6 +2744,7 @@ function refreshAllBfDatasetLists(){
       removeOptions(bfUploadDatasetList)
       removeOptions(bfDatasetListDatasetStatus)
       removeOptions(bfDatasetListRenameDataset)
+      removeOptions(bfDatasetListPostCuration)
       var optionSelect = document.createElement("option")
       optionSelect.textContent = 'Select dataset'
       bfDatasetList.appendChild(optionSelect)
@@ -1687,11 +2753,13 @@ function refreshAllBfDatasetLists(){
       var option4 = optionSelect.cloneNode(true)
       var option5 = optionSelect.cloneNode(true)
       var option6 = optionSelect.cloneNode(true)
+      var option7 = optionSelect.cloneNode(true)
       bfDatasetListMetadata.appendChild(option2)
       bfDatasetListPermission.appendChild(option3)
       bfUploadDatasetList.appendChild(option4)
       bfDatasetListDatasetStatus.appendChild(option5)
       bfDatasetListRenameDataset.appendChild(option6)
+      bfDatasetListPostCuration.appendChild(option7)
     } else {
       client.invoke("api_bf_dataset_account", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
         if(error) {
@@ -1704,6 +2772,7 @@ function refreshAllBfDatasetLists(){
           removeOptions(bfUploadDatasetList)
           removeOptions(bfDatasetListDatasetStatus)
           removeOptions(bfDatasetListRenameDataset)
+          removeOptions(bfDatasetListPostCuration)
           for (myitem in res){
             var myitemselect = res[myitem]
             var option = document.createElement("option")
@@ -1715,11 +2784,13 @@ function refreshAllBfDatasetLists(){
             var option4 = option.cloneNode(true)
             var option5 = option.cloneNode(true)
             var option6 = option.cloneNode(true)
+            var option7 = option.cloneNode(true)
             bfDatasetListMetadata.appendChild(option2)
             bfDatasetListPermission.appendChild(option3)
             bfUploadDatasetList.appendChild(option4)
             bfDatasetListDatasetStatus.appendChild(option5)
             bfDatasetListRenameDataset.appendChild(option6)
+            bfDatasetListPostCuration.appendChild(option7)
         }
       }
     })
@@ -1981,7 +3052,7 @@ function showAccountDetails(bfLoadAccount){
 }
 
 function showUploadAccountDetails(bfLoadAccount){
-  client.invoke("api_bf_account_details", 
+  client.invoke("api_bf_account_details",
     bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text, (error, res) => {
     if(error) {
       log.error(error)
@@ -2059,6 +3130,34 @@ function updateBfAccountList(){
     refreshBfTeamsList(bfListTeams)
 })
 }
+
+function showCurrentDOI(){
+  currentDOI.value = "Please wait..."
+  reserveDOIStatus.innerHTML = ""
+  bfPostCurationProgress.style.display = 'block'
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = bfDatasetListPostCuration.options[bfDatasetListPostCuration.selectedIndex].text
+  if (selectedBfDataset === 'Select dataset'){
+    currentDOI.value = '-------'
+    bfPostCurationProgress.style.display = 'none'
+  } else {
+    client.invoke("api_bf_get_doi", selectedBfAccount, selectedBfDataset,
+    (error, res) => {
+      if(error) {
+        log.error(error)
+        console.error(error)
+        currentDOI.value = '-------'
+        var emessage = userError(error)
+        reserveDOIStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+        bfPostCurationProgress.style.display = 'none'
+      } else {
+        currentDOI.value = res
+        bfPostCurationProgress.style.display = 'none'
+      }
+    })
+  }
+}
+
 
 // Organize Dataset //
 
@@ -2303,7 +3402,7 @@ function jsonToTableMetadata(table, jsonvar){
   var SPARCfolder = 'metadata'
 
   var listfilePath = []
-  
+
   for (let filePath of jsontable[SPARCfolder]){
       var extension = path.extname(filePath);
       var file = path.basename(filePath,extension);

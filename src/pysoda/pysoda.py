@@ -15,7 +15,7 @@ from shutil import copy2
 from configparser import ConfigParser
 # import threading
 import numpy as np
-import collections
+from collections import defaultdict
 import subprocess
 from websocket import create_connection
 import socket
@@ -27,6 +27,11 @@ from blackfynn.log import get_logger
 from blackfynn.api.agent import agent_cmd
 from blackfynn.api.agent import AgentError, check_port, socket_address
 from urllib.request import urlopen
+import json
+
+from openpyxl import load_workbook
+from openpyxl import Workbook
+from docx import Document
 
 ### Global variables
 curateprogress = ' '
@@ -54,6 +59,14 @@ initial_bfdataset_size_submit = 0
 
 forbidden_characters = '<>:"/\|?*'
 forbidden_characters_bf = '\/:*?"<>'
+
+DEV_TEMPLATE_PATH = join(dirname(__file__), "..", "file_templates")
+
+# once pysoda has been packaged with pyinstaller
+# it becomes nested into the pysodadist/api directory
+PROD_TEMPLATE_PATH = join(dirname(__file__), "..", "..", "file_templates")
+TEMPLATE_PATH = DEV_TEMPLATE_PATH if exists(DEV_TEMPLATE_PATH) else PROD_TEMPLATE_PATH
+
 
 ### Internal functions
 def open_file(file_path):
@@ -319,6 +332,110 @@ def mycopyfile_with_metadata(src, dst, *, follow_symlinks=True):
     shutil.copystat(src, dst)
     return dst
 
+### Import Milestone document
+def import_milestone(filepath):
+    doc = Document(filepath)
+    table = doc.tables[0]
+    data = []
+    keys = None
+    for i, row in enumerate(table.rows):
+        text = (cell.text for cell in row.cells)
+        # headers will become the keys of our dictionary
+        if i == 0:
+            keys = tuple(text)
+            continue
+        # Construct a dictionary for this row, mapping
+        # keys to values for this row
+        row_data = dict(zip(keys, text))
+        data.append(row_data)
+    return data
+
+def extract_milestone_info(datalist):
+    milestone = defaultdict(list)
+    milestone_key = "Related milestone, aim, or task"
+    other_keys = ["Description of data", "Expected date of completion"]
+    for row in datalist:
+        key = row[milestone_key]
+        milestone[key].append({key: row[key] for key in other_keys})
+    return milestone
+
+### Prepare submission file
+def save_submission_file(filepath, json_str):
+    source = join(TEMPLATE_PATH, "submission.xlsx")
+    destination = filepath
+    shutil.copyfile(source, destination)
+    # json array to python list
+    val_arr = json.loads(json_str)
+    # write to excel file
+    wb = load_workbook(destination)
+    ws1 = wb['Sheet1']
+    # date_obj = datetime.strptime(val_arr[2], "%Y-%m")
+    # date_new = date_obj.strftime("%m-%Y")
+    ws1["C2"] = val_arr[0]
+    ws1["C3"] = val_arr[1]
+    ws1["C4"] = val_arr[2]
+
+    wb.save(destination)
+
+from string import ascii_uppercase
+import itertools
+
+
+def excel_columns():
+    """
+    NOTE: does not support more than 699 contributors/links
+    """
+    # start with column D not A
+    single_letter = list(ascii_uppercase[3:])
+    two_letter = [a + b for a,b in itertools.product(ascii_uppercase, ascii_uppercase)]
+    return single_letter + two_letter
+
+### Prepare dataset-description file
+def save_ds_description_file(filepath, dataset_str, misc_str, optional_str, con_str):
+    source = join(TEMPLATE_PATH, "dataset_description.xlsx")
+    destination = filepath
+    shutil.copyfile(source, destination)
+
+    # json array to python list
+    val_arr_ds = json.loads(dataset_str)
+    val_arr_con = json.loads(con_str)
+    val_arr_misc = json.loads(misc_str)
+    val_arr_optional = json.loads(optional_str)
+
+    # write to excel file
+    wb = load_workbook(destination)
+    ws1 = wb['Sheet1']
+
+    ## name, description, keywords, samples, subjects
+    ws1["D2"] = val_arr_ds[0]
+    ws1["D3"] = val_arr_ds[1]
+    ws1["D4"] = ", ".join(val_arr_ds[2])
+    ws1["D16"] = val_arr_ds[3]
+    ws1["D17"] = val_arr_ds[4]
+
+    ## contributor info
+    ws1["D10"] = val_arr_con["acknowlegdment"]
+    ws1["D11"] = val_arr_con["funding"]
+    for contributor, column in zip(val_arr_con['contributors'], excel_columns()):
+        ws1[column + "5"] = contributor["conName"]
+        ws1[column + "6"] = contributor["conID"]
+        ws1[column + "7"] = contributor["conAffliation"]
+        ws1[column + "8"] = contributor["conRole"]
+        ws1[column + "9"] = contributor["conContact"]
+
+    ## originating DOI, Protocol DOI
+    ws1["D12"] = ", ".join(val_arr_misc["doi"])
+    ws1["D13"] = ", ".join(val_arr_misc["url"])
+    for link, column in zip(val_arr_misc['additional links'], excel_columns()):
+        ws1[column + "14"] = link["link"]
+        ws1[column + "15"] = link["description"]
+
+    ## completeness, parent dataset ID, title Respectively
+    ws1["D18"] = val_arr_optional["completeness"]
+    ws1["D19"] = val_arr_optional["parentDS"]
+    ws1["D20"] = val_arr_optional["completeDSTitle"]
+
+    wb.save(destination)
 
 ### Prepare dataset
 def save_file_organization(jsonpath, jsondescription, jsonpathmetadata, pathsavefileorganization):
@@ -424,7 +541,7 @@ def create_preview_files(paths, folder_path):
         return
     except Exception as e:
         raise e
- 
+
 
 def preview_file_organization(jsonpath):
     """
@@ -764,7 +881,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
             gevent.sleep(0)
             gevent.joinall(gev) #wait for gevent to finish before exiting the function
             curatestatus = 'Done'
-            
+
             try:
                 return gev[0].get()
             except Exception as e:
@@ -1077,6 +1194,14 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
     error, c = '', 0
     datasetname = renamed_dataset_name.strip()
 
+    try:
+        role = bf_get_current_user_permission(accountname, current_dataset_name)
+        if role not in ['owner', 'manager']:
+            error = "Error: You don't have permissions to change the name of this Blackfynn dataset"
+            raise Exception(error)
+    except Exception as e:
+        raise(e)
+
     if check_forbidden_characters_bf(datasetname):
         error = error + 'Error: A Blackfynn dataset name cannot contain any of the following characters: ' + forbidden_characters_bf + "<br>"
         c += 1
@@ -1232,7 +1357,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         agent_running()
         def calluploadfolder():
 
-            try: 
+            try:
 
                 global submitdataprogress
                 global submitdatastatus
@@ -2018,7 +2143,7 @@ def bf_get_dataset_status(selected_bfaccount, selected_bfdataset):
         dataset_current_status = bf._api._get('/datasets/' + str(selected_dataset_id))['content']['status']
         return [list_status, dataset_current_status]
     except Exception as e:
-        raise Exception(e)
+        raise e
 
 """
     Function to get current status for a selected dataset
@@ -2069,8 +2194,108 @@ def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_st
         #gchange dataset status
         selected_dataset_id = myds.id
         jsonfile = {'status': new_status}
-        bf._api.datasets._put('/' + str(selected_dataset_id), 
+        bf._api.datasets._put('/' + str(selected_dataset_id),
                               json=jsonfile)
-        return "Success: Changed dataset status to " + selected_status
+        return "Success: Changed dataset status to '"+ selected_status +"'"
     except Exception as e:
-        raise Exception(e)
+        raise e
+
+"""
+    Function to get current doi for a selected dataset
+
+    Args:
+        selected_bfaccount: name of selected Blackfynn acccount (string)
+        selected_bfdataset: name of selected Blackfynn dataset (string)
+    Return:
+        Current doi or "None"
+    """
+def bf_get_doi(selected_bfaccount, selected_bfdataset):
+
+    try:
+        bf = Blackfynn(selected_bfaccount)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn account'
+        raise Exception(error)
+
+    try:
+        myds = bf.get_dataset(selected_bfdataset)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn dataset'
+        raise Exception(error)
+
+    try:
+        role = bf_get_current_user_permission(selected_bfaccount, selected_bfdataset)
+        if role not in ['owner', 'manager']:
+            error = "Error: You don't have permissions to view/edit DOI for this Blackfynn dataset"
+            raise Exception(error)
+    except Exception as e:
+        raise e
+
+    try:
+        selected_dataset_id = myds.id
+        doi_status = bf._api._get('/datasets/' + str(selected_dataset_id) + '/doi')
+        return doi_status['doi']
+    except Exception as e:
+        if "doi" in str(e) and "not found" in str(e):
+            error = "No DOI has been reserved for this dataset"
+            raise Exception(error)
+        else:
+            raise e
+
+"""
+    Function to reserve doi for a selected dataset
+
+    Args:
+        selected_bfaccount: name of selected Blackfynn acccount (string)
+        selected_bfdataset: name of selected Blackfynn dataset (string)
+    Return:
+        Success or error message
+"""
+def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
+
+    try:
+        bf = Blackfynn(selected_bfaccount)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn account'
+        raise Exception(error)
+
+    try:
+        myds = bf.get_dataset(selected_bfdataset)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn dataset'
+        raise Exception(error)
+
+    try:
+        role = bf_get_current_user_permission(selected_bfaccount, selected_bfdataset)
+        if role not in ['owner', 'manager']:
+            error = "Error: You don't have permissions to view/edit DOI for this Blackfynn dataset"
+            raise Exception(error)
+    except Exception as e:
+        raise e
+
+    try:
+        bf_get_doi(selected_bfaccount, selected_bfdataset)
+    except Exception as e: 
+        if (str(e) == "No DOI has been reserved for this dataset"):
+            pass
+        else:
+            raise e
+    else:
+        error = "Error: A DOI has already been reserved for this dataset"
+        raise Exception(error)
+
+    try:
+        selected_dataset_id = myds.id
+        contributors_list = bf._api._get('/datasets/' + str(selected_dataset_id) + '/contributors')
+        creators_list = []
+        for item in contributors_list:
+            creators_list.append(item['firstName'] + ' ' + item['lastName'])
+        jsonfile = {
+        'title' : selected_bfdataset,
+        'creators' : creators_list,
+        }
+        bf._api.datasets._post('/' + str(selected_dataset_id)+ '/doi', 
+                              json=jsonfile)
+        return 'Done!'
+    except Exception as e:
+        raise e
