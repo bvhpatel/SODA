@@ -7,26 +7,12 @@ from pysoda import submit_dataset_progress, curate_dataset_progress, save_file_o
     bf_submit_dataset, bf_new_dataset_folder, bf_rename_dataset, bf_add_permission, bf_get_users, bf_get_permission, \
     bf_get_teams, bf_add_permission_team, bf_add_subtitle, bf_get_subtitle, bf_get_description, \
     bf_add_description, bf_get_banner_image, bf_add_banner_image, bf_get_license, bf_add_license, \
-    bf_get_dataset_status, bf_change_dataset_status, bf_default_account_load, bf_get_doi, bf_reserve_doi, \
-    save_submission_file, save_ds_description_file, extract_milestone_info, import_milestone
+    bf_get_dataset_status, bf_change_dataset_status, bf_default_account_load
 
 import sys
 import zerorpc
 
 class SodaApi(object):
-
-    ### import milestone document
-    def api_extract_milestone_info(self, filepath):
-        datalist = import_milestone(filepath)
-        return extract_milestone_info(datalist)
-
-    ### Save Submission file
-    def api_save_submission_file(self, filepath, val_arr):
-        return save_submission_file(filepath, val_arr)
-
-    ### Save Description file
-    def api_save_ds_description_file(self, filepath, val_arr1, val_arr2, val_arr3, val_arr4):
-        return save_ds_description_file(filepath, val_arr1, val_arr2, val_arr3, val_arr4)
 
     ### Curate dataset
     def api_save_file_organization(self, jsonpath, jsondescription, jsonpathmetadata, pathsavefileorganization):
@@ -206,22 +192,9 @@ class SodaApi(object):
             return bf_get_dataset_status(selected_bfaccount, selected_bfdataset)
         except Exception as e:
             raise e
-
     def api_bf_change_dataset_status(self, selected_bfaccount, selected_bfdataset, selected_status):
         try:
             return bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_status)
-        except Exception as e:
-            raise e
-
-    def api_bf_get_doi(self, selected_bfaccount, selected_bfdataset):
-        try:
-            return bf_get_doi(selected_bfaccount, selected_bfdataset)
-        except Exception as e:
-            raise e
-
-    def api_bf_reserve_doi(self, selected_bfaccount, selected_bfdataset):
-        try:
-            return bf_reserve_doi(selected_bfaccount, selected_bfdataset)
         except Exception as e:
             raise e
 
