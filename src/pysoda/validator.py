@@ -870,6 +870,98 @@ class dictValidator():
 
 
 
+    def get_col_vals_xlsx(self, f, name):
+        # this opens an xlsx file, finds the column with the requested variable name  
+        # and extracts the values from that column. Returns a list with all of the 
+        # values from that row.
+        colVals = []
+        workbook = xlrd.open_workbook(f)
+        worksheet = workbook.sheet_by_index(0)
+        for col in range(1, worksheet.ncols):
+            if worksheet.cell_value(0,col) == name:
+                colVals = worksheet.col_values(col,1)
+                break
+
+        return colVals
+
+
+
+
+    def get_col_vals_csv(self, f, name):
+        # this opens a csv file, write the file into a dict assuming that the
+        # first row are the variable names (which are then the keys).
+        # Then goes through each row and appends the value for the "name"
+        # key to the list to be returned.
+
+        colVals = []
+
+        with open(f) as csvFile:
+            dict = csv.DictReader(csvFile)
+            for row in dict:
+                colVals.append(row[name])
+
+        return colVals
+
+
+
+
+    def check_unique_ids(self, rootFolder):
+        # This module goes into the subjects and samples files to make sure that
+        # the listed subject and sample IDs are unique.
+        # In the subjects file there should not be any duplicate entries in the first
+        # column (which would mean the same ID was entered twice).
+        # The samples file should have a unique combination of the 1st two column values (subjID, samID) 
+
+        names = ["subject_id", "sample_id"]
+        files = ["subjects.csv", "subjects.xlsx", "samples.csv", "samples.xlsx"]
+        extensions = ["csv", "xlsx"]
+        uniqueSubIDFlag = 1
+        uniqueSamIDFlag = 1
+
+        allContents = os.listdir(rootFolder)
+
+        # subjects first
+        for a in allContents:
+            fullFilePath = rootFolder+"/"+a
+            if os.path.isfile(fullFilePath):        
+                if a == files[0]:
+                    colVals = self.get_col_vals_csv(fullFilePath,names[0])
+                if a == files[1]:
+                    colVals = self.get_col_vals_xlsx(fullFilePath,names[0])
+                else:
+                    pass
+                # we just need to check whether there are any repeats in subjectID here
+        if len(colVals) != len(set(colVals)):
+            warnings.append("There are duplicate subject ID's in the subjects file!")
+            uniqueSubIDFlag = 0
+
+        # samples next; 
+        for a in allContents:
+            fullFilePath = rootFolder+"/"+a
+            if os.path.isfile(fullFilePath):        
+                if a == files[2]:
+                    colValsSub = self.get_col_vals_csv(fullFilePath,names[0])
+                    colValsSam = self.get_col_vals_csv(fullFilePath,names[1])
+                elif a == files[3]:
+                    colValsSub = self.get_col_vals_xlsx(fullFilePath,names[0])
+                    colValsSam = self.get_col_vals_xlsx(fullFilePath,names[1])
+                else:
+                    pass
+
+        # here have to include values 1st two columns in comparison
+        for i in range(len(colValsSub)):
+            for j in range(i+1,len(colValsSub)):
+                if colValsSub[i] == colValsSub[j] and colValsSam[i] == colValsSam[j]:
+                    uniqueSamIDFlag = 0
+                    break
+
+        return uniqueSubIDFlag, uniqueSamIDFlag
+
+
+
+
+
+
 def main():
 
     global warnings, fatal
@@ -940,6 +1032,12 @@ def main():
     print("Does the number of samples in dataset_description match the number of sample folders? = "+str(checkSamFolDD))
     print("Does the number of samples in dataset_description file match the number in the samples file? = "+str(checkSamFilDD))
     print("Does the number of sample folders match the number in the samples file? = "+str(checkSamFilFol))
+
+    # check that the IDs in the subjects and samples files are unique
+    uniqueSubIDFlag, uniqueSamIDFlag = validator.check_unique_ids(rootFolder)
+    print("Are the IDs in the subjects file unique? = "+str(uniqueSubIDFlag))
+    print("Are the IDs in the samples file unique? = "+str(uniqueSamIDFlag))
+
 
     # print out summary of warnings and fatal errors
     print("\n")
