@@ -22,10 +22,9 @@ The code checks the following items:
 12. Check that mandatory fields are populated for each subject/sample (completed)
 13. Check that the number of samples is the same in the dataset_description and samples files
     and that those numbers match the actual number of folders (completed)
-
-14. Check that the subjects/samples files have unique IDs (to do)
-15. Check that the submission file has all of the required columns (to do) and are populated (to do)
-16. Check that the dataset_description file has all of the required rows (to do) and are populated (to do)
+14. Check that the subjects/samples files have unique IDs (completed)
+15. Check that the submission file has all of the required columns (completed) and are populated (completed)
+16. Check that the dataset_description file has all of the required rows (completed) and are populated (completed)
 
 definitions:
 a) a terminal folder is one with no further subfolders
@@ -46,11 +45,11 @@ output: list of fatal errors and/or warnings, flags that signal whether the
 ver 0.1 2020-01-13 (start)
 ver 0.2 2020-01-31 (1-9 checks)
 ver 0.3 2020-03-05 (1-13 checks)
+ver 0.4 2020-04-26 (1-16 checks)
 
-Karl G. Helmer
-Martinos Center for Biomedical Imaging
-Massachusetts General Hospital
-helmer@nmr.mgh.harvard.edu
+Author: Karl G. Helmer
+Institution: Martinos Center for Biomedical Imaging, Massachusetts General Hospital
+Email: helmer@nmr.mgh.harvard.edu
 '''
 
 import os
@@ -84,7 +83,19 @@ class dictValidator():
 
         self.samCols = ['subject_id', 'sample_id', 'wasDerivedFromSample', 'pool_id', 'experimental group']
 
-    
+        # note: the capitalizations below are inconsistent, but are what is given in SPARC_FAIR-Folder_Structure V1.2.pdf
+        self.ddCols = ['Name', 'Description', 'Keywords', 'Contributors', 'Contributor ORCID ID', 
+                       'Contributor Affiliation', 'Contributor Role',  
+                       'Is Contact Person', 'Acknowledgements', 'Funding', 'Originating Article DOI', 
+                       'Protocol URL or DOI', 'Additional Links', 'Link Description', 'Number of subjects',
+                       'Number of samples', 'Completeness of data set', 'Parent dataset ID', 'Title for complete data set',
+                       'Metadata Version']
+
+        self.submCols = ['SPARC Award number', 'Milestone achieved', 'Milestone completion date'] 
+
+
+
+   
     def get_files_folders(self,path):
         # gets a list of the files and folders in the path of the root directory 
         # fPathList is a list of the files including the path
@@ -959,6 +970,93 @@ class dictValidator():
 
 
 
+    def check_dataset_description(self, rootFolder):
+        # The dataset_description file has the variable names in rows rather than columns
+        # Check that the first column has the right variable name and that at least the 
+        # second column is filled in
+
+        checkDDVarsFlag = 1
+        checkDDValsFlag = 1
+        ddVariables = []
+        ddValues = []
+        ddFileRootCSV = rootFolder+"/"+"dataset_description.csv"
+        ddFileRootXLSX = rootFolder+"/"+"dataset_description.xlsx"
+
+        if os.path.isfile(ddFileRootCSV):
+            with open(ddFileRootCSV) as f:
+                reader = csv.reader(f, delimiter=",")
+                for row in reader:
+                    ddVariables.append(row[0])
+                    if row[1]:
+                        ddValues.append(row[1])
+                    else:
+                        checkDDVals = 0  # each row has to have a variable name and at least one value (even if N/A)
+
+        if os.path.isfile(ddFileRootXLSX):
+            workbook = xlrd.open_workbook(ddFileRootXLSX)
+            worksheet = workbook.sheet_by_index(0)
+            ddVariables = worksheet.col_values(0)
+            ddValues = worksheet.col_values(1)
+            if "" in ddValues:
+                checkDDValues = 0
+
+        # check to make sure that the variables are correct and in the right order
+        print("checking dataset_description required columns...")
+        for d in range(len(self.ddCols)):
+            if ddVariables[d] != self.ddCols[d]:
+                print("there is a problem with the dataset_description file: {}, {}".format(ddVariables[d],self.ddCols[d]))
+                checkDDVarsFlag = 0
+            else:
+                #print("{} = {}".format(ddVariables[d],self.ddCols[d]))
+                pass
+
+        return checkDDVarsFlag, checkDDValsFlag
+        
+
+
+    def check_submission(self, rootFolder):
+        # The submission file has the variable names in rows rather than columns
+        # Check that the first column has the right variable name and that at least the 
+        # second column is filled in
+
+        checkSVarsFlag = 1
+        checkSValsFlag = 1
+        sVariables = []
+        sValues = []
+        sFileRootCSV = rootFolder+"/"+"submission.csv"
+        sFileRootXLSX = rootFolder+"/"+"submission.xlsx"
+
+        if os.path.isfile(sFileRootCSV):
+            with open(sFileRootCSV) as f:
+                reader = csv.reader(f, delimiter=",")
+                for row in reader:
+                    sVariables.append(row[0])
+                    if row[1]:
+                        sValues.append(row[1])
+                    else:
+                        checkSVals = 0  # each row has to have a variable name and at least one value (even if N/A)
+
+        if os.path.isfile(sFileRootXLSX):
+            workbook = xlrd.open_workbook(sFileRootXLSX)
+            worksheet = workbook.sheet_by_index(0)
+            sVariables = worksheet.col_values(0)
+            sValues = worksheet.col_values(1)
+            if "" in sValues:
+                checkSValues = 0
+
+        # check to make sure that the variables are correct and in the right order
+        print("checking submission required columns...")
+        for d in range(len(self.submCols)):
+            if sVariables[d] != self.submCols[d]:
+                print("there is a problem with the submission file: {}, {}".format(sVariables[d],self.sCols[d]))
+                checkSVarsFlag = 0
+            else:
+                #print("{} = {}".format(sVariables[d],self.submCols[d]))
+                pass
+
+        return checkSVarsFlag, checkSValsFlag
+        
+
 
 
 
@@ -1037,6 +1135,16 @@ def main():
     uniqueSubIDFlag, uniqueSamIDFlag = validator.check_unique_ids(rootFolder)
     print("Are the IDs in the subjects file unique? = "+str(uniqueSubIDFlag))
     print("Are the IDs in the samples file unique? = "+str(uniqueSamIDFlag))
+
+    # check that the dataset_description file has all of the required variables and at least one value for each
+    checkDDVarsFlag, checkDDValsFlag = validator.check_dataset_description(rootFolder)
+    print("Are the variables in the dataset_description file correctly named and in the required order? = {}".format(checkDDVarsFlag))
+    print("Does the dataset_description file have at least one value for each variable? = {}".format(checkDDValsFlag))
+
+    # check that the submissions file has all of the required variables and at least one value for each
+    checkSVarsFlag, checkSValsFlag = validator.check_submission(rootFolder)
+    print("Are the variables in the submission file correctly named and in the required order? = {}".format(checkSVarsFlag))
+    print("Does the submission file have at least one value for each variable? = {}".format(checkSValsFlag))
 
 
     # print out summary of warnings and fatal errors
