@@ -6,7 +6,7 @@
 /* toggle button */
 #sidebarCollapse {
    width: 40px;
-   height: 35px;
+   height: 37px;
    background: #04214f;
    position: relative;
    left: 220px;
@@ -131,7 +131,7 @@ a[data-toggle="collapse"] {
 
 #main-nav ul li a {
     /* padding: 10px; */
-    font-size: 15px;
+    font-size: 14px;
     display: block;
     line-height: 43px;
     padding-left: 15px;
@@ -192,7 +192,7 @@ ul ul a {
 
 .feedback-section {
   margin-left: 10px;
-  margin-top: 100px;
+  margin-top: 115px;
   opacity: 0.7;
   margin-right: 10px;
 }
