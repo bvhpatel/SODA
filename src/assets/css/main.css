@@ -535,7 +535,10 @@ input:checked + .slider:before {
 .div-organize-generate-dataset {
   text-align: center;
   min-width: 450px;
-  margin-top: 50px;
+  margin-top: 120px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
 
 .button-generate-dataset {
@@ -552,18 +555,26 @@ input:checked + .slider:before {
 }
 
 .button-generate-dataset:hover {
-  box-shadow: 0 0 4px var(--color-bg-plum);
-  color: var(--color-bg-plum);
+  box-shadow: 0 0 4px #FF0000;
+  color: #FF0000;
   opacity: 1
 }
 
 .button-generate-dataset.active{
-  border: 2px solid #258193;
-  color: #258193;
+  border: 2px solid #0b2d63;
+  color: #0b2d63;
   box-shadow: 0 0 4px #3b5998;
   font-weight: bold;
   opacity: 1;
   outline: none
+}
+
+.button-generate-dataset.active .far.fa-compass {
+  color: green;
+}
+
+.button-generate-dataset.active .fas.fa-dove {
+  color: orange;
 }
 
 /* file and folder */
@@ -681,4 +692,60 @@ input:checked + .slider:before {
 .step-dot.active {
   box-shadow: 0 0 5px #3b5998;
   background-color: #258193
+}
+
+.option-card{
+  display: flex;
+  flex-direction: column;
+  margin-right: 20px;
+  border: 1px solid rgba(0,0,0,.125);
+  min-width:240px;
+  max-width:260px;
+  height: 325px;
+  box-shadow: 0 0 3px #C8C8C8;
+}
+
+.card-body{
+  height: 270px;
+  min-width:240px;
+  padding-top: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom:10px;
+  border: 1px solid rgba(0,0,0,.125);
+}
+
+.card-body i {
+  font-size: 65px
+}
+
+.card-body i p {
+  margin-top:20px;
+  width:200px;
+  height:180px
+}
+
+.card-body button {
+  background: #5fbcf5 !important;
+  border-color:  #5fbcf5 !important;
+  cursor: pointer;
+  min-width: 200px;
+  max-width: 220px
+}
+
+.card-body button:hover{
+  transform: scale(1.05);
+}
+
+.card-head{
+  height: 55px;
+  min-width:240px;
+  padding: 12px 20px;
+  border-radius: calc(.25rem - 1px) calc(.25rem - 1px) 0 0;
+  background-color: rgba(0,0,0,.05);
+  box-shadow: 0 0 3px 0 #C8C8C8;
+}
+
+.card-head h2 {
+  font-size: 19px
 }
