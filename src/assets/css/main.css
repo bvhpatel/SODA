@@ -702,7 +702,7 @@ input:checked + .slider:before {
   min-width:240px;
   max-width:260px;
   height: 325px;
-  box-shadow: 0 0 3px #C8C8C8;
+  border-radius: 10px
 }
 
 .card-body{
@@ -712,11 +712,15 @@ input:checked + .slider:before {
   padding-left: 20px;
   padding-right: 20px;
   padding-bottom:10px;
-  border: 1px solid rgba(0,0,0,.125);
+  /* border: 1px solid rgba(0,0,0,.125); */
+  display:flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  border-radius: 0 0 10px 10px;
 }
 
 .card-body i {
-  font-size: 65px
+  font-size: 60px
 }
 
 .card-body i p {
@@ -726,11 +730,12 @@ input:checked + .slider:before {
 }
 
 .card-body button {
-  background: #5fbcf5 !important;
-  border-color:  #5fbcf5 !important;
+  background:  #2d142c!important;
+  border: none;
   cursor: pointer;
   min-width: 200px;
-  max-width: 220px
+  max-width: 220px;
+  font-size: 15px
 }
 
 .card-body button:hover{
@@ -741,11 +746,12 @@ input:checked + .slider:before {
   height: 55px;
   min-width:240px;
   padding: 12px 20px;
-  border-radius: calc(.25rem - 1px) calc(.25rem - 1px) 0 0;
   background-color: rgba(0,0,0,.05);
-  box-shadow: 0 0 3px 0 #C8C8C8;
+  /* box-shadow: 0 0 3px 0 #C8C8C8; */
+  border-radius: 10px 10px 0 0;
+  border-bottom: 1px solid #d5d5d5
 }
 
 .card-head h2 {
-  font-size: 19px
+  font-size: 18px
 }

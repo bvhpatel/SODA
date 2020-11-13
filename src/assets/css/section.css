@@ -10,7 +10,7 @@
   padding: 10px 10px;
   box-sizing: border-box;
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: hidden;
   color: var(--color-accent);
   background-color: var(--color-section);
 

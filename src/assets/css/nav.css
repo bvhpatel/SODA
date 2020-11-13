@@ -5,9 +5,9 @@
 }
 /* toggle button */
 #sidebarCollapse {
-   width: 40px;
-   height: 37px;
-   background: #04214f;
+   width: 35px;
+   height: 33px;
+   background: #2d142c;
    position: relative;
    left: 220px;
    cursor: pointer;
@@ -48,7 +48,7 @@
 #main-nav {
     min-width: 200px;
     max-width: 200px;
-    background: #04214f;
+    background: #2d142c;
     color: #fff;
     font-family: "Source Sans Pro", sans-serif;
     transition: all 0.1s cubic-bezier(0.945, 0.020, 0.270, 0.665);
@@ -111,7 +111,7 @@ a[data-toggle="collapse"] {
   margin-bottom: 45px;
   padding-right: 13px;
   padding-left: 12px;
-  background: #04214f;
+  background: #2d142c;
   padding-bottom: 30px;
 }
 
@@ -134,13 +134,12 @@ a[data-toggle="collapse"] {
     font-size: 14px;
     display: block;
     line-height: 43px;
-    padding-left: 15px;
+    padding-left: 8px;
     text-align: left;
-    padding-right: 10px;
     color: #fff;
-    opacity: 0.7;
+    opacity: 0.9;
     /* border: none; */
-    background: #04214f;
+    background: #2d142c;
     border-bottom: 1px solid transparent;
     width: 180px;
     margin-left: 10px;
@@ -178,7 +177,7 @@ a[data-toggle="collapse"] {
 #main-nav ul li a.is-selected {
   color: #fff;
   font-weight: 600;
-  background: #5fbcf5;
+  background: red;
   border-right-color: #fff;
   opacity: 1
 }
@@ -209,15 +208,15 @@ ul ul a {
   text-decoration: none !important;
   width: 30px!important;
   border: none!important;
-  color:#04214f!important;
+  color:#2d142c!important;
   padding-right: 10px!important;
   line-height: 30px !important;
   margin-right:5px;
 }
 
 .help-a i {
-  font-size:22px;
-  color:#04214f
+  font-size:19px;
+  color:#2d142c
 }
 
 .list-unstyled {
