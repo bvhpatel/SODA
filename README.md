@@ -8,7 +8,7 @@
 <br />
 <p align="center">
   <a href="#">
-    <img src="/src/assets/app-icon/png/soda_icon.png" alt="Logo" width="100" height="100">
+    <img src="/src/assets/img/logo-can1024-black-circle.png" alt="Logo" width="100" height="100">
   </a>
 
   <h3 align="center">Keep Calm and Curate!</h3>
@@ -37,14 +37,15 @@
 * [Issues and Feedback](#Issues-and-Feedback)
 * [Using the Source Code](#Using-the-Source-Code)
 * [License](#license)
+* [Privacy Policy](#Privacy-Policy)
 * [Acknowledgements](#acknowledgements)
 
 ## About
 
-SODA (Software for Organizing Data Automatically) for SPARC is a desktop software intended to facilitate the data organization and submission process for [SPARC](https://commonfund.nih.gov/sparc) investigators and thus promote the [FAIR Data Principles](https://www.go-fair.org/fair-principles/). The idea for a computer software that assists researchers in curating and sharing their data originated during the SPARC Hackathon in December 2018, where it won the Public's Choice Award, before receiving support from the National Institutes of Health (NIH) for further development. SODA for SPARC is designed such that users can accomplish all the [requirements to submit a SPARC dataset](https://docs.sparc.science/submit_data.html) rapidly through a single interface. Moreover, requirements have been broken down into easy-to-perform steps and automation has been integrated to reduce users' effort to a bare minimum during each step, often to just a few clicks. 
+SODA (Software to Organize Data Automatically) for SPARC is a desktop software intended to facilitate the data organization and submission process for [SPARC](https://commonfund.nih.gov/sparc) investigators and thus promote the [FAIR Data Principles](https://www.go-fair.org/fair-principles/). The idea for a computer software that assists researchers in curating and sharing their data originated during the SPARC Hackathon in December 2018, where it won the Public's Choice Award, before receiving support from the National Institutes of Health (NIH) for further development. SODA for SPARC is designed such that users can accomplish all the [requirements to submit a SPARC dataset](https://docs.sparc.science/submit_data.html) rapidly through a single interface. Moreover, requirements have been broken down into easy-to-perform steps and automation has been integrated to reduce users' effort to a bare minimum during each step, often to just a few clicks. 
 
 <p align="center">
-  <img src="/docs/readme/screenshot-soda.PNG" alt="interface" width="600"> 
+  <img src="/docs/readme/screenshot-soda-interface.PNG" alt="interface" width="600"> 
   <br/> 
   <i> A screenshot of the user interface of SODA. </i>
   </img>
@@ -78,7 +79,7 @@ See the [Wiki](https://github.com/bvhpatel/SODA/wiki) for our full documentation
 To report any issues with the software, suggest improvements, or request a new feature, please open a new issue via the [Issues tab](https://github.com/bvhpatel/SODA/issues). Provide adequate information (operating system, steps leading to error, screenshots) so we can help you efficiently. Alternatively, you could also use [our feedback form](https://docs.google.com/forms/d/e/1FAIpQLSfyUw2_NI1-2tlAr8oB5_JcJ_yjTB-zUDt9skfGjNU9qjITwg/viewform?ts=5e433bea). The feedback form is also accessible directly in the user interface of SODA.
 
 <p align="center">
-   <img src="/docs/readme/feedback-form.PNG" alt="interface" width="600">
+   <img src="/docs/readme/feedback-form-new.PNG" alt="interface" width="600">
   <br/> 
   <i> A screenshot of our feedback form in the user interface of SODA. </i>
   </img>
@@ -90,6 +91,9 @@ If you want to contribute, modify SODA to better suit your needs, or compile it 
 
 ## License
 SODA is distributed under the MIT License. See [LICENSE](https://github.com/bvhpatel/SODA/blob/master/LICENSE) for more information.
+
+## Privacy Policy
+SODA uses Google Analytics to track user interactions with the application. Tracking is anonymous and no identifying personal information is collected. Tracking is implemented as part of our agreement with the SPARC program to report usage statistics for SODA. Tracking is also used to indentify errors and subsequently improve user experience. To learn more about what is tracked and how we use Google Analytics within SODA, please read our [Privacy Policy](https://github.com/bvhpatel/SODA/wiki/Privacy-Policy).
 
 ## Acknowledgements
 * [NIH SPARC Initiative](https://commonfund.nih.gov/sparc)
@@ -115,3 +119,10 @@ SODA is distributed under the MIT License. See [LICENSE](https://github.com/bvhp
 [issues-url]: https://github.com/bvhpatel/SODA/issues
 [license-shield]: https://img.shields.io/github/license/bvhpatel/SODA.svg?style=flat-square
 [license-url]: https://github.com/bvhpatel/SODA/blob/master/LICENSE
+
+## Developers
+* Bhavesh Patel (California Medical Innovations Institute)
+* Tram Ngo (California Medical Innovations Institute)
+* Sanjay Soundarajan (California Medical Innovations Institute)
+* Parya Aghasafari (UC Davis)
+* Karl Helmer (Harvard Medical School/Massachusetts General Hospital)

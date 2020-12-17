@@ -1,47 +1,60 @@
 {
   "name": "SODA",
   "productName": "SODA",
-  "version": "2.1.0",
+  "version": "3.0.1",
   "description": "Keep Calm and Curate",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "NODE_ENV=development electron .",
+    "build-win": "electron-builder build --win --publish never",
+    "build-mac": "electron-builder build --mac --publish never",
+    "build-linux": "electron-builder build --linux --publish never",
+    "deploy-win": "electron-builder build --win --publish always",
+    "deploy-mac": "electron-builder build --mac --publish always",
+    "deploy-linux": "electron-builder build --linux --publish always",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bvhpatel/SODA.git"
+  },
+  "build": {
+    "appId": "com.calmi2.soda",
+    "asar": false,
+    "files": [
+      "**/*",
+      "!pysoda/",
+      "!build/",
+      "!api.spec"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/app-icon/win/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/app-icon/mac/soda_icon.icns",
+      "darkModeSupport": false
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "assets/app-icon/png/soda_icon.png"
+    },
+    "nsis": {
+      "createDesktopShortcut": "always",
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "assets/app-icon/win/icon.ico"
+    },
+    "publish": {
+      "provider": "github",
+      "repository": "https://github.com/bvhpatel/SODA.git"
+    }
   },
   "keywords": [],
   "author": "SODA Team",
   "license": "MIT",
-  "config": {
-    "forge": {
-      "make_targets": {
-        "win32": [
-          "squirrel"
-        ],
-        "darwin": [
-          "zip"
-        ],
-        "linux": [
-          "deb",
-          "rpm"
-        ]
-      },
-      "electronPackagerConfig": {
-        "packageManager": "npm"
-      },
-      "electronWinstallerConfig": {
-        "name": "SODA"
-      },
-      "electronInstallerDebian": {},
-      "electronInstallerRedhat": {},
-      "github_repository": {
-        "owner": "",
-        "name": ""
-      },
-      "windowsStoreConfig": {
-        "packageName": "",
-        "name": "SODA"
-      }
-    }
-  },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.14.0",
     "@toast-ui/editor": "^2.2.0",
@@ -49,23 +62,30 @@
     "airtable": "^0.8.1",
     "axios": "^0.19.2",
     "bootbox": "^5.4.0",
+    "bootstrap-icons": "^1.1.0",
     "cropperjs": "^1.5.7",
     "electron-context-menu": "^0.13.0",
     "electron-log": "^4.2.2",
     "electron-settings": "^3.2.0",
     "electron-shortcut-normalizer": "^1.0.0",
+    "electron-updater": "^4.3.5",
+    "fomantic-ui": "^2.8.7",
     "glob": "^7.1.6",
     "html2canvas": "^1.0.0-rc.5",
     "image-data-uri": "^2.0.1",
     "jquery": "^3.5.1",
+    "node-localstorage": "^2.1.6",
     "pdfkit": "^0.11.0",
     "remove-markdown": "^0.3.0",
     "spur-template": "^1.1.0",
+    "universal-analytics": "^0.4.23",
+    "uuid": "^8.3.1",
     "v8-compile-cache": "^2.1.1",
     "zerorpc-rotkehlchen": "^0.1.0"
   },
   "devDependencies": {
     "electron": "6.0.0",
+    "electron-builder": "^22.9.1",
     "electron-packager": "^14.0.6",
     "electron-rebuild": "^1.11.0"
   }

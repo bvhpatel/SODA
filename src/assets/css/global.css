@@ -49,7 +49,7 @@ h1 {
 
 h2 {
   font-size: 1.3em;
-  font-weight: normal;
+  font-weight: 600;
 }
 
 h3 {
@@ -63,9 +63,9 @@ h5 {
 }
 
 
-svg {
+/* svg {
   fill: currentColor;
-}
+} */
 
 /* Code */
 
@@ -140,7 +140,8 @@ kbd {
   padding-top: 15px;
   padding-bottom:20px;
   background: #fff;
-  max-width:100%
+  max-width:100%;
+  margin-top: 10px;
 }
 .content.is-shown {
   visibility: visible;;

@@ -5,13 +5,74 @@
 
       <div class="section-wrapper">
         <h1>
-          <img class="section-icon" src="assets/img/metadata-teal.png">
+          <svg style="margin-right: 10px; margin-bottom:-3px;" width="22px" height="22px" viewBox="0 0 16 16" class="bi bi-file-text-fill" fill=var(--color-teal) xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" d="M12 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
+          </svg>
           Prepare Metadata
         </h1>
         <h3>This interface will help you in preparing the SPARC metadata files (currently submission and dataset_description files) for your dataset.
          </h3>
       </div>
     </header>
+
+    <div class="demo">
+      <div class="demo-wrapper">
+        <button id="button-save-grant-info-demo-toggle" class="js-container-target demo-toggle-button">Connect to Airtable
+          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Connect-to-Airtable">
+            <img class="nav-video" src="assets/img/documentation-icon.png">
+          </a>
+          <div class="demo-meta u-avoid-clicks"> Connect your Airtable account with SODA  </div>
+        </button>
+
+      <div class="demo-box">
+        <div id="div-add-airtable-key">
+          <h5> Enter your Airtable API key and specify a key name to connect your Airtable account:
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext">
+                SODA make use of the <a href="https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide" style="color:white;"> SPARC Airtable sheet</a> to automatically get award numbers and contributors information such that you don't have to enter them manually in your metadata files. To enable this, you have to connect your Airtable account with SODA (only necessary one time).
+                <br><br>
+                To achieve that, create an Airtable account and request access to the <a href="https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide" style="color:white;">SPARC Airtable sheet</a> if you have not already (contact Dr. Charles Horn at <a href="mailto:chorn@pitt.edu" style='color: white'> chorn@pitt.edu</a>)
+                <br><br>
+                Then, provide a keyname of your choice and enter your Airtable API key in the dedicated SODA interface. Checkout the <a href="https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key" style="color:white;"> Airtable Help page</a> to learn how to obtain or re-generate your API key.
+<!--                 <br><br>
+                The account will then be remembered by SODA for all subsequent uses and you can move on directly to the "Provide award information" feature. Note that the account key will be stored on your computer only, so neither the SODA Team nor anyone else besides you will have access to your Airtable account.
+                <br><br>
+                Please keep your group information up to date in the Airtable sheet, especially contributors' name, email, affiliation, and ORCID to help SODA help you! -->
+              </span>
+            </div>
+          </h5> <br>
+
+          <div class="form-container"><font color="black"> Key name: </font> </div>
+          <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+            <span class="tooltiptext">
+              Provide a name of your choice for your Airtable API Key. Your API Key will be stored under this key name.
+            </span>
+          </div>
+          <div class="demo-controls">
+            <input class="form-container-input-bf" id="airtable-key-name" />
+          </div>
+          <div class="form-container"><font color="black"> API Key: </font> </div>
+          <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+            <span class="tooltiptext">
+              To obtain or re-generate your API key to connect to SODA during your first use, check out the dedicated <a href="https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key" style="color:white;"> Airtable Help page</a>. Note that the key will be stored locally on your computer and the SODA Team will not have access to it.
+            </span>
+          </div>
+          <div class="demo-controls">
+            <input type="password" class="form-container-input-bf" id="airtable-api-key" />
+          </div>
+          <br>
+          <div class="demo-controls">
+            <button class="demo-button" id="button-add-airtable-key"> Connect </button>
+            <div style="display:none" id="div-airtable-connect-load-progress" class="progressdiv">
+              <div class="indeterminatebar"></div>
+            </div>
+            <p id="para-add-airtable-key"  style="float:right;margin: 0 0;padding: 3 3;"></p>
+          </div>
+
+         </div>
+       </div>
+      </div>
+    </div>
 
 <!-- Provide info about award -->
 
@@ -47,7 +108,7 @@
 
             <span style="color:black;margin-top:5px" id="para-add-airtable-key-status"></span>
 
-            <div class="demo-controls" id="div-search-for-awards" style="display:none">
+            <div class="demo-controls" id="div-search-for-awards" style="display:none; margin-top: 25px">
               <h5> Search for award(s):
                 <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                   <span class="tooltiptext">
@@ -56,7 +117,7 @@
                 </div>
               </h5>
               <div class="demo-controls">
-                <input id="input-grant-info" list="select-grant-info-list" class="form-container-input-bf" style="width:90%;float:left;height:35px !important;padding:6px 8px;margin-top:15px">
+                <textarea id="input-grant-info" list="select-grant-info-list" class="form-container-input-bf" style="width:90%;float:left;height:35px !important;padding:6px 8px;margin-top:15px"></textarea>
                 <!-- <datalist id="select-grant-info-list" style="overflow-x: hidden; overflow: scroll; width: 100%; height:500px">
                   <option disabled>Select</option>
                 </datalist> -->
@@ -160,7 +221,7 @@
             </span>
           </div>
           <div class="demo-controls">
-          <select id="presaved-award-list" class="form-container-input-bf" style="line-height: 2;font-size:13px;height:28px; width: 95%">
+          <select id="presaved-award-list" class="form-container-input-bf" style="line-height: 2;font-size:13px;height:28px;">
             <option value="Select">Select an option</option>
           </select>
           </div>
@@ -171,22 +232,11 @@
             </span>
           </div>
           <div class="demo-controls">
-            <select id="selected-milestone" class="form-container-input-bf" style="font-size:13px;line-height: 2;height:28px; width: 95%">
+            <textarea id="selected-milestone" class="form-container-textarea" style="width: 95%"></textarea>
+            <!-- <select id="selected-milestone" class="form-container-input-bf" style="font-size:13px;line-height: 2;height:28px; width: 95%">
               <option value="Select">Select an option</option>
               <option value="N/A">Not specified in the Data Deliverables document</option>
-            </select>
-          </div>
-          <div class="form-container-ds"><font color="black"> Description of Data: </font> </div>
-          <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-            <span class="tooltiptext">
-              Select the description corresponding to your dataset and SODA will automatically populate the associated completion date. Choose "Not specified in the Data Deliverables document" if this dataset isn't associated with any description initially planned.
-            </span>
-          </div>
-          <div class="demo-controls">
-            <select id="selected-description-data" class="form-container-input-bf"  style="font-size:13px;line-height: 2;height:28px; width: 95%">
-              <option value="Select">Select an option</option>
-              <option value="N/A">Not specified in the Data Deliverables document</option>
-            </select>
+            </select> -->
           </div>
           <div class="form-container-ds"><font color="black"> Completion Date: </font> </div>
           <div class="tooltipnew"><img class="info" src="assets/img/info.png">
@@ -195,8 +245,19 @@
             </span>
           </div>
           <div class="demo-controls">
-            <input style="font-size:13px;line-height: 2;height:28px; width: 95%" id="selected-milestone-date" name="milestonedate" type="text" placeholder="" readonly class="form-container-input-bf"></input>
+            <select style="font-size:13px;height:28px;width:100%" id="selected-milestone-date" class="form-container-input-bf"></select>
           </div>
+
+          <div style='display:none;' id="div-submission-enter-different-date-1" class="form-container-ds"><font color="black"> Enter Date: </font> </div>
+          <div class="tooltipnew" style='display:none;' id="div-submission-enter-different-date-2"><img class="info" src="assets/img/info.png">
+            <span class="tooltiptext">
+              This date is filled automatically using extracted information from the Data Deliverables document and based on the milestone/description of data selected above.
+            </span>
+          </div>
+          <div class="demo-controls" style='display:none;' id="div-submission-enter-different-date-3">
+            <input type="date" id="input-milestone-date" style="font-family: inherit" class="form-container-input-bf"></input>
+          </div>
+
           <br>
           <div align="right">
             <button class="demo-button" style="margin-right:0;width:140px;float:right" id="generate-submission"> Generate </button>
@@ -235,7 +296,8 @@
               </span>
             </div>
             <div class="demo-controls">
-              <select id="ds-name" class="form-container-input-bf" style="font-size:13px;line-height:2;height:28px">
+              <select id="ds-name" class="form-container-input-bf" style="width: 100%;font-size:13px;line-height:1em;height:28px;padding-bottom: 5px;">
+                <!-- <option value="Loading..."></option> -->
               </select>
             </div>
             <div class="form-container-ds"><font color="black"> Description*: </font> </div>
@@ -245,7 +307,7 @@
               </span>
             </div>
             <div class="demo-controls">
-              <textarea id="ds-description" class="form-container-textarea"></textarea>
+              <textarea id="ds-description" class="form-container-textarea" disabled></textarea>
             </div>
             <div class="form-container-ds"><font color="black"> Keywords*: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
@@ -322,7 +384,9 @@
                 Name of any contributor to the dataset. This individual need not have been authors on any publications describing the data,
                 but should be acknowledged for their role in producing and publishing the data set.
                 <br><br>
-                The "Contributor" list is compiled from the SPARC Airtable sheet based on the SPARC award selected. Select one Contributor to get the ORCID ID, Contributor Affiliation, and Contributor Role populated automatically (if specified in the SPARC Airtable Sheet). Select "Other contributors" in the "Contributors" dropdown list if you'd like to enter a Contributor name manually (although we suggest to enter them directly in the SPARC Airtable - restart SODA to see them in the list).
+                The "Contributor" list is compiled from the SPARC Airtable sheet based on the SPARC award selected. Select one Contributor to get the ORCID ID, Contributor Affiliation, and Contributor Role populated automatically (if specified in the SPARC Airtable Sheet).
+                <br><br>
+                 Select "Other contributors" in the "Contributors" dropdown list if you'd like to enter a Contributor name manually (although we suggest to enter them directly in the SPARC Airtable - restart SODA to see them in the list).
               </span>
             </div>
             <div class="demo-controls">
@@ -334,7 +398,7 @@
             <div class="form-container-ds" id="div-other-collaborators-1" style="display:none;"><font color="black"> Collaborator name*: </font> </div>
             <div class="tooltipnew" id="div-other-collaborators-3" style="display:none;"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext" style="width: 300px; font-weight: bold">
-                Name of other collaborators to the dataset. This individual is not listed under SPARC Airtable sheet.
+                Name of a collaborator to the dataset not listed in the SPARC Airtable sheet. Must be in the format "Last, First".
               </span>
             </div>
             <div class="demo-controls" id="div-other-collaborators-2" style="display:none;">
@@ -352,16 +416,16 @@
             <div class="form-container-ds"><font color="black"> Contributor Affiliation*: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext">
-                Institutional affiliation for contributor
+                Institutional affiliation for contributor. Hit "Enter" on your keyboard after each entry to register it.
               </span>
             </div>
             <div class="demo-controls">
-              <input id="input-con-affiliation" class="form-container-input-bf"/>
+              <textarea id="input-con-affiliation" class="form-container-textarea"></textarea>
             </div>
             <div class="form-container-ds"><font color="black"> Contributor Role*: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext">
-                 Role(s) of the contributor. Must be from the Data Cite schema (c.f. associated dropdown list). Hit "Enter" after each entry to register it.
+                 Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit "Enter" after each entry to register it. Checkout the related <a href="https://schema.datacite.org/meta/kernel-4.3/" style="color:white"> documentation</a> for a definition of each of these roles.
               </span>
             </div>
             <div class="demo-controls">
@@ -401,8 +465,8 @@
                 <tr>
                   <th style="width:20%">Current Contributors</th>
                   <th style="width:20%">ORCID ID</th>
-                  <th style="width:25%">Affiliation</th>
-                  <th style="width:25%">Role</th>
+                  <th style="width:30%">Affiliation</th>
+                  <th style="width:20%">Role</th>
                   <th style="width:10%">Contact Person</th>
                   <th style="width:5%"></th>
                 </tr>
@@ -581,12 +645,8 @@
 
 
       <script type="text/javascript">
-        require('./renderer-process/native-ui/dialogs/save')
-        require('./renderer-process/prepare-metadata/save-information.js')
-        require('./renderer-process/prepare-metadata/table-script.js')
+      require('./renderer-process/native-ui/dialogs/save')
+      require('./renderer-process/prepare-metadata/save-information.js')
       </script>
-      <!-- <script type="text/javascript" src="./renderer-process/prepare-metadata/table-script.js"> -->
-      <!-- </script> -->
-
   </section>
 </template>
