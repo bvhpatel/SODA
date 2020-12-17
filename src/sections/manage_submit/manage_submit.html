@@ -3,133 +3,23 @@
   <section id="manage_submit-section" class="section js-section u-category-windows">
 
     <header class="section-header">
-       <div class="section-wrapper">
-         <h1>
-           <svg style="margin-right: 10px; margin-bottom:-3px;" width="22px" height="22px" viewBox="0 0 16 16" class="bi bi-server" fill=var(--color-teal) xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" d="M1.333 2.667C1.333 1.194 4.318 0 8 0s6.667 1.194 6.667 2.667V4C14.665 5.474 11.68 6.667 8 6.667 4.318 6.667 1.333 5.473 1.333 4V2.667zm0 3.667v3C1.333 10.805 4.318 12 8 12c3.68 0 6.665-1.193 6.667-2.665V6.334c-.43.32-.931.58-1.458.79C11.81 7.684 9.967 8 8 8c-1.967 0-3.81-.317-5.21-.876a6.508 6.508 0 0 1-1.457-.79zm13.334 5.334c-.43.319-.931.578-1.458.789-1.4.56-3.242.876-5.209.876-1.967 0-3.81-.316-5.21-.876a6.51 6.51 0 0 1-1.457-.79v1.666C1.333 14.806 4.318 16 8 16s6.667-1.194 6.667-2.667v-1.665z"/>
-          </svg>
-           Manage Datasets
-         </h1>
-         <h3>
-           This interface provides a convenient window to accomplish all required curation steps on your Blackfynn datasets.
-           <br>
-           <br>
-         </h3>
+         <div class="section-wrapper">
+           <h1>
+             <img class="section-icon" src="assets/img/manage-teal.png">
+             Manage Datasets
+           </h1>
+           <h3>
+             This interface provides a convenient window to accomplish all required curation steps on your Blackfynn datasets.
+             <br>
+             <br>
+           </h3>
 
-         </h3>
-       </div>
-     </header>
-
-     <div class="demo">
-        <div class="demo-wrapper">
-          <button id="button-new-window-login-demo-toggle" class="js-container-target demo-toggle-button">Connect to your Blackfynn account
-            <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Connect-to-your-Blackfynn-account" >
-              <img class="nav-video" src="assets/img/documentation-icon.png">
-            </a>
-            <div class="demo-meta u-avoid-clicks"> Connect your Blackfynn account with SODA </div>
-          </button>
-
-          <div class="demo-box">
-            <form id = 'blackfynn-account'>
-              <div style = "padding:10px 0px">
-              <input class="input-switch" id="addAccount" type="radio" name="tabs" checked>
-              <label class="label-switch" for="addAccount">Add new account</label>
-              <input class="input-switch" id="selectAccount" type="radio" name="tabs">
-              <label class="label-switch" for="selectAccount">Select existing account</label>
-            </div>
-            </form>
-
-            <br><br><br>
-            <div id="div-add-account" class="datasetsaveoption" style="margin-left:20px">
-              <h5> Generate <a href="https://help.blackfynn.com/articles/1488536-creating-an-api-key-for-the-blackfynn-clients"> API key and secret</a> from your Blackfynn account and enter below
-                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext">Please checkout the dedicated <a href="https://help.blackfynn.com/articles/1488536-creating-an-api-key-for-the-blackfynn-clients" style="color:white;"> Blackfynn Help page</a>
-                  for generating API key and secret and setting up your Blackfynn account in SODA during your first use. 
-                  <br><br>
-                  The account will then be remembered by SODA for all subsequent uses and be accessible under the "Select existing account" tab.
-                  </span>
-                </div>
-              </h5> <br>
-
-              <div class="form-container"><font color="black"> Key name: </font> </div>
-              <div class="demo-controls">
-                <input class="form-container-input-bf" id="bf-key-name" style="width:80%;" />
-              </div>
-              <div class="form-container"><font color="black"> API Key: </font> </div>
-              <div class="demo-controls">
-                <input class="form-container-input-bf" id="bf-key" style="width:80%;" />
-              </div>
-              <div class="form-container"><font color="black"> API Secret: </font> </div>
-              <div class="demo-controls">
-                <input class="form-container-input-bf" id="bf-secret" style="width:80%;"  />
-              </div>
-              <p></p>
-              <div class="demo-controls">
-                <button class="demo-button" id="add-bf-account"> Add Account </button>
-              </div>
-              <p id="para-add-account-status"></p>
-            </div>
-
-            <div id="div-select-account" class="datasetsaveoption" style="margin-left:20px">
-              <h5> Select previously added account
-               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext">
-                    Previously added account(s) will be displayed in this drop-down list. Default account (last selected account before app closed) will be loaded automatically at start if available.
-                    <br><br>
-                    Click on "Switch Account" and select one from the drop-down list for changing to another account (in case multiple ones are connected with SODA).
-                    <br><br>
-                    To remove an account from the list, you would have to delete the associated API key from the Blackfynn webpage (under "My Settings").
-                  </span>
-                </div>
-              </h5>
-              <div class="demo-controls">
-                <select class="my-dropdown" style="width:100%;" id="bfaccountlist">
-                  <option> Loading... </option>
-                </select>
-                <p></p>
-                <!-- <button id="button-check-bf-account-details" style="height:38px;width:180px" class="demo-button"> Switch Account </button> -->
-              </div>
-
-              <div id="div-bf-account-load-progress" class="progressdiv">
-                <div class="indeterminatebar"></div>
-              </div>
-              <p id='para-select-account-status'> <p>
-
-            <div style="display:none" id="div-permission-list">
-              <h5> Select permissions for filtering dataset lists
-                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext">
-                    You will see multiple dropdown lists throughout the SODA interface listing you Blackfynn datasets. You can filter those lists based on your permissions on the dataset.
-                    <br><br>
-                    The default filter is "All" that shows you all the datasets for which you have permissions.
-                    <br><br>
-                    See our <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> on Blackfynn permissions for more information.
-                  </span>
-                </div>
-              </h5>
-              <div class="demo-controls">
-                <select class="my-dropdown" style="width:100%;" id="select-permission-list">
-                  <option default> All </option>
-                  <option> Owner </option>
-                  <option> Manager </option>
-                  <option> Editor </option>
-                  <option> Viewer </option>
-                </select>
-              </div>
-
-              <div id="div-filter-datasets-progress" class="progressdiv">
-                <div class="indeterminatebar"></div>
-              </div>
-              <p id='para-filter-datasets-status'> </p>
-
-            </div>
-
-          </div>
-        </div>
-      </div>
+           </h3>
+         </div>
+       </header>
 
 
-     <div class="demo">
+       <div class="demo">
        <div class="demo-wrapper">
          <button id="button-new-window-create-demo-toggle" class="js-container-target demo-toggle-button"> Handle datasets
            <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Handle-datasets" >
@@ -178,7 +68,7 @@
                </span>
              </div>
              </h5>
-             <div class="demo-controls" style="margin-top: 20px">
+             <div class="demo-controls" style="margin-top: 15px">
                <select class="my-dropdown" style="width:80%" id="bfdatasetlist_renamedataset">
                  <option> Select dataset </option>
                </select>
@@ -447,6 +337,9 @@
                Giving permissions to other members and/or team is only necessary if you need them to contribute to the dataset.
                <br>
                <br>
+               Sharing with the SPARC Curation Team will assign them "manager" role, which is necessary for them to access your dataset when it is ready to be reviewed, and set the dataset status to "03. Ready for Curation" thus adding the dataset to the Curation Team's queue for review. It is then highly recommended to not make any changes to your dataset.
+               <br>
+               <br>
                See our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide.
                </span>
              </div>
@@ -472,7 +365,7 @@
                <h5>
                </h5>
                <div class="demo-controls">
-                 <select class="my-dropdown" style="width:60%;padding: 8px 12px;height: 38px;" id="bf_list_users_pi">
+                 <select class="my-dropdown" id="bf_list_users_pi">
                    <option> Select PI </option>
                  </select>
                </div>
@@ -488,7 +381,7 @@
                <h5>
                </h5>
                <div class="demo-controls">
-                 <select class="my-dropdown" style="width:60%;padding: 8px 12px;height: 38px;" id="bf_list_users">
+                 <select class="my-dropdown" id="bf_list_users">
                    <option> Select user </option>
                  </select>
                </div>
@@ -516,7 +409,7 @@
              <h5>
              </h5>
              <div class="demo-controls">
-               <select class="my-dropdown" style="width:60%;padding: 8px 12px;height: 90px;" id="bf_list_teams">
+               <select class="my-dropdown" id="bf_list_teams">
                  <option> Select team </option>
                </select>
              </div>
@@ -564,8 +457,8 @@
            </h5>
 
            <div class="container-milestone-upload" style="display:flex;">
-             <input class="milestone-upload-text" id="selected-local-dataset-submit" style="width:80%;text-align:center;height:40px" type="text" readonly placeholder="Select a folder">
-             <!-- <button id="button-import-local-ds-submit" type="button" style="width:15%;height:40px" class="button-milestone-upload"><b>Confirm</b></button> -->
+             <input class="milestone-upload-text" id="selected-local-dataset-submit" style="width:65%;text-align:center;height:40px" type="text" readonly placeholder="Select a folder">
+             <button id="button-import-local-ds-submit" type="button" style="width:15%;height:40px" class="button-milestone-upload"><b>Confirm</b></button>
              <p id="para-info-local-submit" style="float:right;margin-top:0;margin-left:7px;padding: 2 2;width:20%;text-align:left;"></p>
            </div>
 
@@ -579,7 +472,7 @@
                </span>
              </div>
            </h5>
-           <div class="demo-controls" style="margin-top: 15px;width:100%">
+           <div class="demo-controls" style="margin-top: 15px">
              <select class="my-dropdown" style="width:80%;" id="bfdatasetlist">
                <option> Select dataset </option>
              </select>
@@ -653,6 +546,13 @@
            <h5> View/change status
              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                <span class="tooltiptext">
+               Investigators should only have to change dataset status to one of the following four options:
+                 <ul >
+                   <li>"02. Work in Progress (Investigator)": Select to indicate that you are working on your dataset </li>
+                   <li> "03. Ready for Curation (Investigator)": Select to inform the SPARC Dataset Curation Team that your dataset is ready to be reviewed (done automatically in SODA when you click on "Share with Curation Team" under "Manage dataset permissions"). You dataset will be added to the curation queue. Please note that the SPARC Dataset Curation Team will not look into your dataset until you change the status to this option. </li>
+                   <li> "11. Complete, Under Embargo (Investigator)": Select to share your dataset with the SPARC Consortium. This will give viewer permissions to the SPARC Embargoed Data Sharing Group and will therefore allow any SPARC investigator who has signed the SPARC Non-disclosure form to see your data. </li>
+                   <li> "12. Published (Investigator)": Select this option once you have published your dataset. One year after the initial upload of your dataset, you must publish your dataset to Blackfynn Discover, which populates the SPARC Portal. To do this, open the dataset of interest on the Blackfynn webpage, click on the Settings tab on the left, and select Publish Dataset. </li>
+                 </ul>
                To find out more about dataset status, please visit <a href="https://sparc.science/help/7k8nEPuw3FjOq2HuS8OVsd" style="color:white;"> docs.sparc.science </a>.
                </span>
              </div>

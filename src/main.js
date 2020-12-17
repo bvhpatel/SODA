@@ -2,18 +2,12 @@ const {app, BrowserWindow, dialog} = require('electron')
 app.showExitPrompt = true
 const path = require('path')
 const glob = require('glob')
-const os = require("os")
 const contextMenu = require('electron-context-menu');
 const log  = require("electron-log");
 require('v8-compile-cache')
 const {ipcMain} = require('electron')
-const { autoUpdater } = require("electron-updater");
-const { JSONStorage } = require('node-localstorage');
-const { trackEvent } = require('./scripts/analytics');
 
 log.transports.console.level = false
-global.trackEvent = trackEvent;
-const nodeStorage = new JSONStorage(app.getPath('userData'));
 /*************************************************************
  * Python Process
  *************************************************************/
@@ -78,122 +72,63 @@ app.on('will-quit', exitPyProc)
  *************************************************************/
 
 let mainWindow = null
-let user_restart_confirmed = false;
-let updatechecked = false;
 
 function initialize () {
   makeSingleInstance()
 
   loadDemos()
+
   function createWindow () {
-
-    // mainWindow.webContents.openDevTools();
-
-    mainWindow.webContents.once('dom-ready', () => {
-      if (updatechecked == false)
-      {
-        log.info('checking for updates');
-        console.log("checking for updates");
-        autoUpdater.checkForUpdatesAndNotify();
-      }
-    });
-
-    mainWindow.on('close', (e) => {
-      if (!user_restart_confirmed) {
-        if (app.showExitPrompt) {
-          e.preventDefault() // Prevents the window from closing
-          if (user_restart_confirmed) {
-            quit_app();
-          }
-          dialog.showMessageBox(BrowserWindow.getFocusedWindow(), {
-            type: 'question',
-            buttons: ['Yes', 'No'],
-            title: 'Confirm',
-            message: 'Any running proccess will be stopped. Are you sure you want to quit?'
-          }, function (response) {
-            if (response === 0) { // Runs the following if 'Yes' is clicked
-              quit_app();
-            }
-          })
-        }
-      }
-      else {
-        if (process.platform == "darwin") {
-          exitPyProc();
-          app.relaunch();
-          app.exit();
-        }
-        else {
-          var first_launch = nodeStorage.getItem('firstlaunch');
-          nodeStorage.setItem('firstlaunch', true);
-          exitPyProc();
-          app.exit();
-        }
-      }
-    })
-
-  }
-
-  const quit_app = () => {
-    app.showExitPrompt = false
-    mainWindow.close()
-    /// feedback form iframe prevents closing gracefully
-    /// so force close
-    if (!mainWindow.closed) {
-      mainWindow.destroy()
-    }
-  }
-
-
-  app.on('ready', () => {
     const windowOptions = {
       minWidth: 1080,
       minHeight: 680,
       width: 1080,
       height: 720,
       center: true,
-      show: false,
+      //title: app.getName(),
       icon: __dirname + '/assets/menu-icon/soda_icon.png',
       webPreferences: {
-        nodeIntegration: true,
-        enableRemoteModule: true
+        nodeIntegration: true
       }
     }
+
+    //if (process.platform === 'linux') {
+    //  windowOptions.icon = path.join(__dirname, '/assets/app-icon/png/soda_icon.png')
+    //}
 
     mainWindow = new BrowserWindow(windowOptions)
     mainWindow.loadURL(path.join('file://', __dirname, '/index.html'))
 
-    const splash = new BrowserWindow({ width: 220, height: 190, frame: false, alwaysOnTop: true, transparent: true });
-    splash.loadURL(path.join('file://', __dirname, '/splash-screen.html'));
-    //
-    // // if main window is ready to show, then destroy the splash window and show up the main window
-    mainWindow.once('ready-to-show', () => {
-    setTimeout(function(){
-        splash.close();
-        mainWindow.show();
-        createWindow();
-        var first_launch = nodeStorage.getItem('firstlaunch');
-        if (first_launch == true || first_launch == undefined)
-        {
-          mainWindow.reload();
-          mainWindow.focus();
-          console.log("mainWindow reloaded for first launch");
-          nodeStorage.setItem('firstlaunch', false);
-        }
-        log.info('checking');
-        console.log("checking");
-        autoUpdater.checkForUpdatesAndNotify();
-        updatechecked = true;
-        //trackEvent('Success', 'App Launched - OS',  os.platform() + "-" + os.release());
-        //trackEvent('Success', 'App Launched - SODA',  app.getVersion());
-      }, 5000);
-    });
-  })
+/*    mainWindow.on('closed', () => {
+      mainWindow = null
+    })*/
+
+    mainWindow.on('close', (e) => {
+    if (app.showExitPrompt) {
+        e.preventDefault() // Prevents the window from closing
+        dialog.showMessageBox(BrowserWindow.getFocusedWindow(), {
+            type: 'question',
+            buttons: ['Yes', 'No'],
+            title: 'Confirm',
+            message: 'Any running proccess will be stopped. Are you sure you want to quit?'
+        }, function (response) {
+            if (response === 0) { // Runs the following if 'Yes' is clicked
+                app.showExitPrompt = false
+                mainWindow.close()
+                /// feedback form iframe prevents closing gracefully
+                /// so force close
+                if (!mainWindow.closed) {
+                  mainWindow.destroy()
+                }
+            }
+        })
+    }
+    })
+
+  }
 
   app.on('ready', () => {
-    //createWindow()
-    trackEvent('Success', 'App Launched - OS',  os.platform() + "-" + os.release());
-    trackEvent('Success', 'App Launched - SODA',  app.getVersion());
+    createWindow()
   })
 
   app.on('window-all-closed', () => {
@@ -201,6 +136,12 @@ function initialize () {
       app.quit()
     // }
   })
+
+  // app.on('activate', () => {
+  //   if (mainWindow === null) {
+  //     createWindow()
+  //   }
+  // })
 }
 
 // Make this app a single instance app.
@@ -251,47 +192,3 @@ ipcMain.on('resize-window', (event, dir) => {
   }
   mainWindow.setSize(x, y)
 })
-
-// Google analytics tracking function
-// To use, category and action is required. Label and value can be left out
-// if not needed. Sample requests from renderer.js is shown below:
-//ipcRenderer.send('track-event', "App Backend", "Python Connection Established");
-//ipcRenderer.send('track-event', "App Backend", "Errors", "server", error);
-
-ipcMain.on("track-event", (event, category, action, label, value) => {
-  if (label == undefined && value == undefined)
-  {
-    trackEvent(category, action);
-  }
-  else if (label != undefined && value == undefined)
-  {
-    trackEvent(category, action, label);
-  }
-  else
-  {
-    trackEvent(category, action, label, value);
-  }
-});
-
-ipcMain.on("app_version", (event) => {
-  event.sender.send("app_version", { version: app.getVersion() });
-});
-
-autoUpdater.on("update-available", () => {
-  trackEvent("App Update", "Update Requested", "User OS", os.platform() + "-" + "-" + os.release() + " - SODAv" + app.getVersion());
-  log.info('update_available');
-  mainWindow.webContents.send("update_available");
-});
-
-autoUpdater.on("update-downloaded", () => {
-  trackEvent("App Update", "Update Downloaded", "User OS", os.platform() + "-" + "-" + os.release() + " - SODAv" + app.getVersion());
-  log.info('update_downloaded');
-  mainWindow.webContents.send("update_downloaded");
-});
-
-ipcMain.on("restart_app", () => {
-  user_restart_confirmed = true;
-  trackEvent("App Update", "App Restarted", "User OS", os.platform() + "-" + "-" + os.release() + " - SODAv" + app.getVersion());
-  log.info('quitAndInstall');
-  autoUpdater.quitAndInstall();
-});

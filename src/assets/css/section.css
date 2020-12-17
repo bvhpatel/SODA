@@ -3,14 +3,11 @@
 .section {
   position: absolute;
   top: 0;
-  left: 210px;
+  left: 230px;
   right: 0;
   bottom: 0;
-  max-height: 100%;
-  margin-right: 0;
-  padding: 0;
-  padding-top:7px;
-  padding-left: 30px;
+  max-height: 100vh;
+  padding: 10px 10px;
   box-sizing: border-box;
   overflow-x: hidden;
   overflow-y: hidden;
@@ -33,8 +30,8 @@
 }
 
 .section.fullShown {
-  left: 190px;
-max-width: 100%;
+  transform: translateX(-230px);
+  width: 100%;
 }
 .section-wrapper {
   position: relative;

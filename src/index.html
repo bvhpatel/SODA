@@ -11,7 +11,6 @@
     <link rel="stylesheet" href="assets/css/nav.css">
     <link rel="stylesheet" href="assets/css/section.css">
     <link rel="stylesheet" href="assets/css/demo.css">
-    <link rel="stylesheet" href="assets/css/individualtab.css">
     <link rel="stylesheet" href="node_modules/cropperjs/dist/cropper.css">
     <link rel="stylesheet" href="assets/css/spur.css">
     <link rel="stylesheet" href="assets/css/main.css">
@@ -19,41 +18,17 @@
     <link rel="stylesheet" href="node_modules/@toast-ui/editor/dist/toastui-editor.css">
     <link rel="stylesheet" href="node_modules/codemirror/lib/codemirror.css">
     <link rel="stylesheet" href="node_modules/@yaireo/tagify/dist/tagify.css">
-    <link rel="stylesheet" href="node_modules/fomantic-ui/dist/semantic.min.css">
 
-<<<<<<< HEAD
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
 
     <link rel="import" href="sections/account/account.html">
-=======
-    <link rel="import" href="sections/welcome/welcome.html">
->>>>>>> master
     <link rel="import" href="sections/getting_started/getting_started.html">
-    <link rel="import" href="sections/curate/curate.html">
-    <link rel="import" href="sections/curate/prepare_dataset.html">
+    <link rel="import" href="sections/curate/organize_files.html">
+    <link rel="import" href="sections/curate/validate_datasets.html">
     <link rel="import" href="sections/manage_submit/manage_submit.html">
     <link rel="import" href="sections/post_curation/post_curation.html">
     <link rel="import" href="sections/prepare_metadata/prepare_metadata.html">
     <link rel="import" href="sections/help/help.html">
-
-    <style>
-      #notification {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 210px;
-        padding: 20px;
-        border-radius: 5px;
-        background-color: white;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-      }
-      #version {
-        white-space: nowrap;
-      }
-      .hidden {
-        display: none;
-      }
-    </style>
 
   </head>
 
@@ -106,13 +81,7 @@
             <span class="fa fa-star"></span>
           </div>
 
-      <div class="help-section">
-        <ul class="list-unstyled components" style="height:50px;margin-bottom:0;margin-left:35px;display:flex;flex-direction:row;justify-content:center">
-          <li style="padding-right:5px"><a href="https://github.com/bvhpatel/SODA"><i class="fab fa-github"></i></a></li>
-          <li style="padding-left:5px"><a href="#"><i data-section="help" class="fas fa-question-circle fa-fw"></i></a></li>
-      </ul>
-      </div>
-    </div>
+</div>
 </nav>
 
   <div class="dash-app" style="background: #fff">
@@ -134,25 +103,18 @@
     <main id="content" class="content js-content"></main>
 </div>
 
-  <div id="notification" class="hidden">
-    <p id="message"></p>
-    <button id="close-button" onClick="closeNotification()">Dismiss</button>
-    <button id="restart-button" onClick="restartApp()" class="hidden">
-      Restart SODA
-    </button>
-  </div>
-
   <script>
     require('./assets/imports') // Imports html files into app
     require('./assets/ex-links') // Opens url into external chrome tab instead of in the app
     require('./assets/nav') // Side navigation menu control
     require('./assets/demo-btns')
     require('./assets/normalize-shortcuts') // For normalizing shortcuts accross OS
+    require('./scripts/renderer.js') // js script for talking with Python back-end
   </script>
-
-  <script>window.$ = window.jQuery = require('jquery')</script>
-
   <script>
+    function myFunction(element) {
+          element.classList.toggle("open");
+    }
     $(document).ready(function () {
       $('#sidebarCollapse').on('click', function () {
           $('#main-nav').toggleClass('active');
@@ -168,16 +130,7 @@
       });
     });
   </script>
-
-  <script src="scripts/popper.min.js"></script>
-  <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-  <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
-<!--
-  <script type='text/javascript' src="../src/scripts/popper.min.js"></script>
-
-  <script src="../src/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-  <script src="../src/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script> -->
-
+  <script>window.$ = window.jQuery = require('jquery')</script>
+  <script src="../src/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
