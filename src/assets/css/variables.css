@@ -2,17 +2,9 @@
 /* Custom Properties */
 
 :root {
-  --color:          hsl(0,0%,22%);
-  --color-subtle:   hsl(0,0%,44%);
-  --color-strong:   hsl(0,0%,11%);
-  --color-link:     hsl(0,0%,22%);
-  --color-bg:       hsl(0,0%,96%);
-  --color-sidebar:  #222c3c;
-
-  --color-border:   hsl(0,0%,88%);
-  --color-bg-plum:       hsl(339,90%,30%);
-  /*--color-bg-plum:       hsl(339,86.8%,38.6%);*/
-  --color-strong-white:   hsl(0,100%,100%);
+  --color-sidebar:  #2d142c;
+  --color-green-button:   #008000;
+  --color-text-color: #101010;
 
   --color-section:  hsla(0, 0%, 100%);
 

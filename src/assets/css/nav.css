@@ -5,8 +5,8 @@
 }
 /* toggle button */
 #sidebarCollapse {
-   width: 35px;
-   height: 33px;
+   width: 28px;
+   height: 28px;
    background: #2d142c;
    position: relative;
    left: 220px;
@@ -17,7 +17,7 @@
 
 #sidebarCollapse span {
    width: 80%;
-   height: 2px;
+   height: 1px;
    margin: 0 auto;
    display: block;
    background: #fff;
@@ -26,7 +26,7 @@
 /* animate toggle button */
 #sidebarCollapse span:first-of-type {
     /* rotate first one */
-    transform: rotate(45deg) translate(2px, 2px);
+    transform: rotate(45deg) translate(1px, 1px);
 }
 #sidebarCollapse span:nth-of-type(2) {
     /* second one is not visible */
@@ -42,12 +42,12 @@
     transform: none;
     /* all bars are visible */
     opacity: 1;
-    margin: 5px auto;
+    margin: 4px auto;
 }
 
 #main-nav {
-    min-width: 200px;
-    max-width: 200px;
+    min-width: 210px;
+    max-width: 210px;
     background: #2d142c;
     color: #fff;
     font-family: "Source Sans Pro", sans-serif;
@@ -195,14 +195,14 @@ ul ul a {
   opacity: 0.7;
   margin-right: 10px;
 }
-
+/*
 .help-section {
   bottom:2px;
   position:absolute;
   /* padding-right:51px; */
   /* height:50px; */
-  width:200px;
-}
+  /* width:200px; */
+/* } */
 
 .help-a{
   text-decoration: none !important;
@@ -215,7 +215,7 @@ ul ul a {
 }
 
 .help-a i {
-  font-size:19px;
+  font-size:17px;
   color:#2d142c
 }
 

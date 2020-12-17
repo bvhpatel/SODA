@@ -52,18 +52,10 @@
           <!-- <hr style="border-color: #7D8CCD;"> -->
           <!-- Sidebar Links -->
           <ul class="list-unstyled components">
-            <!-- <li><a href="#" data-section="getting_started"><i class="far fa-play-circle"></i>Getting started</a></li> -->
-              <li><a href="#" data-section="account" class="is-selected"><i class="fas fa-play" style="font-size: 20px"></i>Getting started</a></li>
+              <li><a href="#" data-section="getting_started" class="is-selected"><i class="fas fa-play" style="font-size: 20px"></i>Getting started</a></li>
               <li><a href="#" data-section="prepare_metadata"><i class="far fa-file-alt" style="font-size: 20px"></i>Create metadata</a></li>
               <li><a href="#" data-section="prepare_metadata"><i class="fas fa-exchange-alt" style="font-size: 20px;margin-right:20px"></i>Convert file format</a></li>
 
-              <!-- <li>
-                  <a href="#curateSubmenu" data-toggle="collapse" aria-expanded="false"><i class="fas fa-code-branch" style="margin-right: 32px;font-size:24px"></i>Convert file format</a>
-                  <ul class="collapse list-unstyled" id="curateSubmenu">
-                      <li><a href="#" data-section="organize_files">Organize dataset</a></li>
-                      <li><a href="#" data-section="validate">Prepare dataset</a></li>
-                  </ul>
-              <li> -->
                 <li><a href="#" data-section="manage_submit"><i class="far fa-check-square" style="font-size: 20px"></i>Validate dataset</a>
               </li>
               <li>
@@ -93,7 +85,7 @@
 </nav>
 
   <div class="dash-app" style="background: #fff">
-    <div style="border-bottom:1px solid #F0F0F0;border-top:1px solid #D3D3D3;padding-bottom:3px;padding-top:15px">
+    <div style="border-bottom:1px solid #F0F0F0;border-top:1px solid #D3D3D3;padding-bottom:3px;padding-top:8px">
         <button type="button" id="sidebarCollapse" class="navbar-btn">
             <span></span>
             <span></span>
@@ -101,10 +93,10 @@
         </button>
 
         <div style="float:right;">
-          <ul class="list-unstyled components" style="height:44px;width:160px;margin-bottom:0;margin-top:5px;display:flex;padding-right:20px;border-bottom:transparent">
-          <li><a href="https://github.com/bvhpatel/SODA" class="help-a"><i class="fab fa-github"></i></a></li>
-          <li><a href="#" data-section="getting_started" class="help-a"><i class="far fa-play-circle"></i></a></li>
-          <li><a href="#" data-section="help" class="help-a"><i class="fas fa-question-circle fa-fw"></i></a></li>
+          <ul class="list-unstyled components help-section">
+          <li><a class="help-a"><i href="https://github.com/bvhpatel/SODA" class="fab fa-github"></i></a></li>
+          <li><a href="#" class="help-a"><i  data-section="getting_started" class="far fa-play-circle"></i></a></li>
+          <li><a href="#" class="help-a"><i  data-section="help"  class="fas fa-question-circle fa-fw"></i></a></li>
         </ul>
       </div>
     </div>
@@ -128,6 +120,13 @@
           $('#main-nav').toggleClass('active');
           $(this).toggleClass('active');
           $(".section").toggleClass('fullShown');
+      });
+    });
+
+    $(document).ready(function () {
+      $('a').on('click', function () {
+          $($(this).parents()[1]).find('a').removeClass('is-selected');
+          $(this).addClass('is-selected');
       });
     });
   </script>

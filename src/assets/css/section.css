@@ -33,12 +33,6 @@
   transform: translateX(-230px);
   width: 100%;
 }
-
-.section h3,
-.section p {
-  color: var(--color);
-}
-
 .section-wrapper {
   position: relative;
   max-width: 100%;
