@@ -1,66 +1,659 @@
 <!DOCTYPE html>
 <template class="task-template">
-  <section id="account-section" class="section js-section u-category-windows">
+  <section id="guided_mode_step_preliminary-section" class="section js-section u-category-windows">
 
-    <header class="section-header">
-       <div class="section-wrapper" style="float:left;max-width:250px;border-bottom: 1px solid  #14438f;min-width:250px;border-bottom:none;margin-top:20px">
-         <h1 style="color: #2d142c;font-weight:600; font-size:16px"><i class="fas fa-play" style="margin-right:6px"></i>
-
-          Getting started
-         </h1>
-
-       </div>
-    </header>
-
-  <br>
-  <main class="dash-content" style="font-size: 15px">
+  <main class="dash-content" style="display:flex;flex-direction:column">
+    <div style="display:flex;flex-direction: column;justify-content:space-between;height:100%">
       <div class="container-fluid" style="height:100%">
+        <div class="parent-tabs tab-active" id="generate-dataset-tab" style="overflow-y:auto;">
+          <h3 class="question-title" style="color: #101010;font-weight:600;font-size:18px;text-align:center;margin-bottom:70px">Guided mode</h3>
+          <!-- Question 1-->
+            <div class="individual-question getting-started" id="Question-getting-started-1" style="display:flex">
+              <div class="ui form" style="width:100%">
+                <div class="grouped fields">
+                  <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Let's get started! What type of data would you like to curate?​
+                  <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
+                  <div style="display:flex;flex-direction:row;">
+                    <select class="ui selection dropdown" style="padding:5px 5px" data-next="Question-getting-started-2" onchange="transitionSubQuestions(this, 'Question-getting-started-1', 'generate-dataset-tab', '', 'generate-dataset')">
+                      <option value="Select">Select option</option>
+                      <option value="Virus genomics data">Virus genomics data</option>
+                      <option value="Transcriptomics of human subjects">Transcriptomics of human subjects</option>
+                      <option value="Transcriptomics from cell lines/animals​">Transcriptomics from cell lines/animals​</option>
+                      <option value="Microarray-based gene expression">Microarray-based gene expression</option>
+                      <option value="Protein and nucleic acid structures data">Protein and nucleic acid structures data</option>
+                      <option value="Proteomics">Proteomics</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Question 2-->
+            <div class="individual-question getting-started" id="Question-getting-started-2">
+              <div class="ui form" style="width:100%">
+                <div class="grouped fields" style="width:80%; margin:0 auto">
+                  <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">For other data types, we currently provide support for preparing a metadata​ file with fields suggested by the NIAID.<br> Would you like to continue?
+                  <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
+                  <div style="display:flex;flex-direction:row;margin:0 auto">
+                    <div class="radio-button" data-next="Question-getting-started-3" onclick="transitionSubQuestions(this, 'Question-getting-started-2', 'generate-dataset-tab', '', 'generate-dataset')">
+                      <i class="check icon" style="color:green"></i>
+                      <p style="color:green">Yes, continue</p>
+                    </div>
+                    <div class="radio-button">
+                      <i class="times icon" style="color:red"></i>
+                      <p style="color:red">No</p>
+                    </div>
+                  </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Question 3: Yes/No proceed with other data types-->
+              <div class="individual-question getting-started" id="Question-getting-started-3">
+                <div class="ui form" style="width:100%">
+                  <div class="grouped fields" style="width:90%; margin:0 auto">
+                    <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">The database listed below are suggested for sharing other data types. ​
+                    <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
+                    <div style="display:flex;flex-direction:row;margin:0 auto;flex-wrap:wrap;justify-content:center">
+                      <div class="radio-button" style="height:90px">
+                        <img src="assets/img/harvard_logo.png">
+                        <p>Harvard ​dataverse​</p>
+                      </div>
+                      <div class="radio-button" style="height:90px">
+                        <img src="assets/img/dyriad.png" style="height:35px;width:35px">
+                        <p>Dryad​</p>
+                      </div>
+                      <div class="radio-button" style="height:90px">
+                        <img src="assets/img/fig-share.png" style="width:35px">
+                        <p>Figshare</p>
+                      </div>
+                      <div class="radio-button" style="height:90px" onclick="transitionParentTabs(this, 'generate-dataset-tab')" data-next="file-organization">
+                        <img src="assets/img/zenodo.png" style="width:75px">
+                        <p>Zenodo</p>
+                      </div>
+                      <div class="radio-button" style="height:90px">
+                        <i class="glasses icon" style="color:gray;font-size:27px !important"></i>
+                        <p>Select one ​for me!​</p>
+                      </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
 
-      <!-- <h4 align="center" style="margin-bottom:25px;font-weight: bold;color: #222c3c;margin-top:100px">CHOOSE AN OPTION BELOW</h4> -->
-      <div class="div-organize-generate-dataset">
-
-        <div class="option-card">
-          <div class="card-head">
-            <h2 style="color: #000;">Free-form mode</h2>
-          </div>
-          <div class="card-body">
-            <i class="fas fa-dove" style="color: orange"></i>
-            <p class="description-text">Accomplish only the desired curation and sharing steps of your choice</p>
-            <button type="button" style="margin-top:15px" class="btn btn-lg btn-primary side">Browse features</button>
-          </div>
-        </div>
-
-        <div class="option-card">
-          <div class="card-head">
-            <h2 style="color: #000">Guided mode</h2>
-          </div>
-          <div class="card-body">
-              <i class="far fa-compass" style="color: green"></i>
-              <p class="description-text">Identify and go through the suitable curation and sharing processes for your data type</p>
-              <button type="button" class="btn btn-lg btn-primary main" style="background:green !important;opacity: 0.8 !important;font-weight:600">Guide me</button>
-          </div>
-        </div>
-
-        <div class="option-card">
-          <div class="card-head">
-            <h2 style="color: #000;">Learn more</h2>
-          </div>
-          <div class="card-body">
-            <i class="fas fa-info-circle" style="color: #14438f"></i>
-            <p class="description-text">Find out more about SODA for COVID-19 and learn how it can enhance your research</p>
-            <button type="button" class="btn btn-lg btn-primary side">Tell me more</button>
+        <!-- step 1: File organization -->
+        <div class="parent-tabs" id="file-organization" style="overflow-y:auto;">
+          <h3 class="question-title" style="color: #101010;font-size:18px;text-align:center;font-weight:600;">Guided mode
+          </h3>
+          <div id="" style="margin-top:30px">
+            <h5 style="text-align:center;color:red;font-size:16px"> Step 1: Specify and organize all the files to be included in your dataset​ </h5>
+            <div style="border-top:1px solid #f0f0f0;padding: 0 0;margin:3px 3px;margin-left:60px;display:flex;flex-direction:row;justify-content:space-between">
+            <div style="width:100%;display:flex;flex-direction:row">
+            <div class="container-fluid" style="margin-top:40px;height:auto;border-radius:3px;">
+              <div>
+              <button id="button-back" class="button-back" style="float:left;"><i class="fas fa-arrow-left fa-fw"></i></button>
+              <input style="float:left;margin-left: 15px;height: 40px;border: none; font-family: 'Raleway', sans-serif;font-size: 14px;font-weight:600;text-decoration:underline;cursor:default;color:#898989;width: 300px" id="input-global-path" value="My_dataset_folder/" readonly></input>
+                <div class="div-organize-dataset-menu">
+                  <button onclick="transitionParentTabs(this, 'file-organization')" data-next="step2-tab" style="float:right;margin-right:10px;background:var(--tagify-dd-color-primary);color:#fff;border:none"><i class="fas fa-folder-plus"></i> Next</button>
+                  <button id="new-folder" style="float:right;margin-right:10px;background:var(--tagify-dd-color-primary);color:#fff;border:none"><i class="fas fa-folder-plus"></i> New folder</button>
+                  <div class="btn-group" role="group">
+                    <button id="btnGroupDrop1" type="button" style="color:var(--tagify-dd-color-primary);background:#fff;border: 1px solid var(--tagify-dd-color-primary);font-weight:600" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <svg style="margin-right:10px" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-upload" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                        <path fill-rule="evenodd" d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+                      </svg>Import
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="btnGroupDrop1">
+                      <a class="dropdown-item" id="add-files" href="#"><i class="fas fa-upload" style="margin-right:5px"></i>Import files</a>
+                      <a class="dropdown-item" id="add-folders" href="#"><i class="fas fa-upload" style="margin-right:5px"></i>Import folders</a>
+                    </div>
+                  </div>
+                  </div>
+              </div>
+              <!-- These are the context menu options, will not appear on the UI until prompted -->
+                <ul class="menu reg-folder off">
+                  <li id="folder-delete"><i class="far fa-trash-alt fa-fw"></i>Delete</li>
+                  <li id="folder-rename"><i class="fas fa-edit fa-fw"></i>Rename</li>
+                </ul>
+                <ul class="menu high-level-folder off">
+                  <li id="folder-delete"><i class="far fa-trash-alt fa-fw"></i>Delete</li>
+                  <li id="folder-rename"><i class="fas fa-edit fa-fw"></i>Rename</li>
+                  <li id="tooltip-folders"><i class="fas fa-info fa-fw"></i>Details</li>
+                </ul>
+                <ul class="menu file off">
+                  <li id="file-delete"><i class="far fa-trash-alt fa-fw"></i>Delete</li>
+                  <li id="file-rename"><i class="fas fa-edit fa-fw"></i>Rename</li>
+                  <li id="file-description"><i class="far fa-plus-square fa-fw"></i>Details</li>
+                </ul>
+                <span class="hoverFullName" style="display: none"></span>
+              <!-- END -->
+                <div id="items" class="div-organize-items" ondrop="drop(event);" ondragover="allowDrop(event);">
+                </div>
+            </div>
           </div>
         </div>
       </div>
+    </div>
 
-  </div>
-</main>
+    <!-- step 2 -->
+
+    <div class="parent-tabs" id="step2-tab" style="overflow-y:auto;">
+      <h3 class="question-title" style="color: #101010;font-weight:600;font-size:18px;text-align:center;margin-bottom:20px">Guided mode</h3>
+      <h5 style="text-align:center;color:red;font-size:16px;margin-bottom:50px;margin-top:0"> Step 2: Enter information to help us prepare your metadata file ​ </h5>
+      <!-- Question 1-->
+        <div class="individual-question step2" id="Question-step2-1" style="display:flex">
+          <div class="ui form" style="width:100%">
+            <div class="grouped fields">
+              <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">​What would you like to name your dataset?​</label>
+                <div class="ui input" style="width:350px; margin: 0 auto">
+                  <input type="text" placeholder="Enter here..." oninput="showConfirmBtn('confirm-dataset-name')">
+                </div>
+                <div id="confirm-dataset-name" style="display: none;flex-direction:row;justify-content:center;margin:0 auto">
+                  <button class="confirm-btn" data-next="Question-step2-2" onclick="transitionSubQuestions(this, 'Question-step2-1', 'step2-tab', 'delete', 'generate-dataset')">Confirm</button>
+                </div>
+            </div>
+          </div>
+        </div>
+        <!-- Question 2-->
+        <div class="individual-question step2" id="Question-step2-2">
+          <div class="ui form" style="width:100%">
+            <div class="grouped fields" style="width:80%; margin:0 auto">
+              <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">​Enter below a brief description of your dataset​:</label>
+                <div class="ui input" style="width:350px; margin: 0 auto">
+                  <textarea type="text" placeholder="Enter here..." oninput="showConfirmBtn('confirm-dataset-description')"></textarea>
+                </div>
+                <div id="confirm-dataset-description" style="display: none;flex-direction:row;justify-content:center;margin:0 auto">
+                  <button class="confirm-btn" data-next="Question-step2-3" onclick="transitionSubQuestions(this, 'Question-step2-2', 'step2-tab', 'delete', 'generate-dataset')">Confirm</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Question 3: Yes/No -->
+          <div class="individual-question step2" id="Question-step2-3">
+            <div class="ui form" style="width:100%">
+              <div class="grouped fields" style="width:90%; margin:0 auto">
+                <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Were any research articles published based on all or part of this data?​ ​
+                </label>
+                <div style="display:flex;flex-direction:row;margin:0 auto">
+                  <div class="radio-button" data-next="Question-step2-4" onclick="transitionSubQuestions(this, 'Question-step2-4', 'step2-tab', '', 'generate-dataset')">
+                    <i class="check icon" style="color:green"></i>
+                    <p style="color:green">Yes</p>
+                  </div>
+                  <div class="radio-button">
+                    <i class="times icon" style="color:red"></i>
+                    <p style="color:red">No</p>
+                  </div>
+                </div>
+                </div>
+              </div>
+            </div>
+            <!-- Question 4 -->
+            <div class="individual-question step2" id="Question-step2-4">
+              <div class="ui form" style="width:100%">
+                <div class="grouped fields" style="width:90%; margin:0 auto">
+                  <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Enter DOI or links to articles​: ​
+                  </label>
+                  <table class="ui celled table" style="text-align:center" id="doi-table">
+                    <thead class="full-width">
+                      <tr>
+                        <th style="width:90%">DOIs or links</th>
+                        <th style="width:10%"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <!-- <tr>
+                        <td>Link example 1</td>
+                        <td>
+                          <div class="ui small basic icon buttons">
+                            <button class="ui button"><i class="edit outline icon" style="color:var(--bs-table-active-color)"></i></button>
+                            <button class="ui button"><i class="trash alternate outline icon" style="color:red"></i></button>
+                          </div>
+                        </td>
+                      </tr> -->
+                    </tbody>
+                    <tfoot class="full-width">
+                      <tr>
+                        <th style="width:80%"></th>
+                        <th style="width:20%">
+                          <div onclick="addNewRow('doi-table')" class="ui right floated medium primary labeled icon button" style="font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue">
+                            <i class="plus icon" style="padding:8px"></i>Add
+                          </div>
+                        </th>
+                      </tr>
+                    </tfoot>
+                  </table>
+                  <div id="confirm-table-doi" style="display: flex;flex-direction:row;justify-content:center;margin:0 auto">
+                    <button class="confirm-btn" data-next="Question-step2-5" onclick="transitionSubQuestions(this, 'Question-step2-5', 'step2-tab', '', 'generate-dataset')">Confirm</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Question 5: Yes/No -->
+            <div class="individual-question step2" id="Question-step2-5">
+              <div class="ui form" style="width:100%">
+                <div class="grouped fields" style="width:90%; margin:0 auto">
+                  <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Enter below the details for everyone who participated in the collection and analysis of the dataset​
+                  </label>
+                  <table class="ui celled table" style="text-align:center" id="contributor-table">
+                    <thead class="full-width">
+                      <tr>
+                        <th style="width:15%">First name</th>
+                        <th style="width:15%">Last name</th>
+                        <th style="width:20%">Affiliation</th>
+                        <th style="width:15%">ORCID</th>
+                        <th style="width:20%">Role</th>
+                        <th style="width:15%"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <!-- <tr>
+                        <td>First name</td>
+                        <td>Last name</td>
+                        <td>Affiliation</td>
+                        <td>ORCID</td>
+                        <td>Role</td>
+                        <td>
+                          <div class="ui small basic icon buttons">
+                            <button class="ui button"><i class="edit outline icon" style="color:var(--bs-table-active-color)"></i></button>
+                            <button class="ui button"><i class="trash alternate outline icon" style="color:red"></i></button>
+                          </div>
+                        </td>
+                      </tr> -->
+                    </tbody>
+                    <tfoot class="full-width">
+                      <tr>
+                        <th style="width:15%"></th>
+                        <th style="width:15%"></th>
+                        <th style="width:20%"></th>
+                        <th style="width:15%"></th>
+                        <th style="width:20%"></th>
+                        <th style="width:15%">
+                          <div onclick="addNewRow('contributor-table')" class="ui right floated medium primary labeled icon button" style="font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue">
+                            <i class="plus icon" style="padding:8px"></i>Add
+                          </div>
+                        </th>
+                      </tr>
+                    </tfoot>
+                  </table>
+                  <div id="confirm-table-contributor" style="display: flex;flex-direction:row;justify-content:center;margin:0 auto">
+                    <button class="confirm-btn" data-next="Question-step2-6" onclick="transitionSubQuestions(this, 'Question-step2-6', 'step2-tab', '', 'generate-dataset')">Confirm</button>
+                  </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Question 6 -->
+              <div class="individual-question step2" id="Question-step2-6">
+                <div class="ui form" style="width:100%">
+                  <div class="grouped fields" style="width:90%; margin:0 auto">
+                    <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Enter below the details for everyone who participated in the collection and analysis of the dataset​
+                    </label>
+                    <table class="ui celled table" style="text-align:center" id="grant-table">
+                      <thead class="full-width">
+                        <tr>
+                          <th style="width:45%">Funder number or name​</th>
+                          <th style="width:45%">Grant number</th>
+                          <th style="width:10%"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <!-- <tr>
+                          <td>Funder</td>
+                          <td>Number</td>
+                          <td>
+                            <div class="ui small basic icon buttons">
+                              <button class="ui button"><i class="edit outline icon" style="color:var(--bs-table-active-color)"></i></button>
+                              <button class="ui button"><i class="trash alternate outline icon" style="color:red"></i></button>
+                            </div>
+                          </td>
+                        </tr> -->
+                      </tbody>
+                      <tfoot class="full-width">
+                        <tr>
+                          <th style="width:45%"></th>
+                          <th style="width:45%"></th>
+                          <th style="width:10%">
+                            <div onclick="addNewRow('grant-table')" class="ui right floated medium primary labeled icon button" style="font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue">
+                              <i class="plus icon" style="padding:8px"></i>Add
+                            </div>
+                          </th>
+                        </tr>
+                      </tfoot>
+                    </table>
+                    <div id="confirm-table-grant" style="display: flex;flex-direction:row;justify-content:center;margin:0 auto">
+                      <button class="confirm-btn" data-next="Question-step2-7" onclick="transitionSubQuestions(this, 'Question-step2-6', 'step2-tab', '', 'generate-dataset')">Confirm</button>
+                    </div>
+                    </div>
+                  </div>
+                </div>
+
+
+            <!-- Question 7 -->
+            <div class="individual-question step2" id="Question-step2-7">
+              <div class="ui form" style="width:100%">
+                <div class="grouped fields" style="width:90%; margin:0 auto">
+                  <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Does the research related to this dataset involve human subjects?​
+                  </label>
+                  <div style="display:flex;flex-direction:row;margin:0 auto">
+                    <div class="radio-button" data-next="Question-step2-8" onclick="transitionSubQuestions(this, 'Question-step2-7', 'step2-tab', '', 'generate-dataset')">
+                      <i class="check icon" style="color:green"></i>
+                      <p style="color:green">Yes</p>
+                    </div>
+                    <div class="radio-button">
+                      <i class="times icon" style="color:red"></i>
+                      <p style="color:red">No</p>
+                    </div>
+                  </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Question 8 -->
+              <div class="individual-question step2" id="Question-step2-8">
+                <div class="ui form" style="width:100%">
+                  <div class="grouped fields" style="width:90%; margin:0 auto">
+                    <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Was the SARS-COVID-19 virus involved in your research?​
+                    </label>
+                    <div style="display:flex;flex-direction:row;margin:0 auto">
+                      <div class="radio-button" data-next="Question-step2-9" onclick="transitionSubQuestions(this, 'Question-step2-8', 'step2-tab', '', 'generate-dataset')">
+                        <i class="check icon" style="color:green"></i>
+                        <p style="color:green">Yes</p>
+                      </div>
+                      <div class="radio-button">
+                        <i class="times icon" style="color:red"></i>
+                        <p style="color:red">No</p>
+                      </div>
+                    </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Question 9-->
+                <div class="individual-question step2" id="Question-step2-9">
+                  <div class="ui form" style="width:100%">
+                    <div class="grouped fields" style="width:80%; margin:0 auto">
+                      <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Enter keywords that describes the variable measured in your dataset​:</label>
+                        <div class="ui input" style="margin:0 auto">
+                          <textarea style="width:400px" oninput="showConfirmBtn('confirm-keywords')" id="textarea-keywords-variables" type="text" placeholder="Enter here..."></textarea>
+                        </div>
+                        <div id="confirm-keywords" style="display: none;flex-direction:row;justify-content:center;margin:0 auto">
+                          <button class="confirm-btn" data-next="Question-step2-10" onclick="transitionSubQuestions(this, 'Question-step2-9', 'step2-tab', '', 'generate-dataset')">Confirm</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Question 10-->
+                  <div class="individual-question step2" id="Question-step2-10">
+                    <div class="ui form" style="width:100%">
+                      <div class="grouped fields" style="width:80%; margin:0 auto">
+                        <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Enter keywords that describes the techniques used to collect your data:</label>
+                          <div class="ui input" style="margin:0 auto">
+                            <textarea style="width:400px" oninput="showConfirmBtn('confirm-techniques')" id="textarea-keywords-techniques" type="text" placeholder="Enter here..."></textarea>
+                          </div>
+                          <div id="confirm-techniques" style="display: none;flex-direction:row;justify-content:center;margin:0 auto">
+                            <button class="confirm-btn" onclick="transitionParentTabs(this, 'step2-tab')" data-next="step3-tab">Confirm</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+        </div>
+        <!-- Step 3 -->
+        <div class="parent-tabs" id="step3-tab" style="overflow-y:auto;">
+          <h3 class="question-title" style="color: #101010;font-weight:600;font-size:18px;text-align:center;margin-bottom:20px">Guided mode</h3>
+          <h5 style="text-align:center;color:red;font-size:16px;margin-bottom:50px;margin-top:0"> Step 3: Connect to your Zenodo account​ ​ </h5>
+          <!-- Question 1 -->
+          <div class="individual-question step3" id="Question-step3-1"  style="display:flex">
+            <div class="ui form" style="width:100%">
+              <div class="grouped fields" style="width:90%; margin:0 auto">
+                <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">It looks like you have not connected your Zenodo account with SODA for COVID-19 yet.​
+                <br><br>Do you have a Zenodo account?​</label>
+                <div style="display:flex;flex-direction:row;margin:0 auto">
+                  <div class="radio-button" data-next="Question-step3-2" onclick="transitionSubQuestions(this, 'Question-step3-1', 'step3-tab', '', 'generate-dataset')">
+                    <i class="check icon" style="color:green"></i>
+                    <p style="color:green">Yes</p>
+                  </div>
+                  <div class="radio-button">
+                    <i class="times icon" style="color:red"></i>
+                    <p style="color:red">No</p>
+                  </div>
+                </div>
+                </div>
+              </div>
+            </div>
+            <!-- Question 2 -->
+            <div class="individual-question step3" id="Question-step3-2">
+              <div class="ui form" style="width:100%">
+                <div class="grouped fields" style="width:90%; margin:0 auto">
+                  <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Great! Follow the instructions available <a style="text-decoration:underline;color:#4183c4 !important">here</a> to generate a Zenodo API token and enter it below.​
+                  ​</label>
+                  <div class="ui input">
+                    <input type="text" placeholder="Enter here..." oninput="showConfirmBtn('confirm-zenodo-connect')">
+                  </div>
+                  <div id="confirm-zenodo-connect" style="display: none;flex-direction:row;justify-content:center;margin:0 auto">
+                    <button class="confirm-btn" onclick="connectAccount('para-connected')">Connect</button>
+                  </div>
+                  <p id="para-connected"></p>
+                  </div>
+                </div>
+              </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="parent-tabs" id="step4-tab" style="overflow-y:auto;">
+          <h3 class="question-title" style="color: #101010;font-weight:600;font-size:18px;text-align:center;margin-bottom:20px">Guided mode</h3>
+          <h5 style="text-align:center;color:red;font-size:16px;margin-bottom:50px;margin-top:0"> Step 4: Upload your dataset​​ </h5>
+          <p style="color:#585858;text-align:center;width:80%;margin:0 auto;margin-bottom:20px">Zenodo requires certain information before you can upload. We will complete most of them based on the information already provided in the previous steps, but some still require your inputs.​</p>
+
+          <!-- Question 1 -->
+          <div class="individual-question step4" id="Question-step4-1"  style="display:flex">
+            <div class="ui form" style="width:100%">
+              <div class="grouped fields" style="width:90%; margin:0 auto">
+                <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Was the SARS-COVID-19 virus involved in your research?​
+                </label>
+                <div style="display:flex;flex-direction:row;margin:0 auto;flex-wrap:wrap;justify-content:center">
+                  <div class="radio-button" style="height:90px">
+                    <i class="file alternate icon"></i>
+                    <p>Publication</p>
+                  </div>
+                  <div class="radio-button" style="height:90px">
+                    <i class="columns icon"></i>
+                    <p>Poster</p>
+                  </div>
+                  <div class="radio-button" style="height:90px">
+                    <i class="columns icon"></i>
+                    <p>Presentation</p>
+                  </div>
+                  <div class="radio-button" style="height:90px" data-next="Question-step4-2" onclick="transitionSubQuestions(this, 'Question-step4-1', 'step4-tab', '', 'generate-dataset')">
+                    <i class="table icon"></i>
+                    <p>Dataset</p>
+                  </div>
+                  <div class="radio-button" style="height:90px">
+                    <i class="image outline icon"></i>
+                    <p>Image​</p>
+                  </div>
+                  <div class="radio-button" style="height:90px">
+                    <i class="image outline icon"></i>
+                    <p>Video/Audio​</p>
+                  </div>
+                  <div class="radio-button" style="height:90px">
+                    <i class="image outline icon"></i>
+                    <p>Software​</p>
+                  </div>
+                  <div class="radio-button" style="height:90px">
+                    <i class="user graduate icon"></i>
+                    <p>Lesson</p>
+                  </div>
+                  <div class="radio-button" style="height:90px">
+                    <i class="cube icon"></i>
+                    <p>Physical object</p>
+                  </div>
+                  <div class="radio-button" style="height:90px">
+                    <i class="star of life icon"></i>
+                    <p>Other</p>
+                  </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Question 2 -->
+            <div class="individual-question step4" id="Question-step4-2">
+              <div class="ui form" style="width:100%">
+                <div class="grouped fields" style="width:90%; margin:0 auto">
+                  <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">What access would you like to provide to others?​​
+                  ​</label>
+                  <div style="display:flex;flex-direction:row;margin:0 auto;flex-wrap:wrap;justify-content:center">
+                    <div class="radio-button" style="height:90px" data-next="Question-step4-3" onclick="transitionSubQuestions(this, 'Question-step4-2', 'step4-tab', '', 'generate-dataset')">
+                      <i class="lock open icon"></i>
+                      <p>Open Access</p>
+                    </div>
+                    <div class="radio-button" style="height:90px">
+                      <i class="ban icon"></i>
+                      <p>Embargoed Access</p>
+                    </div>
+                    <div class="radio-button" style="height:90px">
+                      <i class="key icon"></i>
+                      <p>Restricted Access</p>
+                    </div>
+                    <div class="radio-button" style="height:90px">
+                      <i class="key icon"></i>
+                      <p>Closed Access</p>
+                    </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <!-- Question 3 -->
+            <div class="individual-question step4" id="Question-step4-3">
+              <div class="ui form" style="width:100%">
+                <div class="grouped fields" style="width:90%; margin:0 auto">
+                  <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Which license would you like to assign to your dataset?​
+                  ​</label>
+                  <div style="display:flex;flex-direction:row;">
+                    <select class="ui selection dropdown" style="padding:5px 5px" data-next="Question-step4-4" onchange="transitionSubQuestions(this, 'Question-step4-3', 'step4-tab', '', 'generate-dataset')">
+                      <option value="Select">Select option</option>
+                      <option value="Creative Commons Attribution 4.0 International">Creative Commons Attribution 4.0 International</option>
+                      <option value="Creative Commons Attribution 1.0 Generic">Creative Commons Attribution 1.0 Generic</option>
+                      <option value="Creative Commons Attribution 2.0 Generic">Creative Commons Attribution 2.0 Generic</option>
+                      <option value="Creative Commons Attribution 3.0 Unported">Creative Commons Attribution 3.0 Unported</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Question 4 -->
+            <div class="individual-question step4" id="Question-step4-4">
+              <div class="ui form" style="width:100%">
+                <div class="grouped fields" style="width:90%; margin:0 auto">
+                  <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Would you like your dataset to appear in the Coronavirus Disease Research Community of Zenodo?​
+                  ​</label>
+                  <div style="display:flex;flex-direction:row;margin:0 auto">
+                    <div class="radio-button" data-next="Question-step4-5" onclick="transitionSubQuestions(this, 'Question-step4-4', 'step4-tab', '', 'generate-dataset')">
+                      <i class="check icon" style="color:green"></i>
+                      <p style="color:green">Yes</p>
+                    </div>
+                    <div class="radio-button">
+                      <i class="times icon" style="color:red"></i>
+                      <p style="color:red">No</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Question 5 -->
+            <div class="individual-question step4" id="Question-step4-5">
+              <div class="ui form" style="width:100%">
+                <div class="grouped fields" style="width:90%; margin:0 auto">
+                  <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">You're all set!
+                  ​</label>
+                  <button class="confirm-btn" style="background:#fff; color:green;border:1px solid green;margin:0 auto;height:40;width:150px" onclick="transitionParentTabs(this, 'step4-tab')" data-next="step5-tab">Create dataset</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+    <!-- Step 5 -->
+    <div class="parent-tabs" id="step5-tab" style="overflow-y:auto;">
+      <h3 class="question-title" style="color: #101010;font-weight:600;font-size:18px;text-align:center;margin-bottom:20px">Guided mode</h3>
+      <h5 style="text-align:center;color:red;font-size:16px;margin-bottom:50px;margin-top:0"> Creating dataset </h5>
+      <div id="myProgress" style="background:#f1f1f1;width:95%;margin:0 auto">
+        <div onclick="move()" id="myBar">0%</div>
+      </div>
+      <p id="para-progress-bar" style="font-weight:600;color:#000;text-align:center;margin-top:25px"></p>
+    </div>
+
+    </div>
+      <div style="border-top:1px solid #f0f0f0;padding:10px;padding-top:15px;height:50px;display:flex;flex-direction:row;justify-content:space-between">
+        <div style="display:flex;flex-direction:row;width:110px">
+          <button type="button" onclick="nextPrev(-1)" id="prevBtn" class="transition-btn prev"><i class="fas fa-arrow-left" style="margin-right:10px"></i>Back</button>
+        </div>
+        <div style="display:flex;flex-direction:row;width:100px">
+          <button style="float:right" onclick="nextPrev(1)" id="nextBtn" type="button" class="transition-btn" disabled>Continue</button>
+        </div>
+      </div>
+    </div>
+  </main>
 </body>
 
-
-
     <script>window.$ = window.jQuery = require('jquery');</script>
-    <script src="node_modules/cropperjs/dist/cropper.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <!-- <script src='./renderer.js' type='text/javascript'></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous"></script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src='./organizeDS.js' type='text/javascript'></script>
+    <script src='./tab-effects.js' type='text/javascript'></script>
+    <script src="./node_modules/fomantic-ui/dist/semantic.min.js"></script>
+    <script>
+      function showConfirmBtn(btn) {
+        $('#'+btn).show()
+      }
+      function changeTabsHelper(target, parentTab){
+        $("#"+parentTab).removeClass('tab-active')
+        // display the target tab (data-next tab)
+        if (!($("#"+target).hasClass('tab-active'))) {
+          $("#"+target).addClass('tab-active');
+        }
+      }
+      function connectAccount(pTag) {
+        document.getElementById(pTag).innerHTML = "Connected!";
+        setTimeout(changeTabsHelper('step4-tab', 'step3-tab'), 7000);
+      }
+      var i = 0;
+      function move() {
+        if (i == 0) {
+          i = 1;
+          var elem = document.getElementById("myBar");
+          var width = 10;
+          var id = setInterval(frame, 10);
+          function frame() {
+            if (width >= 100) {
+              clearInterval(id);
+              i = 0;
+              document.getElementById("para-progress-bar").innerHTML = "Done! Go checkout your dataset on Zenodo from the link below:​";
+            } else {
+              width++;
+              elem.style.width = width + "%";
+              elem.innerHTML = width + "%";
+            }
+          }
+        }
+      }
+      function addNewRow(table) {
+        var table = document.getElementById(table);
+        /// Construct table
+        var rowcount = table.rows.length;
+        if (rowcount===2) {
+          // start at 1 to skip the header
+          var rowIndex = 1;
+        } else {
+          /// append row to table from the bottom
+          var rowIndex = rowcount;
+        }
+        var row = table.insertRow(rowIndex).outerHTML="<tr><td class='grab'>"+name+"</td><td id='orcid-id-row"+rowIndex+"'>"+ id +"</td><td id='affiliation-row"+rowIndex+"'>"+ affiliation +"</td><td id='role-row"+rowIndex+"'>"+ roleVal+"</td><td id='contact-person-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
+      }
+    </script>
 
   </section>
   </template>

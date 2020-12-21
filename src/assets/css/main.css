@@ -6,13 +6,17 @@ body {
 .btn.btn-lg.btn-primary.main {
   background: green !important;
   color: #fff;
-  font-weight: 600
+  font-weight: 600;
+  width: fit-content;
+  margin: 0 auto
 }
 
 .btn.btn-lg.btn-primary.side {
   background: #fff !important;
   color: green;
   border: 1px solid green;
+  width: fit-content;
+  margin: 0 auto
   /* font-weight: 600 */
 }
 
@@ -39,8 +43,9 @@ body {
 }
 
 #items {
-  min-height:600px;
-  max-height: 800px
+  min-height:400px;
+  max-height: 500px;
+  border: 1px solid #f5f5f5
 }
 
 .button-grp {
@@ -453,9 +458,9 @@ input:checked + .slider:before {
   } */
 
 .button-back {
-  color: #258193;
+  color: green;
   background-color: #fff;
-  border: 1px solid #258193;
+  border: 1px solid green;
   border-radius: 50%;
   /* padding: 15px 18px 30px 15px; */
   cursor: pointer;
@@ -726,7 +731,7 @@ input:checked + .slider:before {
   border: 1px solid rgba(0,0,0,.125);
   min-width:240px;
   max-width:260px;
-  height: 325px;
+  height: auto;
   border-radius: 10px
 }
 
@@ -762,7 +767,7 @@ input:checked + .slider:before {
   cursor: pointer;
   min-width: 200px;
   max-width: 220px;
-  font-size: 15px
+  font-size: 15px;
 }
 
 .card-body button:hover{

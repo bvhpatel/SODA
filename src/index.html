@@ -6,6 +6,7 @@
     <title>SODA - Keep Calm and Curate </title>
 
     <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet" href="assets/css/individual-tabs.css">
     <link rel="stylesheet" href="assets/css/nativize.css">
     <link rel="stylesheet" href="assets/css/global.css">
     <link rel="stylesheet" href="assets/css/nav.css">
@@ -18,17 +19,20 @@
     <link rel="stylesheet" href="node_modules/@toast-ui/editor/dist/toastui-editor.css">
     <link rel="stylesheet" href="node_modules/codemirror/lib/codemirror.css">
     <link rel="stylesheet" href="node_modules/@yaireo/tagify/dist/tagify.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="node_modules/fomantic-ui/dist/semantic.min.css">
 
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
 
     <link rel="import" href="sections/account/account.html">
     <link rel="import" href="sections/getting_started/getting_started.html">
-    <link rel="import" href="sections/curate/organize_files.html">
+    <!-- <link rel="import" href="sections/curate/organize_files.html">
     <link rel="import" href="sections/curate/validate_datasets.html">
     <link rel="import" href="sections/manage_submit/manage_submit.html">
     <link rel="import" href="sections/post_curation/post_curation.html">
     <link rel="import" href="sections/prepare_metadata/prepare_metadata.html">
-    <link rel="import" href="sections/help/help.html">
+    <link rel="import" href="sections/help/help.html"> -->
 
   </head>
 
@@ -53,21 +57,21 @@
           <!-- Sidebar Links -->
           <ul class="list-unstyled components">
               <li><a href="#" data-section="getting_started" class="is-selected"><i class="fas fa-play" style="font-size: 20px"></i>Getting started</a></li>
-              <li><a href="#" data-section="prepare_metadata"><i class="far fa-file-alt" style="font-size: 20px"></i>Create metadata</a></li>
-              <li><a href="#" data-section="prepare_metadata"><i class="fas fa-exchange-alt" style="font-size: 20px;margin-right:20px"></i>Convert file format</a></li>
+              <li><a href="#"><i class="far fa-file-alt" style="font-size: 20px"></i>Create metadata</a></li>
+              <li><a href="#"><i class="fas fa-exchange-alt" style="font-size: 20px;margin-right:20px"></i>Convert file format</a></li>
 
-                <li><a href="#" data-section="manage_submit"><i class="far fa-check-square" style="font-size: 20px"></i>Validate dataset</a>
+                <li><a href="#"><i class="far fa-check-square" style="font-size: 20px"></i>Validate dataset</a>
               </li>
               <li>
-                  <a href="#" data-section="manage_submit"><i class="fas fa-share-alt" style="font-size: 20px"></i>Share dataset</img></a>
+                  <a href="#"><i class="fas fa-share-alt" style="font-size: 20px"></i>Share dataset</img></a>
               </li>
 
               <hr style="border-bottom:1px solid #f2f2f2;opacity:0.1">
               <li>
-                  <a href="#" data-section="manage_submit"><i class="fas fa-cog"></i>Settings</a>
+                  <a href="#"><i class="fas fa-cog"></i>Settings</a>
               </li>
               <li>
-                  <a href="#" data-section="manage_submit"><i class="fas fa-comment-dots"></i>Feedback</a>
+                  <a href="#"><i class="fas fa-comment-dots"></i>Feedback</a>
               </li>
 
           </ul>
@@ -109,7 +113,7 @@
     require('./assets/nav') // Side navigation menu control
     require('./assets/demo-btns')
     require('./assets/normalize-shortcuts') // For normalizing shortcuts accross OS
-    require('./scripts/renderer.js') // js script for talking with Python back-end
+    // require('./renderer.js') // js script for talking with Python back-end
   </script>
   <script>
     function myFunction(element) {
@@ -131,6 +135,8 @@
     });
   </script>
   <script>window.$ = window.jQuery = require('jquery')</script>
-  <script src="../src/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous"></script>
+  <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
