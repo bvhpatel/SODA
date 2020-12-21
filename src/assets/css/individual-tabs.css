@@ -578,14 +578,15 @@
 }
 
 .div-file-import-button {
-  background: var(--color-bg-light-green-button);
-  color: var(--color-teal);
-  border: 1px solid var(--color-bg-light-green-button);
+  background: lightgray;
+  color: #585858;
+  border: #d2efee;
   border-radius: 5px;
-  margin: 0 auto;
-  width: 70%;
+  margin: 10px auto;
+  width: 70px;
   padding: 7px;
   cursor: pointer;
+  font-size: 13px
 }
 
 .div-file-import-button:hover {
@@ -728,7 +729,8 @@
   opacity: 0.8;
   color:#fff;
   font-weight:600;
-  border:none
+  border:none;
+  font-size: 12px
 }
 
 .individual-question {
@@ -737,9 +739,9 @@
   flex-direction:column;
   justify-content: center;
   /* transition: scale-display .3s; */
-  transition: all 0.3s ease-out !important;
+  /* transition: all 0.3s ease-out !important; */
   margin: 0 auto;
-  margin-bottom: 10%;
+  margin-bottom: 11%;
   width: auto;
   min-width: 80%
   /* border-top:1px solid var(--color-bg-plum) */
@@ -858,8 +860,8 @@
 
 .individual-question.test2 {
   /* margin-top:40px; */
-  transform: translateY(-8px);
-  transition: transform 0.2s ease-in-out;
+  transform: translateY(-16px);
+  transition: transform 0.5s ease-in-out;
   height: 50%;
 }
 
@@ -921,15 +923,15 @@
 
 @keyframes changeWelcomeIcon {
   from {
-    left: -15px;
+    top: 10px;
   }
 
   to {
-    left: 0px;
+    top: 0px;
   }
 }
 
-.fas.fa-hand-point-left.welcome-icon-hand {
+.fas.fa-hand-point-down.welcome-icon-hand {
   animation-duration: 0.7s;
   animation-name: changeWelcomeIcon;
   animation-iteration-count: infinite;
@@ -937,7 +939,7 @@
   position: relative;
   color: var(--color-teal);
   font-size: 21px;
-  margin-right:10px;
+  margin-left:10px;
 }
 
 .ui.icon.button {

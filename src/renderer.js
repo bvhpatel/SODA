@@ -19,6 +19,7 @@ const https = require('https')
 const $ = require( "jquery" );
 const PDFDocument = require('pdfkit');
 const html2canvas = require("html2canvas");
+const bootbox = require('bootbox');
 const removeMd = require('remove-markdown');
 
 //////////////////////////////////

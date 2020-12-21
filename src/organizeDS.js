@@ -132,62 +132,54 @@ organizeDSbackButton.addEventListener("click", function() {
 // Add folder button
 organizeDSaddNewFolder.addEventListener("click", function(event) {
   event.preventDefault();
-  var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
-  if(slashCount !== 1) {
-    var newFolderName = "New Folder"
-    // show prompt for name
-    bootbox.prompt({
-      title: "Add new folder...",
-      message: "Enter a name below:",
-      centerVertical: true,
-      callback: function(result) {
-        if(result !== null && result!== "") {
-          newFolderName = result.trim()
-          // check for duplicate or files with the same name
-          var duplicate = false
-          var itemDivElements = document.getElementById("items").children
-          for (var i=0;i<itemDivElements.length;i++) {
-            if (newFolderName === itemDivElements[i].innerText) {
-              duplicate = true
-              break
-            }
-          }
-          if (duplicate) {
-            bootbox.alert({
-              message: "Duplicate folder name: " + newFolderName,
-              centerVertical: true
-            })
-          } else {
-            var appendString = '';
-            appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">'+ newFolderName +'</div></div>'
-            $(appendString).appendTo('#items');
-
-            /// update datasetStructureJSONObj
-            var currentPath = organizeDSglobalPath.value
-            var jsonPathArray = currentPath.split("/")
-            var filtered = jsonPathArray.slice(1).filter(function (el) {
-              return el != "";
-            });
-
-            var myPath = getRecursivePath(filtered, datasetStructureJSONObj)
-            // update Json object with new folder created
-            var renamedNewFolder = newFolderName
-            myPath["folders"][renamedNewFolder] = {"folders": {}, "files": {}, "type":"virtual"}
-
-            listItems(myPath,'#items')
-            getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
-            hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-            hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
+  var newFolderName = "New Folder"
+  // show prompt for name
+  bootbox.prompt({
+    title: "Add new folder...",
+    message: "Enter a name below:",
+    centerVertical: true,
+    callback: function(result) {
+      if(result !== null && result!== "") {
+        newFolderName = result.trim()
+        // check for duplicate or files with the same name
+        var duplicate = false
+        var itemDivElements = document.getElementById("items").children
+        for (var i=0;i<itemDivElements.length;i++) {
+          if (newFolderName === itemDivElements[i].innerText) {
+            duplicate = true
+            break
           }
         }
+        if (duplicate) {
+          bootbox.alert({
+            message: "Duplicate folder name: " + newFolderName,
+            centerVertical: true
+          })
+        } else {
+          var appendString = '';
+          appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">'+ newFolderName +'</div></div>'
+          $(appendString).appendTo('#items');
+
+          /// update datasetStructureJSONObj
+          var currentPath = organizeDSglobalPath.value
+          var jsonPathArray = currentPath.split("/")
+          var filtered = jsonPathArray.slice(1).filter(function (el) {
+            return el != "";
+          });
+
+          var myPath = getRecursivePath(filtered, datasetStructureJSONObj)
+          // update Json object with new folder created
+          var renamedNewFolder = newFolderName
+          myPath["folders"][renamedNewFolder] = {"folders": {}, "files": {}, "type":"virtual"}
+
+          listItems(myPath,'#items')
+          getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
+          hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+          hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
+        }
       }
-    })
-  } else {
-      bootbox.alert({
-        message: "New folders cannot be added at this level. Please go back to add another high-level SPARC folder.",
-        centerVertical: true
-      })
     }
+  })
 })
 
 // ///////////////////////////////////////////////////////////////////////////
@@ -427,42 +419,33 @@ function addFoldersfunction(folderArray, currentLocation) {
       uiFolders[folder] = 1
     }
   }
-
-  var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
-  if (slashCount === 1) {
-    bootbox.alert({
-      message: "Other non-SPARC folders cannot be added to this dataset level!",
-      centerVertical: true
-    })
-  } else {
-      // check for duplicates/folders with the same name
-      for (var i=0; i<folderArray.length;i++) {
-          var j = 1;
-          var originalFolderName = path.basename(folderArray[i]);
-          var renamedFolderName = originalFolderName;
-          while (renamedFolderName in uiFolders || renamedFolderName in importedFolders) {
-            renamedFolderName = `${originalFolderName} (${j})`;
-            j++;
-          }
-          importedFolders[renamedFolderName] = {"path": folderArray[i], "original-basename": originalFolderName};
-        }
-        if (Object.keys(importedFolders).length > 0) {
-          for (var element in importedFolders) {
-            currentLocation["folders"][element] = {"type": "local", "path": importedFolders[element]["path"], "folders": {}, "files": {}, "action": ["new"]}
-            populateJSONObjFolder(currentLocation["folders"][element], importedFolders[element]["path"]);
-            // check if a folder has to be renamed due to duplicate reason
-            if (element !== importedFolders[element]["original-basename"]) {
-              currentLocation["folders"][element]["action"].push('renamed');
-            }
-            var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+element+'</div></div>'
-            $('#items').html(appendString)
-            listItems(currentLocation, '#items')
-            getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
-            hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-            hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
-          }
-        }
+  // check for duplicates/folders with the same name
+  for (var i=0; i<folderArray.length;i++) {
+      var j = 1;
+      var originalFolderName = path.basename(folderArray[i]);
+      var renamedFolderName = originalFolderName;
+      while (renamedFolderName in uiFolders || renamedFolderName in importedFolders) {
+        renamedFolderName = `${originalFolderName} (${j})`;
+        j++;
       }
+      importedFolders[renamedFolderName] = {"path": folderArray[i], "original-basename": originalFolderName};
+    }
+    if (Object.keys(importedFolders).length > 0) {
+      for (var element in importedFolders) {
+        currentLocation["folders"][element] = {"type": "local", "path": importedFolders[element]["path"], "folders": {}, "files": {}, "action": ["new"]}
+        populateJSONObjFolder(currentLocation["folders"][element], importedFolders[element]["path"]);
+        // check if a folder has to be renamed due to duplicate reason
+        if (element !== importedFolders[element]["original-basename"]) {
+          currentLocation["folders"][element]["action"].push('renamed');
+        }
+        var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+element+'</div></div>'
+        $('#items').html(appendString)
+        listItems(currentLocation, '#items')
+        getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
+        hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+        hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
+      }
+    }
 }
 
 //// Step 3. Organize dataset: Add files or folders with drag&drop
@@ -542,23 +525,14 @@ function drop(ev) {
             }
           }
     } else if (statsObj.isDirectory()) {
-      /// drop a folder
-      var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
-      if (slashCount === 1) {
-        bootbox.alert({
-          message: "Other non-SPARC folders cannot be added to this dataset level!",
-          centerVertical: true
-        })
-      } else {
-          var j = 1;
-          var originalFolderName = itemName;
-          var renamedFolderName = originalFolderName;
-          while (renamedFolderName in uiFolders || renamedFolderName in importedFolders) {
-            renamedFolderName = `${originalFolderName} (${j})`;
-            j++;
-          }
-          importedFolders[renamedFolderName] = {"path": itemPath, "original-basename": originalFolderName};
+        var j = 1;
+        var originalFolderName = itemName;
+        var renamedFolderName = originalFolderName;
+        while (renamedFolderName in uiFolders || renamedFolderName in importedFolders) {
+          renamedFolderName = `${originalFolderName} (${j})`;
+          j++;
         }
+        importedFolders[renamedFolderName] = {"path": itemPath, "original-basename": originalFolderName};
       }
     }
   if (nonAllowedDuplicateFiles.length > 0) {
@@ -937,37 +911,37 @@ $("#inputNewNameDataset").keyup(function() {
   }
 });
 
-//// Select to choose a local dataset
-document.getElementById("input-destination-generate-dataset-locally").addEventListener("click", function() {
-  $("#Question-generate-dataset-locally-destination").nextAll().removeClass('show');
-  $("#Question-generate-dataset-locally-destination").nextAll().removeClass('test2');
-  $("#Question-generate-dataset-locally-destination").nextAll().removeClass('prev');
-  document.getElementById("input-destination-generate-dataset-locally").placeholder = "Browse here";
-  ipcRenderer.send('open-file-dialog-local-destination-curate');
-})
+// //// Select to choose a local dataset
+// document.getElementById("input-destination-generate-dataset-locally").addEventListener("click", function() {
+//   $("#Question-generate-dataset-locally-destination").nextAll().removeClass('show');
+//   $("#Question-generate-dataset-locally-destination").nextAll().removeClass('test2');
+//   $("#Question-generate-dataset-locally-destination").nextAll().removeClass('prev');
+//   document.getElementById("input-destination-generate-dataset-locally").placeholder = "Browse here";
+//   ipcRenderer.send('open-file-dialog-local-destination-curate');
+// })
 
-ipcRenderer.on('selected-local-destination-datasetCurate', (event, filepath) => {
-  if (filepath.length > 0) {
-    if (filepath != null){
-      document.getElementById("input-destination-generate-dataset-locally").placeholder = filepath[0];
-      // document.getElementById('div-confirm-destination-locally').style.display = "flex";
-      $("#div-confirm-destination-locally button").click()
-    }
-  } else {
-      $("#Question-generate-dataset-locally-destination").nextAll().removeClass('show');
-      $("#Question-generate-dataset-locally-destination").nextAll().removeClass('test2');
-      $("#Question-generate-dataset-locally-destination").nextAll().removeClass('prev');
-      // document.getElementById("div-confirm-destination-locally").style.display = "none";
-      // $("#div-confirm-destination-locally button").hide()
-  }
-})
-
-document.getElementById("button-generate-comeback").addEventListener('click', function() {
-  document.getElementById('generate-dataset-progress-tab').style.display = "none";
-  document.getElementById('div-vertical-progress-bar').style.display = "flex";
-  document.getElementById('prevBtn').style.display = "inline";
-  $('#generate-dataset-tab').addClass('tab-active');
-})
+// ipcRenderer.on('selected-local-destination-datasetCurate', (event, filepath) => {
+//   if (filepath.length > 0) {
+//     if (filepath != null){
+//       document.getElementById("input-destination-generate-dataset-locally").placeholder = filepath[0];
+//       // document.getElementById('div-confirm-destination-locally').style.display = "flex";
+//       $("#div-confirm-destination-locally button").click()
+//     }
+//   } else {
+//       $("#Question-generate-dataset-locally-destination").nextAll().removeClass('show');
+//       $("#Question-generate-dataset-locally-destination").nextAll().removeClass('test2');
+//       $("#Question-generate-dataset-locally-destination").nextAll().removeClass('prev');
+//       // document.getElementById("div-confirm-destination-locally").style.display = "none";
+//       // $("#div-confirm-destination-locally button").hide()
+//   }
+// })
+//
+// document.getElementById("button-generate-comeback").addEventListener('click', function() {
+//   document.getElementById('generate-dataset-progress-tab').style.display = "none";
+//   document.getElementById('div-vertical-progress-bar').style.display = "flex";
+//   document.getElementById('prevBtn').style.display = "inline";
+//   $('#generate-dataset-tab').addClass('tab-active');
+// })
 
 // function to hide the sidebar and disable the sidebar expand button
 function forceActionSidebar(action) {
@@ -1084,59 +1058,51 @@ function renameFolder(event1, organizeCurrentLocation, itemElement, inputGlobal,
   } else {
     nameWithoutExtension = currentName
   }
+  // show prompt to enter a new name
+  var myBootboxDialog = bootbox.dialog({
+    title: 'Rename '+ promptVar,
+    message: 'Please enter a new name: <p><input type="text" id="input-new-name-renamed" class="form-control" value="'+nameWithoutExtension+'"></input></p>',
+    buttons: {
+      cancel: {
+            label: '<i class="fa fa-times"></i> Cancel'
+        },
+        confirm: {
+            label: '<i class="fa fa-check"></i> Save',
+            className: 'btn-success',
+            callback: function() {
+              var returnedName = checkValidRenameInput(event1, $("#input-new-name-renamed").val().trim(), type, currentName, newName, itemElement, myBootboxDialog);
+              if (returnedName !== "") {
+                myBootboxDialog.modal('hide')
+                bootbox.alert({
+                  message: "Successfully renamed!",
+                  centerVertical: true
+                });
 
-  if (highLevelFolderBool) {
-    bootbox.alert({
-      message: "High-level SPARC folders cannot be renamed!",
-      centerVertical: true
-    })
-  } else {
-    // show prompt to enter a new name
-    var myBootboxDialog = bootbox.dialog({
-      title: 'Rename '+ promptVar,
-      message: 'Please enter a new name: <p><input type="text" id="input-new-name-renamed" class="form-control" value="'+nameWithoutExtension+'"></input></p>',
-      buttons: {
-        cancel: {
-              label: '<i class="fa fa-times"></i> Cancel'
-          },
-          confirm: {
-              label: '<i class="fa fa-check"></i> Save',
-              className: 'btn-success',
-              callback: function() {
-                var returnedName = checkValidRenameInput(event1, $("#input-new-name-renamed").val().trim(), type, currentName, newName, itemElement, myBootboxDialog);
-                if (returnedName !== "") {
-                  myBootboxDialog.modal('hide')
-                  bootbox.alert({
-                    message: "Successfully renamed!",
-                    centerVertical: true
-                  });
-
-                  /// assign new name to folder or file in the UI
-                  event1.parentElement.parentElement.innerText = returnedName
-                  /// get location of current file or folder in JSON obj
-                  var filtered = getGlobalPath(organizeCurrentLocation)
-                  var myPath = getRecursivePath(filtered.slice(1), inputGlobal)
-                  /// update jsonObjGlobal with the new name
-                  storedValue = myPath[type][currentName]
-                  delete myPath[type][currentName];
-                  myPath[type][returnedName] = storedValue;
-                  if ("action" in myPath[type][returnedName]
-                    && !(myPath[type][returnedName]["action"].includes("renamed"))) {
-                    myPath[type][returnedName]["action"].push("renamed")
-                  } else {
-                    myPath[type][returnedName]["action"] = ["new", "renamed"]
-                  }
-                  /// list items again with updated JSON obj
-                  listItems(myPath, uiItem)
-                  getInFolder(singleUIItem, uiItem, organizeCurrentLocation, inputGlobal)
+                /// assign new name to folder or file in the UI
+                event1.parentElement.parentElement.innerText = returnedName
+                /// get location of current file or folder in JSON obj
+                var filtered = getGlobalPath(organizeCurrentLocation)
+                var myPath = getRecursivePath(filtered.slice(1), inputGlobal)
+                /// update jsonObjGlobal with the new name
+                storedValue = myPath[type][currentName]
+                delete myPath[type][currentName];
+                myPath[type][returnedName] = storedValue;
+                if ("action" in myPath[type][returnedName]
+                  && !(myPath[type][returnedName]["action"].includes("renamed"))) {
+                  myPath[type][returnedName]["action"].push("renamed")
+                } else {
+                  myPath[type][returnedName]["action"] = ["new", "renamed"]
                 }
-                return false
+                /// list items again with updated JSON obj
+                listItems(myPath, uiItem)
+                getInFolder(singleUIItem, uiItem, organizeCurrentLocation, inputGlobal)
               }
-          }
-      },
-      centerVertical: true
-  })
-  }
+              return false
+            }
+        }
+    },
+    centerVertical: true
+})
 }
 
 function getGlobalPath(path) {
@@ -1335,9 +1301,9 @@ var datasetStructureJSONObj = {
   "files":{},
   "type":""
 }
-
-listItems(datasetStructureJSONObj, '#items')
-getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
+//
+// listItems(datasetStructureJSONObj, '#items')
+// getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
 
 var sodaJSONObj = {}
 //
@@ -1390,62 +1356,54 @@ organizeDSbackButton.addEventListener("click", function() {
 // Add folder button
 organizeDSaddNewFolder.addEventListener("click", function(event) {
   event.preventDefault();
-  var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
-  if(slashCount !== 1) {
-    var newFolderName = "New Folder"
-    // show prompt for name
-    bootbox.prompt({
-      title: "Add new folder...",
-      message: "Enter a name below:",
-      centerVertical: true,
-      callback: function(result) {
-        if(result !== null && result!== "") {
-          newFolderName = result.trim()
-          // check for duplicate or files with the same name
-          var duplicate = false
-          var itemDivElements = document.getElementById("items").children
-          for (var i=0;i<itemDivElements.length;i++) {
-            if (newFolderName === itemDivElements[i].innerText) {
-              duplicate = true
-              break
-            }
-          }
-          if (duplicate) {
-            bootbox.alert({
-              message: "Duplicate folder name: " + newFolderName,
-              centerVertical: true
-            })
-          } else {
-            var appendString = '';
-            appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">'+ newFolderName +'</div></div>'
-            $(appendString).appendTo('#items');
-
-            /// update datasetStructureJSONObj
-            var currentPath = organizeDSglobalPath.value
-            var jsonPathArray = currentPath.split("/")
-            var filtered = jsonPathArray.slice(1).filter(function (el) {
-              return el != "";
-            });
-
-            var myPath = getRecursivePath(filtered, datasetStructureJSONObj)
-            // update Json object with new folder created
-            var renamedNewFolder = newFolderName
-            myPath["folders"][renamedNewFolder] = {"folders": {}, "files": {}, "type":"virtual"}
-
-            listItems(myPath,'#items')
-            getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
-            hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-            hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
+  var newFolderName = "New Folder"
+  // show prompt for name
+  bootbox.prompt({
+    title: "Add new folder...",
+    message: "Enter a name below:",
+    centerVertical: true,
+    callback: function(result) {
+      if(result !== null && result!== "") {
+        newFolderName = result.trim()
+        // check for duplicate or files with the same name
+        var duplicate = false
+        var itemDivElements = document.getElementById("items").children
+        for (var i=0;i<itemDivElements.length;i++) {
+          if (newFolderName === itemDivElements[i].innerText) {
+            duplicate = true
+            break
           }
         }
+        if (duplicate) {
+          bootbox.alert({
+            message: "Duplicate folder name: " + newFolderName,
+            centerVertical: true
+          })
+        } else {
+          var appendString = '';
+          appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">'+ newFolderName +'</div></div>'
+          $(appendString).appendTo('#items');
+
+          /// update datasetStructureJSONObj
+          var currentPath = organizeDSglobalPath.value
+          var jsonPathArray = currentPath.split("/")
+          var filtered = jsonPathArray.slice(1).filter(function (el) {
+            return el != "";
+          });
+
+          var myPath = getRecursivePath(filtered, datasetStructureJSONObj)
+          // update Json object with new folder created
+          var renamedNewFolder = newFolderName
+          myPath["folders"][renamedNewFolder] = {"folders": {}, "files": {}, "type":"virtual"}
+
+          listItems(myPath,'#items')
+          getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
+          hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+          hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
+        }
       }
-    })
-  } else {
-      bootbox.alert({
-        message: "New folders cannot be added at this level. Please go back to add another high-level SPARC folder.",
-        centerVertical: true
-      })
     }
+  })
 })
 
 // ///////////////////////////////////////////////////////////////////////////
@@ -1769,40 +1727,31 @@ function addFoldersfunction(folderArray, currentLocation) {
       uiFolders[folder] = 1
     }
   }
-
-  var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
-  if (slashCount === 1) {
-    bootbox.alert({
-      message: "Other non-SPARC folders cannot be added to this dataset level!",
-      centerVertical: true
-    })
-  } else {
-      // check for duplicates/folders with the same name
-      for (var i=0; i<folderArray.length;i++) {
-          var j = 1;
-          var originalFolderName = path.basename(folderArray[i]);
-          var renamedFolderName = originalFolderName;
-          while (renamedFolderName in uiFolders || renamedFolderName in importedFolders) {
-            renamedFolderName = `${originalFolderName} (${j})`;
-            j++;
-          }
-          importedFolders[renamedFolderName] = {"path": folderArray[i], "original-basename": originalFolderName};
+    // check for duplicates/folders with the same name
+    for (var i=0; i<folderArray.length;i++) {
+        var j = 1;
+        var originalFolderName = path.basename(folderArray[i]);
+        var renamedFolderName = originalFolderName;
+        while (renamedFolderName in uiFolders || renamedFolderName in importedFolders) {
+          renamedFolderName = `${originalFolderName} (${j})`;
+          j++;
         }
-        if (Object.keys(importedFolders).length > 0) {
-          for (var element in importedFolders) {
-            currentLocation["folders"][element] = {"type": "local", "path": importedFolders[element]["path"], "folders": {}, "files": {}, "action": ["new"]}
-            populateJSONObjFolder(currentLocation["folders"][element], importedFolders[element]["path"]);
-            // check if a folder has to be renamed due to duplicate reason
-            if (element !== importedFolders[element]["original-basename"]) {
-              currentLocation["folders"][element]["action"].push('renamed');
-            }
-            var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+element+'</div></div>'
-            $('#items').html(appendString)
-            listItems(currentLocation, '#items')
-            getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
-            hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-            hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
+        importedFolders[renamedFolderName] = {"path": folderArray[i], "original-basename": originalFolderName};
+      }
+      if (Object.keys(importedFolders).length > 0) {
+        for (var element in importedFolders) {
+          currentLocation["folders"][element] = {"type": "local", "path": importedFolders[element]["path"], "folders": {}, "files": {}, "action": ["new"]}
+          populateJSONObjFolder(currentLocation["folders"][element], importedFolders[element]["path"]);
+          // check if a folder has to be renamed due to duplicate reason
+          if (element !== importedFolders[element]["original-basename"]) {
+            currentLocation["folders"][element]["action"].push('renamed');
           }
+          var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+element+'</div></div>'
+          $('#items').html(appendString)
+          listItems(currentLocation, '#items')
+          getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
+          hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+          hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
         }
       }
 }
@@ -1833,7 +1782,6 @@ function drop(ev) {
   for (var folder in myPath["folders"]) {
     uiFolders[path.parse(folder).name] = 1
   }
-
   for (var i=0; i<ev.dataTransfer.files.length;i++) {
     /// Get all the file information
     var itemPath = ev.dataTransfer.files[i].path
@@ -1849,69 +1797,56 @@ function drop(ev) {
     }
     /// check for File duplicate
     if (statsObj.isFile()) {
-      var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
-      if (slashCount === 1) {
-        bootbox.alert({
-          message: "<p>SPARC metadata files can be imported in the next step!</p>",
-          centerVertical: true
-        })
-        break
-      } else {
-          if (JSON.stringify(myPath["files"]) === "{}"  && JSON.stringify(importedFiles) === "{}") {
-            importedFiles[path.parse(itemPath).name] = {"path": itemPath, "basename":path.parse(itemPath).base}
-          } else {
-              for (var objectKey in myPath["files"]) {
-                if (objectKey !== undefined) {
-                  var nonAllowedDuplicate = false;
-                  if (itemPath === myPath["files"][objectKey]["path"]) {
-                    nonAllowedDuplicateFiles.push(itemPath);
-                    nonAllowedDuplicate = true;
-                    break
-                  }
+        if (JSON.stringify(myPath["files"]) === "{}"  && JSON.stringify(importedFiles) === "{}") {
+          importedFiles[path.parse(itemPath).name] = {"path": itemPath, "basename":path.parse(itemPath).base}
+        } else {
+            for (var objectKey in myPath["files"]) {
+              if (objectKey !== undefined) {
+                var nonAllowedDuplicate = false;
+                if (itemPath === myPath["files"][objectKey]["path"]) {
+                  nonAllowedDuplicateFiles.push(itemPath);
+                  nonAllowedDuplicate = true;
+                  break
                 }
               }
-              if (!nonAllowedDuplicate) {
-                var j = 1;
-                var fileBaseName = itemName;
-                var originalFileNameWithoutExt = path.parse(itemName).name;
-                var fileNameWithoutExt = originalFileNameWithoutExt;
-                while (fileNameWithoutExt in uiFiles || fileNameWithoutExt in importedFiles) {
-                  fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
-                  j++;
-                }
-                importedFiles[fileNameWithoutExt] = {"path": itemPath, "basename": fileNameWithoutExt + path.parse(itemName).ext};
+            }
+            if (!nonAllowedDuplicate) {
+              var j = 1;
+              var fileBaseName = itemName;
+              var originalFileNameWithoutExt = path.parse(itemName).name;
+              var fileNameWithoutExt = originalFileNameWithoutExt;
+              while (fileNameWithoutExt in uiFiles || fileNameWithoutExt in importedFiles) {
+                fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
+                j++;
               }
+              importedFiles[fileNameWithoutExt] = {"path": itemPath, "basename": fileNameWithoutExt + path.parse(itemName).ext};
             }
           }
     } else if (statsObj.isDirectory()) {
-      /// drop a folder
-      var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
-      if (slashCount === 1) {
-        bootbox.alert({
-          message: "Other non-SPARC folders cannot be added to this dataset level!",
-          centerVertical: true
-        })
-      } else {
-          var j = 1;
-          var originalFolderName = itemName;
-          var renamedFolderName = originalFolderName;
-          while (renamedFolderName in uiFolders || renamedFolderName in importedFolders) {
-            renamedFolderName = `${originalFolderName} (${j})`;
-            j++;
-          }
-          importedFolders[renamedFolderName] = {"path": itemPath, "original-basename": originalFolderName};
+        var j = 1;
+        var originalFolderName = itemName;
+        var renamedFolderName = originalFolderName;
+        while (renamedFolderName in uiFolders || renamedFolderName in importedFolders) {
+          renamedFolderName = `${originalFolderName} (${j})`;
+          j++;
         }
+        importedFolders[renamedFolderName] = {"path": itemPath, "original-basename": originalFolderName};
       }
+    if (nonAllowedDuplicateFiles.length > 0) {
+      var listElements = showItemsAsListBootbox(nonAllowedDuplicateFiles)
+      bootbox.alert({
+        message: 'The following files are already imported into the current location of your dataset: <p><ul>'+listElements+'</ul></p>',
+        centerVertical: true
+      })
     }
-  if (nonAllowedDuplicateFiles.length > 0) {
-    var listElements = showItemsAsListBootbox(nonAllowedDuplicateFiles)
-    bootbox.alert({
-      message: 'The following files are already imported into the current location of your dataset: <p><ul>'+listElements+'</ul></p>',
-      centerVertical: true
-    })
-  }
   // // now append to UI files and folders
   if (Object.keys(importedFiles).length > 0) {
+    document.getElementById('div-file-org-buttons').style.display = "flex";
+    if (document.getElementById('para-drag-drop')) {
+      document.getElementById('para-drag-drop').style.display = "none";
+    }
+    document.getElementById('items').style.border = "1px solid #f5f5f5";
+
     for (var element in importedFiles) {
       myPath["files"][importedFiles[element]["basename"]] = {"path": importedFiles[element]["path"], "type": "local", "description":"", "additional-metadata":"", "action":["new"]}
       // append "renamed" to "action" key if file is auto-renamed by UI
@@ -1928,6 +1863,12 @@ function drop(ev) {
       }
     }
     if (Object.keys(importedFolders).length > 0) {
+      document.getElementById('div-file-org-buttons').style.display = "flex";
+      document.getElementById('items').style.border = "1px solid #f5f5f5";
+      document.getElementById('items').style.display = "block"
+      if (document.getElementById('para-drag-drop')) {
+        document.getElementById('para-drag-drop').style.display = "none";
+      }
       for (var element in importedFolders) {
         myPath["folders"][element] = {"type": "local", "path": importedFolders[element]["path"], "folders": {}, "files": {}, "action": ["new"]}
         // append "renamed" to "action" key if file is auto-renamed by UI
@@ -1944,6 +1885,7 @@ function drop(ev) {
         hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
         }
       }
+    }
 }
 
 // SAVE FILE ORG

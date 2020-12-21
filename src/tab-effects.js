@@ -831,3 +831,38 @@ function saveOrganizeProgressPrompt() {
     })
   }
 }
+
+function dropHandler(ev) {
+  ev.preventDefault();
+  var folderObject = {};
+  var fileObject = {};
+  if (ev.dataTransfer.items) {
+    var items = ev.dataTransfer.files;
+    for (var item of items) {
+      var itemName = item.name;
+      var itemPath = item.path;
+      if (itemName.includes('.')) {
+        fileObject[itemName] = itemPath
+      } else {
+        folderObject[itemName] = itemPath
+      }
+    }
+    document.getElementById('file-organization-getting-started').style.display = "none";
+    document.getElementById('file-organization-regular-UI').style.display = "flex";
+    var myDatasetJSONObj = {"type":"virtual", "folders": {}, "files":{}};
+    for (var folder in folderObject) {
+      myDatasetJSONObj["folders"][folder] = {"path": folderObject[folder], "folders": {}, "files": {}, "type": "local"};
+      var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+folder+'</div></div>'
+      $('#items').html(appendString);
+      listItems(currentLocation, '#items')
+      getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
+    }
+    for (var file in fileObject) {
+      myDatasetJSONObj["files"][file] = {"path": fileObject[file]};
+    }
+    var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+element+'</div></div>'
+    $('#items').html(appendString)
+    listItems(myDatasetJSONObj, '#items')
+    getInFolder('.single-item', '#items', organizeDSglobalPath, myDatasetJSONObj)
+  }
+}
