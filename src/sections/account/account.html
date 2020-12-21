@@ -214,10 +214,10 @@ Guided mode</h3>
                       <tr>
                         <td class="doi-table-row"><input contenteditable="true"></input></td>
                         <td>
-                          <div onclick="addNewRow('doi-table')" class="ui right floated medium primary labeled icon button add-row-button" style="font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue;display:inline">
+                          <div onclick="addNewRow('doi-table')" class="ui right floated medium primary labeled icon button doi-add-row-button" style="font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue;display:inline">
                             <i class="plus icon" style="padding:8px"></i>Add
                           </div>
-                          <div class='ui small basic icon buttons helper-buttons' style='display:none'>
+                          <div class='ui small basic icon buttons doi-helper-buttons' style='display:none'>
                             <button class='ui button'><i class='edit outline icon' style='color:var(--bs-table-active-color)'></i>
                             </button>
                             <button class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button>
@@ -226,15 +226,6 @@ Guided mode</h3>
                       </tr>
                     </tbody>
                     <tfoot class="full-width">
-                      <!-- <tr>
-                        <th style="width:80%"></th>
-                        <th style="width:20%">
-                          <div onclick="addNewRow('doi-table')" class="ui right floated medium primary labeled icon button" style="font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue">
-                            <i class="plus icon" style="padding:8px"></i>Add
-                          </div>
-                        </th>
-                      </tr>
-                    </tfoot> -->
                   </table>
                   <div id="confirm-table-doi" style="display: flex;flex-direction:row;justify-content:center;margin:0 auto">
                     <button class="confirm-btn" data-next="Question-step2-5" onclick="transitionSubQuestions(this, 'Question-step2-5', 'step2-tab', 'delete', 'generate-dataset')">Confirm</button>
@@ -261,21 +252,24 @@ Guided mode</h3>
                       </tr>
                     </thead>
                     <tbody>
-                    </tbody>
-                    <tfoot class="full-width">
                       <tr>
-                        <th style="width:15%"></th>
-                        <th style="width:15%"></th>
-                        <th style="width:20%"></th>
-                        <th style="width:15%"></th>
-                        <th style="width:20%"></th>
-                        <th style="width:15%">
-                          <div onclick="addNewRow('contributor-table')" class="ui right floated medium primary labeled icon button" style="font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue">
+                        <td class="contributor-table-row"><input contenteditable="true"></input></td>
+                        <td class="contributor-table-row"><input contenteditable="true"></input></td>
+                        <td class="contributor-table-row"><input contenteditable="true"></input></td>
+                        <td class="contributor-table-row"><input contenteditable="true"></input></td>
+                        <td class="contributor-table-row"><input contenteditable="true"></input></td>
+                        <th>
+                          <div onclick="addNewRow('contributor-table')" class="ui right floated medium primary labeled icon button contributor-add-row-button" style="font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue;display:block">
                             <i class="plus icon" style="padding:8px"></i>Add
+                          </div>
+                          <div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'>
+                            <button class='ui button'><i class='edit outline icon' style='color:var(--bs-table-active-color)'></i>
+                            </button>
+                            <button class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button>
                           </div>
                         </th>
                       </tr>
-                    </tfoot>
+                    </tbody>
                   </table>
                   <div id="confirm-table-contributor" style="display: flex;flex-direction:row;justify-content:center;margin:0 auto">
                     <button class="confirm-btn" data-next="Question-step2-6" onclick="transitionSubQuestions(this, 'Question-step2-6', 'step2-tab', 'delete', 'generate-dataset')">Confirm</button>
@@ -299,28 +293,21 @@ Guided mode</h3>
                         </tr>
                       </thead>
                       <tbody>
-                        <!-- <tr>
-                          <td>Funder</td>
-                          <td>Number</td>
-                          <td>
-                            <div class="ui small basic icon buttons">
-                              <button class="ui button"><i class="edit outline icon" style="color:var(--bs-table-active-color)"></i></button>
-                              <button class="ui button"><i class="trash alternate outline icon" style="color:red"></i></button>
-                            </div>
-                          </td>
-                        </tr> -->
-                      </tbody>
-                      <tfoot class="full-width">
                         <tr>
-                          <th style="width:45%"></th>
-                          <th style="width:45%"></th>
-                          <th style="width:10%">
-                            <div onclick="addNewRow('grant-table')" class="ui right floated medium primary labeled icon button" style="font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue">
+                          <td class="grant-table-row"><input contenteditable="true"></input></td>
+                          <td class="grant-table-row"><input contenteditable="true"></input></td>
+                          <td>
+                            <div onclick="addNewRow('grant-table')" class="ui right floated medium primary labeled icon button grant-add-row-button" style="font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue;display:inline">
                               <i class="plus icon" style="padding:8px"></i>Add
                             </div>
-                          </th>
+                            <div class='ui small basic icon buttons grant-helper-buttons' style='display:none'>
+                              <button class='ui button'><i class='edit outline icon' style='color:var(--bs-table-active-color)'></i>
+                              </button>
+                              <button class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button>
+                            </div>
+                          </td>
                         </tr>
-                      </tfoot>
+                      </tbody>
                     </table>
                     <div id="confirm-table-grant" style="display: flex;flex-direction:row;justify-content:center;margin:0 auto">
                       <button class="confirm-btn" data-next="Question-step2-7" onclick="transitionSubQuestions(this, 'Question-step2-6', 'step2-tab', 'delete', 'generate-dataset')">Confirm</button>
@@ -619,17 +606,17 @@ Guided mode</h3>
         document.getElementById(pTag).innerHTML = "Connected!";
         setTimeout(changeTabsHelper('step4-tab', 'step3-tab'), 7000);
       }
-      var i = 0;
+      var m = 0;
       function move() {
-        if (i == 0) {
-          i = 1;
+        if (m == 0) {
+          m = 1;
           var elem = document.getElementById("myBar");
           var width = 10;
           var id = setInterval(frame, 10);
           function frame() {
             if (width >= 100) {
               clearInterval(id);
-              i = 0;
+              m = 0;
               document.getElementById("para-progress-bar").innerHTML = "Done! Go checkout your dataset on Zenodo from the link below:​";
             } else {
               width++;
@@ -638,27 +625,8 @@ Guided mode</h3>
             }
           }
         }
-      }
-      function addNewRow(table) {
-        var rowcount = document.getElementById(table).rows.length;
-        if (rowcount===2) {
-          // start at 1 to skip the header
-          var rowIndex = 1;
-        } else {
-          /// append row to table from the bottom
-          var rowIndex = rowcount;
-        }
-        if (table==='doi-table') {
-          $('.doi-table-row input').attr('contenteditable','false');
-          $('.helper-buttons').attr('display', 'inline');
-          $('.add-row-button').attr('display', 'none');
-          var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr><td class='grab'><input type='text' contenteditable='true'></input></td><td><div onclick='addNewRow('doi-table')' class='ui right floated medium primary labeled icon button add-row-button' style='display:inline;font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue'><i class='plus icon' style='padding:8px'></i>Add</div><div class='ui small basic icon buttons helper-buttons' style='display:none'><button class='ui button'><i class='edit outline icon' style='color:var(--bs-table-active-color)'></i></button><button class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
-        } else if (table === 'contributor-table') {
-          var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true'></input></td><td><div class='ui small basic icon buttons'><button class='ui button'><i class='edit outline icon' style='color:var(--bs-table-active-color)'></i></button><button class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
-        } else if (table === 'grant-table') {
-          var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true'></input></td><td><div class='ui small basic icon buttons'><button class='ui button'><i class='edit outline icon' style='color:var(--bs-table-active-color)'></i></button><button class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
-        }
-      }
+      };
+
     </script>
   </section>
   </template>

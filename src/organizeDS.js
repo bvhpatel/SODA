@@ -2183,3 +2183,28 @@ function addDetailsForFile(ev) {
       $("#button-confirm-display-details-file").html('Added')
   }
 }
+
+function addNewRow(table) {
+  var rowcount = document.getElementById(table).rows.length;
+    /// append row to table from the bottom
+  var rowIndex = rowcount;
+  if (table==='doi-table') {
+    $('.doi-table-row input').attr('contenteditable','false');
+    $('.doi-table-row input').attr('readonly','readonly');
+    $('.doi-helper-buttons').css('display', 'inline-flex');
+    $('.doi-add-row-button').css('display', 'none');
+    var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr><td><input type='text' contenteditable='true'></input></td><td><div onclick='addNewRow(\"doi-table\")' class='ui right floated medium primary labeled icon button doi-add-row-button' style='display:block;font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue'><i class='plus icon' style='padding:8px'></i>Add</div><div class='ui small basic icon buttons doi-helper-buttons' style='display:none'><button class='ui button'><i class='edit outline icon' style='color:var(--bs-table-active-color)'></i></button><button class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
+  } else if (table === 'contributor-table') {
+    $('.contributor-table-row input').attr('contenteditable','false');
+    $('.contributor-table-row input').attr('readonly','readonly');
+    $('#contributor-table .contributor-helper-buttons').css('display', 'inline-flex');
+    $('#contributor-table .contributor-add-row-button').css('display', 'none');
+    var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true'></input></td><td><div onclick='addNewRow(\"contributor-table\")' class='ui right floated medium primary labeled icon button contributor-add-row-button' style='display:block;font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue'><i class='plus icon' style='padding:8px'></i>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button'><i class='edit outline icon' style='color:var(--bs-table-active-color)'></i></button><button class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
+  } else if (table === 'grant-table') {
+    $('.grant-table-row input').attr('contenteditable','false');
+    $('.grant-table-row input').attr('readonly','readonly');
+    $('#grant-table .grant-helper-buttons').css('display', 'inline-flex');
+    $('#grant-table .grant-add-row-button').css('display', 'none');
+    var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true'></input></td><td><div onclick='addNewRow(\"grant-table\")' class='ui right floated medium primary labeled icon button grant-add-row-button' style='display:block;font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue'><i class='plus icon' style='padding:8px'></i>Add</div><div class='ui small basic icon buttons grant-helper-buttons' style='display:none'><button class='ui button'><i class='edit outline icon' style='color:var(--bs-table-active-color)'></i></button><button class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
+  }
+}
