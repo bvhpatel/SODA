@@ -871,7 +871,7 @@
 
 .step-title {
   text-align:center;
-  color:green;
+  color:var(--color-red);
   font-size:16px
 }
 

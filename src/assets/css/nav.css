@@ -177,7 +177,7 @@ a[data-toggle="collapse"] {
 #main-nav ul li a.is-selected {
   color: #fff;
   font-weight: 600;
-  background: red;
+  background: var(--color-red);
   border-right-color: #fff;
   opacity: 1
 }
