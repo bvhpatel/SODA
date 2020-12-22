@@ -447,14 +447,6 @@ function allowContinue(ev, string) {
 function hideSidebar() {
   if (!$('#main-nav').hasClass('active')) {
     $('#sidebarCollapse').click()
-  //   $('#main-nav').removeClass('active');
-  //   $('#main-nav').removeClass('is-shown');
-  //   $(".section").toggleClass('fullShown');
-  //   if ($('#sidebarCollapse').hasClass('active')) {
-  //     $('#sidebarCollapse').removeClass('active');
-  //   } else {
-  //     $('#sidebarCollapse').addClass('active');
-  //   }
   }
 }
 

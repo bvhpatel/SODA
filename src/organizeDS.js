@@ -2199,7 +2199,8 @@ function addNewRow(table) {
     $('.contributor-table-row input').attr('readonly','readonly');
     $('#contributor-table .contributor-helper-buttons').css('display', 'inline-flex');
     $('#contributor-table .contributor-add-row-button').css('display', 'none');
-    var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true'></input></td><td><div onclick='addNewRow(\"contributor-table\")' class='ui right floated medium primary labeled icon button contributor-add-row-button' style='display:block;font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue'><i class='plus icon' style='padding:8px'></i>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button'><i class='edit outline icon' style='color:var(--bs-table-active-color)'></i></button><button class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
+    var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='role-"+rowIndex+"'></input></td><td><div onclick='addNewRow(\"contributor-table\")' class='ui right floated medium primary labeled icon button contributor-add-row-button' style='display:block;font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue'><i class='plus icon' style='padding:8px'></i>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button'><i class='edit outline icon' style='color:var(--bs-table-active-color)'></i></button><button class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
+    createTagify('role-'+rowIndex.toString());
   } else if (table === 'grant-table') {
     $('.grant-table-row input').attr('contenteditable','false');
     $('.grant-table-row input').attr('readonly','readonly');
@@ -2207,4 +2208,28 @@ function addNewRow(table) {
     $('#grant-table .grant-add-row-button').css('display', 'none');
     var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true'></input></td><td><div onclick='addNewRow(\"grant-table\")' class='ui right floated medium primary labeled icon button grant-add-row-button' style='display:block;font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue'><i class='plus icon' style='padding:8px'></i>Add</div><div class='ui small basic icon buttons grant-helper-buttons' style='display:none'><button class='ui button'><i class='edit outline icon' style='color:var(--bs-table-active-color)'></i></button><button class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
   }
+}
+
+var inputElm = document.querySelector('input[name=role]')
+// initialize Tagify on the above input node reference
+var tagify = new Tagify(inputElm, {
+  whitelist: ["PrincipleInvestigator", "Creator", "CoInvestigator", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RelatedPerson", "Researcher", "ResearchGroup", "Sponsor", "Supervisor", "WorkPackageLeader", "Other"],
+  enforceWhitelist: true,
+  dropdown : {
+     enabled   : 0,
+     closeOnSelect : true
+   }
+})
+
+function createTagify(inputField) {
+  var input = document.getElementById(inputField);
+  // initialize Tagify on the above input node reference
+  var tagify = new Tagify(input, {
+    whitelist: ["PrincipleInvestigator", "Creator", "CoInvestigator", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RelatedPerson", "Researcher", "ResearchGroup", "Sponsor", "Supervisor", "WorkPackageLeader", "Other"],
+    enforceWhitelist: true,
+    dropdown : {
+       enabled   : 0,
+       closeOnSelect : true
+     }
+  })
 }
