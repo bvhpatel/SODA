@@ -246,8 +246,8 @@
                         <th style="width:10%">First name</th>
                         <th style="width:10%">Last name</th>
                         <th style="width:20%">Affiliation</th>
-                        <th style="width:15%">ORCID</th>
-                        <th style="width:30%">Role</th>
+                        <th style="width:15%">ORCID <img class="info-new" src="assets/img/info.png"></th>
+                        <th style="width:30%">Role <img class="info-new" src="assets/img/info.png"></th>
                         <th style="width:15%"></th>
                       </tr>
                     </thead>
@@ -282,7 +282,7 @@
               <div class="individual-question step2" id="Question-step2-6">
                 <div class="ui form" style="width:100%">
                   <div class="grouped fields" style="width:90%; margin:0 auto">
-                    <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Enter below the details for everyone who participated in the collection and analysis of the dataset​
+                    <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Enter below information about the funding source, if applicavle.
                     </label>
                     <table class="ui celled table" style="text-align:center" id="grant-table">
                       <thead class="full-width">
@@ -396,7 +396,7 @@ Guided mode</h3>
           <div class="individual-question step3" id="Question-step3-1"  style="display:flex">
             <div class="ui form" style="width:100%">
               <div class="grouped fields" style="width:90%; margin:0 auto">
-                <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px"> For other data type, we suggest to use the data repositery Zenodo. <img class="info-new" src="assets/img/info.png"> <br><br> It looks like you have not connected your Zenodo account with SODA for COVID-19 yet.​
+                <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px"> Based on your previous inputs, we suggest to use the data repositery Zenodo to share your dataset. <img class="info-new" src="assets/img/info.png"> <br><br> It looks like you have not connected your Zenodo account with SODA for COVID-19 yet.​
                 <br><br>Do you have a  <span style="font-weight:600;color:dodgerblue">Zenodo account?</span>​</label>
                 <div style="display:flex;flex-direction:row;margin:0 auto">
                   <div class="radio-button" data-next="Question-step3-2" onclick="transitionSubQuestions(this, 'Question-step3-1', 'step3-tab', '', 'generate-dataset')">
@@ -638,7 +638,7 @@ Guided mode</h3>
             if (width >= 100) {
               clearInterval(id);
               m = 0;
-              document.getElementById("para-progress-bar").innerHTML = "Done! Go checkout your dataset on Zenodo from the link below:​";
+              document.getElementById("para-progress-bar").innerHTML = "Done! Go to your dataset using the link below for reviewing and publishing it:​ <br> <br> <a> https://zenodo.org/deposit/4341955 </a>";
             } else {
               width++;
               elem.style.width = width + "%";
