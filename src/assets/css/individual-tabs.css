@@ -871,7 +871,7 @@
 
 .step-title {
   text-align:center;
-  color:var(--color-red);
+  color:var(--color-dark-yellow);
   font-size:16px
 }
 
@@ -977,6 +977,6 @@
   margin:50px auto;
   font-weight:600;
   color:green;
-  padding-left:20px;
+  padding-left:25%;
   line-height:1.5
 }

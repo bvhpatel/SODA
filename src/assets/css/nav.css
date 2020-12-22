@@ -160,6 +160,10 @@ a[data-toggle="collapse"] {
     font-size: 21px
 }
 
+#main-nav ul li a.is-selected i {
+  color: var(--color-sidebar);
+}
+
 /* #main-nav ul li a:hover {
     color: #fff;
     text-decoration: none;
@@ -175,9 +179,9 @@ a[data-toggle="collapse"] {
 }
 
 #main-nav ul li a.is-selected {
-  color: #fff;
+  color: var(--color-sidebar);
   font-weight: 600;
-  background: var(--color-red);
+  background: var(--color-yellow);
   border-right-color: #fff;
   opacity: 1
 }
