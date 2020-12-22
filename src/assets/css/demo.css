@@ -638,6 +638,13 @@ height: 80%;
   float: right;
 }
 
+.info-new {
+  width:18px;
+  height:18px;
+  position: absolute;
+  margin-left: 10px;
+}
+
 .tooltipnew .tooltiptext {
   visibility: hidden;
   width: 400px;

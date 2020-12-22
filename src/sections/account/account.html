@@ -8,11 +8,12 @@
         <div class="parent-tabs tab-active" id="generate-dataset-tab" style="overflow-y:auto;">
           <h3 class="question-title" style="color: #101010;font-weight:600;font-size:18px;text-align:left;margin-bottom:70px"><i class="far fa-compass" style="color: var(--color-sidebar);font-size:20px;margin-right:10px"></i>
 Guided mode</h3>
+            <h5 style="text-align:center;color:red;font-size:16px; margin-bottom:40px"> Preliminary questions​ </h5>
           <!-- Question 1-->
             <div class="individual-question getting-started" id="Question-getting-started-1" style="display:flex">
               <div class="ui form" style="width:100%">
                 <div class="grouped fields">
-                  <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Let's get started! What <span style="font-weight:600;color:dodgerblue">type of data</span> would you like to curate?​
+                  <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Let's get started! <br> <br> What <span style="font-weight:600;color:dodgerblue">type of data</span> would you like to curate?​
                   <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
                   <div style="display:flex;flex-direction:row;">
                     <select class="ui selection dropdown" style="padding:5px 5px" data-next="Question-getting-started-2" onchange="transitionSubQuestions(this, 'Question-getting-started-1', 'generate-dataset-tab', '', 'generate-dataset')">
@@ -33,12 +34,12 @@ Guided mode</h3>
             <div class="individual-question getting-started" id="Question-getting-started-2">
               <div class="ui form" style="width:100%">
                 <div class="grouped fields" style="width:80%; margin:0 auto">
-                  <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">For other data types, we currently provide support for preparing a metadata​ file with fields suggested by the NIAID.<br> Would you like to continue?
-                  <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
+                  <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">For other data types, we currently provide support for preparing a metadata​ file with fields suggested by the NIAID. Would you like to continue? <img class="info-new" src="assets/img/info.png"> 
+                  <br></label>
                   <div style="display:flex;flex-direction:row;margin:0 auto">
                     <div class="radio-button" data-next="Question-getting-started-3" onclick="transitionSubQuestions(this, 'Question-getting-started-2', 'generate-dataset-tab', '', 'generate-dataset')">
                       <i class="check icon" style="color:green"></i>
-                      <p style="color:green">Yes, continue</p>
+                      <p style="color:green">Yes</p>
                     </div>
                     <div class="radio-button">
                       <i class="times icon" style="color:red"></i>
@@ -52,7 +53,7 @@ Guided mode</h3>
               <div class="individual-question getting-started" id="Question-getting-started-3">
                 <div class="ui form" style="width:100%">
                   <div class="grouped fields" style="width:90%; margin:0 auto">
-                    <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">The database listed below are suggested for <span style="font-weight:600;color:dodgerblue">sharing other data types</span>. ​
+                    <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">The database listed below are suggested for <span style="font-weight:600;color:dodgerblue">sharing other data types</span> <img class="info-new" src="assets/img/info.png">
                     <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
                     <div style="display:flex;flex-direction:row;margin:0 auto;flex-wrap:wrap;justify-content:center">
                       <div class="radio-button" style="height:90px">
@@ -320,7 +321,7 @@ Guided mode</h3>
             <div class="individual-question step2" id="Question-step2-7">
               <div class="ui form" style="width:100%">
                 <div class="grouped fields" style="width:90%; margin:0 auto">
-                  <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Does the research related to this dataset involve <span style="font-weight:600;color:dodgerblue">human subjects</span>?​
+                  <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Does the research related to this dataset involve <span style="font-weight:600;color:dodgerblue">human subjects</span>?​ <img class="info-new" src="assets/img/info.png">
                   </label>
                   <div style="display:flex;flex-direction:row;margin:0 auto">
                     <div class="radio-button" data-next="Question-step2-8" onclick="transitionSubQuestions(this, 'Question-step2-7', 'step2-tab', '', 'generate-dataset')">
@@ -340,7 +341,7 @@ Guided mode</h3>
               <div class="individual-question step2" id="Question-step2-8">
                 <div class="ui form" style="width:100%">
                   <div class="grouped fields" style="width:90%; margin:0 auto">
-                    <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Was the <span style="font-weight:600;color:dodgerblue">SARS-COVID-19 virus</span> involved in your research?​
+                    <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Was the <span style="font-weight:600;color:dodgerblue">SARS-COVID-19 virus</span> involved in your research?​ <img class="info-new" src="assets/img/info.png">
                     </label>
                     <div style="display:flex;flex-direction:row;margin:0 auto">
                       <div class="radio-button" data-next="Question-step2-9" onclick="transitionSubQuestions(this, 'Question-step2-8', 'step2-tab', '', 'generate-dataset')">
@@ -360,7 +361,7 @@ Guided mode</h3>
                 <div class="individual-question step2" id="Question-step2-9">
                   <div class="ui form" style="width:100%">
                     <div class="grouped fields" style="width:80%; margin:0 auto">
-                      <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Enter keywords that <span style="font-weight:600;color:dodgerblue">describes the variable measured</span> in your dataset​:</label>
+                      <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Enter keywords that <span style="font-weight:600;color:dodgerblue">describes the variable measured</span> in your dataset​: <img class="info-new" src="assets/img/info.png"> </label> 
                         <div class="ui input" style="margin:0 auto">
                           <textarea style="width:400px" oninput="showConfirmBtn('confirm-keywords')" id="textarea-keywords-variables" type="text" placeholder="Enter here..."></textarea>
                         </div>
@@ -375,7 +376,7 @@ Guided mode</h3>
                   <div class="individual-question step2" id="Question-step2-10">
                     <div class="ui form" style="width:100%">
                       <div class="grouped fields" style="width:80%; margin:0 auto">
-                        <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Enter keywords that <span style="font-weight:600;color:dodgerblue">describes the techniques</span> used to collect your data:</label>
+                        <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Enter keywords that <span style="font-weight:600;color:dodgerblue">describes the techniques</span> used to collect your data: <img class="info-new" src="assets/img/info.png"> </label> 
                           <div class="ui input" style="margin:0 auto">
                             <textarea style="width:400px" oninput="showConfirmBtn('confirm-techniques')" id="textarea-keywords-techniques" type="text" placeholder="Enter here..."></textarea>
                           </div>
@@ -395,7 +396,7 @@ Guided mode</h3>
           <div class="individual-question step3" id="Question-step3-1"  style="display:flex">
             <div class="ui form" style="width:100%">
               <div class="grouped fields" style="width:90%; margin:0 auto">
-                <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">It looks like you have not connected your Zenodo account with SODA for COVID-19 yet.​
+                <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px"> For other data type, we suggest to use the data repositery Zenodo. <img class="info-new" src="assets/img/info.png"> <br><br> It looks like you have not connected your Zenodo account with SODA for COVID-19 yet.​
                 <br><br>Do you have a  <span style="font-weight:600;color:dodgerblue">Zenodo account?</span>​</label>
                 <div style="display:flex;flex-direction:row;margin:0 auto">
                   <div class="radio-button" data-next="Question-step3-2" onclick="transitionSubQuestions(this, 'Question-step3-1', 'step3-tab', '', 'generate-dataset')">
@@ -414,8 +415,8 @@ Guided mode</h3>
             <div class="individual-question step3" id="Question-step3-2">
               <div class="ui form" style="width:100%">
                 <div class="grouped fields" style="width:90%; margin:0 auto">
-                  <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Great! Follow the instructions available <a style="text-decoration:underline;color:#4183c4 !important">here</a> to generate a Zenodo API token and enter it below.​
-                  ​</label>
+                  <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Great! Follow the instructions available <a style="text-decoration:underline;color:#4183c4 !important">here</a> to generate a Zenodo API token and enter it below.​ <img class="info-new" src="assets/img/info.png">
+                  ​</label> 
                   <div class="ui input">
                     <input type="text" placeholder="Enter here..." oninput="showConfirmBtn('confirm-zenodo-connect')" id="input-zenodo-key">
                   </div>
@@ -491,7 +492,7 @@ Guided mode</h3>
             <div class="individual-question step4" id="Question-step4-2">
               <div class="ui form" style="width:100%">
                 <div class="grouped fields" style="width:90%; margin:0 auto">
-                  <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px"><span style="font-weight:600;color:dodgerblue">What access</span> would you like to provide to others?​​
+                  <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px"><span style="font-weight:600;color:dodgerblue">What access</span> would you like to provide to others?​​ <img class="info-new" src="assets/img/info.png">
                   ​</label>
                   <div style="display:flex;flex-direction:row;margin:0 auto;flex-wrap:wrap;justify-content:center">
                     <div class="radio-button" style="height:90px" data-next="Question-step4-3" onclick="transitionSubQuestions(this, 'Question-step4-2', 'step4-tab', '', 'generate-dataset')">
@@ -518,7 +519,7 @@ Guided mode</h3>
             <div class="individual-question step4" id="Question-step4-3">
               <div class="ui form" style="width:100%">
                 <div class="grouped fields" style="width:90%; margin:0 auto">
-                  <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px"><span style="font-weight:600;color:dodgerblue">Which license</span> would you like to assign to your dataset?​
+                  <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px"><span style="font-weight:600;color:dodgerblue">Which license</span> would you like to assign to your dataset?​ <img class="info-new" src="assets/img/info.png">
                   ​</label>
                   <div style="display:flex;flex-direction:row;">
                     <select class="ui selection dropdown" style="padding:5px 5px" data-next="Question-step4-4" onchange="transitionSubQuestions(this, 'Question-step4-3', 'step4-tab', '', 'generate-dataset')">
@@ -536,7 +537,7 @@ Guided mode</h3>
             <div class="individual-question step4" id="Question-step4-4">
               <div class="ui form" style="width:100%">
                 <div class="grouped fields" style="width:90%; margin:0 auto">
-                  <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Would you like your dataset to appear in the <span style="font-weight:600;color:dodgerblue">Coronavirus Disease Research Community of Zenodo?</span>​
+                  <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Would you like your dataset to appear in the <span style="font-weight:600;color:dodgerblue">Coronavirus Disease Research Community of Zenodo?</span>​ <img class="info-new" src="assets/img/info.png">
                   ​</label>
                   <div style="display:flex;flex-direction:row;margin:0 auto">
                     <div class="radio-button" data-next="Question-step4-5" onclick="transitionSubQuestions(this, 'Question-step4-4', 'step4-tab', '', 'generate-dataset')">
