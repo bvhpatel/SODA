@@ -396,7 +396,7 @@ $("#nextBtn").click(function() {
     }
   })
   // Disable Continue btn for some tabs
-  if (["generate-dataset-tab", "step3-tab", "step2-tab"].includes(tabToShow)) {
+  if (["generate-dataset-tab", "step3-tab", "step2-tab", "step4-added-tab"].includes(tabToShow)) {
     $("#nextBtn").css("display", "inline")
     document.getElementById("nextBtn").disabled = true;
   } else {
@@ -906,6 +906,7 @@ function appendValidateMessage(paraElement) {
       document.getElementById(paraElement).innerHTML += checkMark + message + "<br>";
     }, (index * interval)/2);
   })
+  $('#nextBtn').prop('disabled', false);
 }
 
 $("#validate-btn").click(function(){

@@ -51,7 +51,8 @@
     background: #2d142c;
     color: #fff;
     font-family: "Source Sans Pro", sans-serif;
-    transition: all 0.1s cubic-bezier(0.945, 0.020, 0.270, 0.665);
+    transition: margin-left 0.9s ease-in-out
+    /* transition: all 0.1s cubic-bezier(0.945, 0.020, 0.270, 0.665); */
     transform-origin: center left; /* Set the transformed position of sidebar to center left side. */
 }
 
