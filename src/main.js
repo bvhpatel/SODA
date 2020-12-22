@@ -86,7 +86,7 @@ function initialize () {
       height: 720,
       center: true,
       //title: app.getName(),
-      icon: __dirname + '/assets/menu-icon/soda_icon.png',
+      icon: __dirname + '/assets/menu-icon/soda_covid_icon.png',
       webPreferences: {
         nodeIntegration: true
       }
