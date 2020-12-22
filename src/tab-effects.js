@@ -396,24 +396,29 @@ $("#nextBtn").click(function() {
     }
   })
   // Disable Continue btn for some tabs
-  if (["generate-dataset-tab", "step3-tab", "step4-tab", "step2-tab"].includes(tabToShow)) {
+  if (["generate-dataset-tab", "step3-tab", "step2-tab"].includes(tabToShow)) {
     $("#nextBtn").css("display", "inline")
     document.getElementById("nextBtn").disabled = true;
   } else {
-    $("#nextBtn").css("display", "inline")
-    document.getElementById("nextBtn").disabled = false;
-  }
-  if (tabToShow === "step5-tab") {
-    $("#nextBtn").css("display", "none")
+    if (tabToShow === "step4-tab") {
+      $("#nextBtn").css("display", "none")
+    } else {
+      $("#nextBtn").css("display", "inline")
+      document.getElementById("nextBtn").disabled = false;
+    }
   }
 })
 
 function allowContinue(ev, string) {
   if (string === "connect") {
     $($(ev).parents()[0]).css("display", "none");
-    document.getElementById("para-connected").innerHTML = "Connected successfully!";
-    document.getElementById("input-zenodo-key").value = "";
-    document.getElementById("input-zenodo-key").placeholder = "Enter here...";
+    document.getElementById("div-loading-connect").style.display = "block";
+    setTimeout(function() {
+      document.getElementById("div-loading-connect").style.display = "none";
+      document.getElementById("para-connected").innerHTML = "Connected successfully!";
+      document.getElementById("input-zenodo-key").value = "";
+      document.getElementById("input-zenodo-key").placeholder = "Enter here...";
+    }, 1200)
   } else if (string === "delete") {
       $($(ev).parents()[0]).css("display", "none");
   }
@@ -891,3 +896,23 @@ function dropHandler(ev) {
     getInFolder('.single-item', '#items', organizeDSglobalPath, myDatasetJSONObj)
   }
 }
+
+var validateMessageArray = ["Folder structure is valid (no folder structure is imposed for other data type)​", "File names are valid (no file naming convention is imposed for other data type)​", "File formats are valid (no file format is imposed for other data type)​", "All required information to generate metadata is provided​", "All metadata information is in a valid format​"]
+function appendValidateMessage(paraElement) {
+  var checkMark = "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='green' class='bi bi-check2' viewBox='0 0 16 16'><path fill-rule='evenodd' d='M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z'/></svg>"
+  var interval = 1000;
+  validateMessageArray.forEach(function (message, index) {
+    setTimeout(function () {
+      document.getElementById(paraElement).innerHTML += checkMark + message + "<br>";
+    }, (index * interval)/2);
+  })
+}
+
+$("#validate-btn").click(function(){
+  $("#div-loading-validate").css('display', 'block');
+  $(this).prop('disabled', true);
+  setTimeout(function() {
+    $("#div-loading-validate").css('display', 'none');
+    appendValidateMessage('para-validate');
+  }, 800)
+})

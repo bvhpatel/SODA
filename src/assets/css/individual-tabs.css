@@ -967,3 +967,16 @@
   font-size: 16px;
   margin-left:5px
 }
+
+#para-validate svg {
+  margin-right:10px;
+  vertical-align: middle
+}
+
+#para-validate {
+  margin:50px auto;
+  font-weight:600;
+  color:green;
+  padding-left:20px;
+  line-height:1.5
+}

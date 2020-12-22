@@ -591,9 +591,11 @@ Guided mode</h3>
       <h3 class="question-title" style="color: #101010;font-weight:600;font-size:18px;text-align:left;width:150px"><i class="far fa-compass" style="color: var(--color-sidebar);font-size:20px;margin-right:10px"></i>
         Guided mode</h3>
       <div>
-        <h5 style="text-align:center;color:red;font-size:16px"> Step 4: Validation​​ </h5>
+        <h5 class="step-title"> Step 4: Validation​​ </h5>
         <p style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Click on Validate to check that your dataset satisfies all the data and metadata​ requirements for your selected data type​</p>
-        <button class="confirm-btn" style="background:#fff; color:green;border:1px solid green;margin:0 auto;height:40px;width:100px;font-size:14px;">Validate</button>
+        <button id="validate-btn" class="confirm-btn" style="background:#fff; color:green;border:1px solid green;margin:0 auto;height:40px;width:100px;font-size:14px;">Validate</button>
+        <div class="ui active green inline loader" style="display:none;margin:10px auto" id="div-loading-validate"></div>
+        <p id="para-validate"></p>
       </div>
     </div>
 
