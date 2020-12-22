@@ -71,7 +71,7 @@ Guided mode</h3>
                         <img src="assets/img/zenodo.png" style="width:75px">
                         <p>Zenodo</p>
                       </div>
-                      <div class="radio-button" style="height:90px" onclick="transitionParentTabs(this, 'generate-dataset-tab')" data-next="file-organization">
+                      <div class="radio-button" style="height:90px" onclick="allowContinue(this, '')">
                         <i class="glasses icon" style="color:gray;font-size:27px !important"></i>
                         <p>Select one ​for me!​</p>
                       </div>
@@ -144,11 +144,10 @@ Guided mode</h3>
     </div>
 
     <!-- step 2 -->
-
     <div class="parent-tabs" id="step2-tab" style="overflow-y:auto;">
       <h3 class="question-title" style="color: #101010;font-weight:600;font-size:18px;text-align:left;"><i class="far fa-compass" style="color: var(--color-sidebar);font-size:20px;margin-right:10px"></i>
         Guided mode</h3>
-      <h5 style="text-align:center;color:red;font-size:16px;margin-bottom:50px;margin-top:0"> Step 2: Enter information to help us prepare your metadata file ​ </h5>
+      <h5 style="text-align:center;color:red;font-size:16px;margin-bottom:50px;margin-top:0"> Step 3: Enter information to help us prepare your metadata file ​ </h5>
       <!-- Question 1-->
         <div class="individual-question step2" id="Question-step2-1" style="display:flex">
           <div class="ui form" style="width:100%">
@@ -381,7 +380,7 @@ Guided mode</h3>
                             <textarea style="width:400px" oninput="showConfirmBtn('confirm-techniques')" id="textarea-keywords-techniques" type="text" placeholder="Enter here..."></textarea>
                           </div>
                           <div id="confirm-techniques" style="display: none;flex-direction:row;justify-content:center;margin:0 auto">
-                            <button class="confirm-btn" onclick="transitionParentTabs(this, 'step2-tab')" data-next="step3-tab">Confirm</button>
+                            <button class="confirm-btn" onclick="allowContinue(this, 'delete')">Confirm</button>
                           </div>
                         </div>
                       </div>
@@ -418,12 +417,12 @@ Guided mode</h3>
                   <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Great! Follow the instructions available <a style="text-decoration:underline;color:#4183c4 !important">here</a> to generate a Zenodo API token and enter it below.​
                   ​</label>
                   <div class="ui input">
-                    <input type="text" placeholder="Enter here..." oninput="showConfirmBtn('confirm-zenodo-connect')">
+                    <input type="text" placeholder="Enter here..." oninput="showConfirmBtn('confirm-zenodo-connect')" id="input-zenodo-key">
                   </div>
                   <div id="confirm-zenodo-connect" style="display: none;flex-direction:row;justify-content:center;margin:0 auto">
-                    <button class="confirm-btn" onclick="connectAccount('para-connected')">Connect</button>
+                    <button class="confirm-btn" onclick="allowContinue(this, 'connect')">Connect</button>
                   </div>
-                  <p id="para-connected"></p>
+                  <p id="para-connected" style="margin:10px auto;font-weight:600;color:green"></p>
                   </div>
                 </div>
               </div>
@@ -433,7 +432,7 @@ Guided mode</h3>
         <div class="parent-tabs" id="step4-tab" style="overflow-y:auto;">
           <h3 class="question-title" style="color: #101010;font-weight:600;font-size:18px;text-align:left;"><i class="far fa-compass" style="color: var(--color-sidebar);font-size:20px;margin-right:10px"></i>
 Guided mode</h3>
-          <h5 style="text-align:center;color:red;font-size:16px;margin-bottom:50px;margin-top:0"> Step 4: Upload your dataset​​ </h5>
+          <h5 style="text-align:center;color:red;font-size:16px;margin-bottom:50px;margin-top:0"> Step 5: Upload your dataset​​ </h5>
           <p style="color:#585858;text-align:center;width:80%;margin:0 auto;margin-bottom:20px">Zenodo requires certain information before you can upload. We will complete most of them based on the information already provided in the previous steps, but some still require your inputs.​</p>
 
           <!-- Question 1 -->
@@ -575,14 +574,34 @@ Guided mode</h3>
       <p id="para-progress-bar" style="font-weight:600;color:#000;text-align:center;margin-top:25px"></p>
     </div>
 
+    <!-- Added later as step 2*: File format conversion  -->
+    <div class="parent-tabs" id="step2-added-tab" style="overflow-y:auto;">
+      <h3 class="question-title" style="color: #101010;font-weight:600;font-size:18px;text-align:left;width:150px"><i class="far fa-compass" style="color: var(--color-sidebar);font-size:20px;margin-right:10px"></i>
+        Guided mode</h3>
+      <div>
+        <h5 style="text-align:center;color:red;font-size:16px"> Step 2: File format conversion​ </h5>
+        <p style="font-size:14px;color:var(--color-text-color);text-align:center;margin-bottom:15px;margin-top:30px">For other data types, there are no file format requirements.​ You can continue to the next step.​</p>
+      </div>
     </div>
-      <div style="border-top:1px solid #f0f0f0;padding:10px;padding-top:15px;height:50px;display:flex;flex-direction:row;justify-content:space-between">
-        <div style="display:flex;flex-direction:row;width:110px">
-          <button type="button" onclick="nextPrev(-1)" id="prevBtn" class="transition-btn prev"><i class="fas fa-arrow-left" style="margin-right:10px"></i>Back</button>
-        </div>
-        <div style="display:flex;flex-direction:row;width:100px">
-          <button style="float:right" onclick="transitionParentTabs(this, 'file-organization')" data-next="step2-tab" id="nextBtn" type="button" class="transition-btn" disabled>Continue</button>
-        </div>
+
+    <!-- Added later as step 4*: File format conversion  -->
+    <div class="parent-tabs" id="step4-added-tab" style="overflow-y:auto;">
+      <h3 class="question-title" style="color: #101010;font-weight:600;font-size:18px;text-align:left;width:150px"><i class="far fa-compass" style="color: var(--color-sidebar);font-size:20px;margin-right:10px"></i>
+        Guided mode</h3>
+      <div>
+        <h5 style="text-align:center;color:red;font-size:16px"> Step 4: Validation​​ </h5>
+        <p style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Click on Validate to check that your dataset satisfies all the data and metadata​ requirements for your selected data type​</p>
+        <button class="confirm-btn" style="background:#fff; color:green;border:1px solid green;margin:0 auto;height:40px;width:100px;font-size:14px;">Validate</button>
+      </div>
+    </div>
+
+    </div>
+    <div style="border-top:1px solid #f0f0f0;padding:10px;padding-top:15px;height:50px;display:flex;flex-direction:row;justify-content:space-between">
+      <div style="display:flex;flex-direction:row;width:110px">
+        <button type="button" onclick="nextPrev(-1)" id="prevBtn" class="transition-btn prev"><i class="fas fa-arrow-left" style="margin-right:10px"></i>Back</button>
+      </div>
+      <div style="display:flex;flex-direction:row;width:100px">
+        <button style="float:right" id="nextBtn" type="button" class="transition-btn" disabled>Continue</button>
       </div>
     </div>
   </main>

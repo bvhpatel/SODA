@@ -2,22 +2,30 @@ body {
     margin: 0;
     font-family: sans-serif;
 }
-
+/*
 .btn.btn-lg.btn-primary.main {
-  background: green !important;
+  background: #green !important;
   color: #fff;
   font-weight: 600;
   width: fit-content;
   margin: 0 auto
-}
+} */
 
 .btn.btn-lg.btn-primary.side {
   background: #fff !important;
   color: green;
   border: 1px solid green;
   width: fit-content;
-  margin: 0 auto
+  margin: 0 auto;
   /* font-weight: 600 */
+}
+
+.btn.btn-lg.btn-primary:hover {
+  background: green !important;
+  color: #fff;
+  font-weight: 600;
+  width: fit-content;
+  margin: 0 auto;
 }
 
 .help-section {

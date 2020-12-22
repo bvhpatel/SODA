@@ -389,7 +389,7 @@ div.main-window {
   padding-top: 0 !important;
   padding-bottom: 10px !important;
   z-index:5000;
-  padding-right: 15px !important;
+  padding-right: 0px !important;
   padding-left: 0 !important;
   height: 100%;
 }

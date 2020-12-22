@@ -401,6 +401,63 @@ function transitionSubQuestions(ev, currentDiv, parentDiv, button, category){
   }
 }
 
+$("#nextBtn").click(function() {
+  var tabsInOrder = ["generate-dataset-tab", "file-organization", "step2-added-tab", "step2-tab", "step3-tab", "step4-added-tab", "step4-tab", "step5-tab"]
+  var oldTab = "";
+  var tabToShow = "";
+  var parentTabs = $('.parent-tabs');
+  for (parentTab of parentTabs) {
+    if ($(parentTab).hasClass('tab-active')) {
+      oldTab = parentTab.id
+      $(parentTab).removeClass('tab-active')
+    }
+  }
+  tabsInOrder.forEach(element => {
+    if (element === oldTab) {
+      var itemIndex = tabsInOrder.indexOf(element);
+      $('#'+tabsInOrder[itemIndex+1]).addClass('tab-active');
+      tabToShow = tabsInOrder[itemIndex+1];
+    }
+  })
+  // Disable Continue btn for some tabs
+  if (["generate-dataset-tab", "step3-tab", "step4-tab", "step2-tab"].includes(tabToShow)) {
+    $("#nextBtn").css("display", "inline")
+    document.getElementById("nextBtn").disabled = true;
+  } else {
+    $("#nextBtn").css("display", "inline")
+    document.getElementById("nextBtn").disabled = false;
+  }
+  if (tabToShow === "step5-tab") {
+    $("#nextBtn").css("display", "none")
+  }
+})
+
+function allowContinue(ev, string) {
+  if (string === "connect") {
+    $($(ev).parents()[0]).css("display", "none");
+    document.getElementById("para-connected").innerHTML = "Connected successfully!";
+    document.getElementById("input-zenodo-key").value = "";
+    document.getElementById("input-zenodo-key").placeholder = "Enter here...";
+  } else if (string === "delete") {
+      $($(ev).parents()[0]).css("display", "none");
+  }
+  document.getElementById("nextBtn").disabled = false;
+}
+
+function hideSidebar() {
+  if (!$('#main-nav').hasClass('active')) {
+    $('#sidebarCollapse').click()
+  //   $('#main-nav').removeClass('active');
+  //   $('#main-nav').removeClass('is-shown');
+  //   $(".section").toggleClass('fullShown');
+  //   if ($('#sidebarCollapse').hasClass('active')) {
+  //     $('#sidebarCollapse').removeClass('active');
+  //   } else {
+  //     $('#sidebarCollapse').addClass('active');
+  //   }
+  }
+}
+
 function transitionParentTabs(ev, parentTab) {
   // first, handle target or the next div to show
   var target = document.getElementById(ev.getAttribute('data-next'));
