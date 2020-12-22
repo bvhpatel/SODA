@@ -359,28 +359,13 @@ function transitionSubQuestions(ev, currentDiv, parentDiv, button, category){
 
   // first, handle target or the next div to show
   var target = document.getElementById(ev.getAttribute('data-next'));
-  hidePrevDivs(currentDiv, category);
   // display the target tab (data-next tab)
   if (!(target.classList.contains('show'))) {
     target.classList.add('show');
   }
-  // here, handling existing folders and files tabs are independent of each other
-  if (!(ev.getAttribute('data-next') === "Question-generate-dataset-existing-files-options"
-      && target.classList.contains('prev'))) {
-      // append to parentDiv
-      document.getElementById(parentDiv).appendChild(target);
-  }
-  // if buttons: Add account and Confirm account were hidden, show them again here
-  if (ev.getAttribute('data-next') === "Question-generate-dataset-BF-account") {
-    $("#"+ev.getAttribute('data-next')+" button").show();
-  }
-  if (!(ev.getAttribute('data-next') === "Question-generate-dataset-generate-div")) {
-    // create moving effects when new questions appear
-    setTimeout(()=> target.classList.add("test2"), 100);
-  }
-
+  // create moving effects when new questions appear
+  setTimeout(()=> target.classList.add("test2"), 100);
   document.getElementById(currentDiv).classList.add("prev");
-
   // handle buttons (if buttons are confirm buttons -> delete after users confirm)
   if (button==='delete') {
     if ($(ev).siblings().length>0) {
@@ -390,19 +375,10 @@ function transitionSubQuestions(ev, currentDiv, parentDiv, button, category){
   }
   // auto-scroll to bottom of div
   document.getElementById(parentDiv).scrollTop = document.getElementById(parentDiv).scrollHeight;
-  // when we hit the last question under Step 6, hide and disable Next button
-  if (ev.getAttribute('data-next') === "Question-getting-started-final") {
-    if ($(ev).children().find('.folder-input-check').prop('checked')) {
-      document.getElementById('nextBtn').disabled = false;
-      $("#nextBtn").click();
-    } else {
-      document.getElementById('nextBtn').disabled = true
-    }
-  }
 }
 
 $("#nextBtn").click(function() {
-  var tabsInOrder = ["generate-dataset-tab", "file-organization", "step2-added-tab", "step2-tab", "step3-tab", "step4-added-tab", "step4-tab", "step5-tab"]
+  var tabsInOrder = ["generate-dataset-tab", "file-organization", "step2-added-tab", "step2-tab", "step4-added-tab", "step3-tab", "step4-tab", "step5-tab"]
   var oldTab = "";
   var tabToShow = "";
   var parentTabs = $('.parent-tabs');

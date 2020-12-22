@@ -6,9 +6,9 @@
     <div style="display:flex;flex-direction: column;justify-content:space-between;height:100%">
       <div class="container-fluid" style="height:100%">
         <div class="parent-tabs tab-active" id="generate-dataset-tab" style="overflow-y:auto;">
-          <h3 class="question-title" style="color: #101010;font-weight:600;font-size:18px;text-align:left;margin-bottom:70px"><i class="far fa-compass" style="color: var(--color-sidebar);font-size:20px;margin-right:10px"></i>
-Guided mode</h3>
-            <h5 style="text-align:center;color:red;font-size:16px; margin-bottom:40px"> Preliminary questions​ </h5>
+          <h3 class="question-title" style="color: #101010;font-weight:600;font-size:18px;text-align:left;"><i class="far fa-compass" style="color: var(--color-sidebar);font-size:20px;margin-right:10px"></i>
+            Guided mode</h3>
+            <h5 class="step-title" style="margin-bottom:40px;margin-top:0"> Preliminary questions​ </h5>
           <!-- Question 1-->
             <div class="individual-question getting-started" id="Question-getting-started-1" style="display:flex">
               <div class="ui form" style="width:100%">
@@ -34,7 +34,7 @@ Guided mode</h3>
             <div class="individual-question getting-started" id="Question-getting-started-2">
               <div class="ui form" style="width:100%">
                 <div class="grouped fields" style="width:80%; margin:0 auto">
-                  <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">For other data types, we currently provide support for preparing a metadata​ file with fields suggested by the NIAID. Would you like to continue? <img class="info-new" src="assets/img/info.png"> 
+                  <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">For other data types, we currently provide support for preparing a metadata​ file with fields suggested by the NIAID. Would you like to continue? <img class="info-new" src="assets/img/info.png">
                   <br></label>
                   <div style="display:flex;flex-direction:row;margin:0 auto">
                     <div class="radio-button" data-next="Question-getting-started-3" onclick="transitionSubQuestions(this, 'Question-getting-started-2', 'generate-dataset-tab', '', 'generate-dataset')">
@@ -87,7 +87,7 @@ Guided mode</h3>
           <h3 class="question-title" style="color: #101010;font-weight:600;font-size:18px;text-align:left;width:150px"><i class="far fa-compass" style="color: var(--color-sidebar);font-size:20px;margin-right:10px"></i>
             Guided mode</h3>
           <div>
-            <h5 style="text-align:center;color:red;font-size:16px"> Step 1: Specify and organize all the files to be included in your dataset​ </h5>
+            <h5 class="step-title"> Step 1: Specify and organize all the files to be included in your dataset​ </h5>
             <div style="padding: 0 0;margin:3px 3px;margin-left:20px;display:flex;flex-direction:row;justify-content:space-between">
             <div style="width:100%;display:flex;flex-direction:row;margin-top:25px">
               <!-- <div id="file-organization-getting-started" style="display:flex;width:100%">
@@ -148,7 +148,7 @@ Guided mode</h3>
     <div class="parent-tabs" id="step2-tab" style="overflow-y:auto;">
       <h3 class="question-title" style="color: #101010;font-weight:600;font-size:18px;text-align:left;"><i class="far fa-compass" style="color: var(--color-sidebar);font-size:20px;margin-right:10px"></i>
         Guided mode</h3>
-      <h5 style="text-align:center;color:red;font-size:16px;margin-bottom:50px;margin-top:0"> Step 3: Enter information to help us prepare your metadata file ​ </h5>
+      <h5 class="step-title" style="margin-bottom:50px;margin-top:0"> Step 3: Enter information to help us prepare your metadata file ​ </h5>
       <!-- Question 1-->
         <div class="individual-question step2" id="Question-step2-1" style="display:flex">
           <div class="ui form" style="width:100%">
@@ -184,7 +184,7 @@ Guided mode</h3>
                 <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Were any research articles published based on all or part of this data?​ ​
                 </label>
                 <div style="display:flex;flex-direction:row;margin:0 auto">
-                  <div class="radio-button" data-next="Question-step2-4" onclick="transitionSubQuestions(this, 'Question-step2-4', 'step2-tab', '', 'generate-dataset')">
+                  <div class="radio-button" data-next="Question-step2-4" onclick="transitionSubQuestions(this, 'Question-step2-3', 'step2-tab', '', 'generate-dataset')">
                     <i class="check icon" style="color:green"></i>
                     <p style="color:green">Yes</p>
                   </div>
@@ -228,7 +228,7 @@ Guided mode</h3>
                     <tfoot class="full-width">
                   </table>
                   <div id="confirm-table-doi" style="display: flex;flex-direction:row;justify-content:center;margin:0 auto">
-                    <button class="confirm-btn" data-next="Question-step2-5" onclick="transitionSubQuestions(this, 'Question-step2-5', 'step2-tab', 'delete', 'generate-dataset')">Confirm</button>
+                    <button class="confirm-btn" data-next="Question-step2-5" onclick="transitionSubQuestions(this, 'Question-step2-4', 'step2-tab', 'delete', 'generate-dataset')">Confirm</button>
                   </div>
                 </div>
               </div>
@@ -272,7 +272,7 @@ Guided mode</h3>
                     </tbody>
                   </table>
                   <div id="confirm-table-contributor" style="display: flex;flex-direction:row;justify-content:center;margin:0 auto">
-                    <button class="confirm-btn" data-next="Question-step2-6" onclick="transitionSubQuestions(this, 'Question-step2-6', 'step2-tab', 'delete', 'generate-dataset')">Confirm</button>
+                    <button class="confirm-btn" data-next="Question-step2-6" onclick="transitionSubQuestions(this, 'Question-step2-5', 'step2-tab', 'delete', 'generate-dataset')">Confirm</button>
                   </div>
                   </div>
                 </div>
@@ -361,7 +361,7 @@ Guided mode</h3>
                 <div class="individual-question step2" id="Question-step2-9">
                   <div class="ui form" style="width:100%">
                     <div class="grouped fields" style="width:80%; margin:0 auto">
-                      <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Enter keywords that <span style="font-weight:600;color:dodgerblue">describes the variable measured</span> in your dataset​: <img class="info-new" src="assets/img/info.png"> </label> 
+                      <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Enter keywords that <span style="font-weight:600;color:dodgerblue">describes the variable measured</span> in your dataset​: <img class="info-new" src="assets/img/info.png"> </label>
                         <div class="ui input" style="margin:0 auto">
                           <textarea style="width:400px" oninput="showConfirmBtn('confirm-keywords')" id="textarea-keywords-variables" type="text" placeholder="Enter here..."></textarea>
                         </div>
@@ -376,7 +376,7 @@ Guided mode</h3>
                   <div class="individual-question step2" id="Question-step2-10">
                     <div class="ui form" style="width:100%">
                       <div class="grouped fields" style="width:80%; margin:0 auto">
-                        <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Enter keywords that <span style="font-weight:600;color:dodgerblue">describes the techniques</span> used to collect your data: <img class="info-new" src="assets/img/info.png"> </label> 
+                        <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Enter keywords that <span style="font-weight:600;color:dodgerblue">describes the techniques</span> used to collect your data: <img class="info-new" src="assets/img/info.png"> </label>
                           <div class="ui input" style="margin:0 auto">
                             <textarea style="width:400px" oninput="showConfirmBtn('confirm-techniques')" id="textarea-keywords-techniques" type="text" placeholder="Enter here..."></textarea>
                           </div>
@@ -391,7 +391,7 @@ Guided mode</h3>
         <div class="parent-tabs" id="step3-tab" style="overflow-y:auto;">
           <h3 class="question-title" style="color: #101010;font-weight:600;font-size:18px;text-align:left;"><i class="far fa-compass" style="color: var(--color-sidebar);font-size:20px;margin-right:10px"></i>
 Guided mode</h3>
-          <h5 style="text-align:center;color:red;font-size:16px;margin-bottom:50px;margin-top:0"> Step 3: Connect to your Zenodo account​ ​ </h5>
+          <h5 class="step-title" style="margin-bottom:50px;margin-top:0"> Step 5: Connect to your Zenodo account​ ​ </h5>
           <!-- Question 1 -->
           <div class="individual-question step3" id="Question-step3-1"  style="display:flex">
             <div class="ui form" style="width:100%">
@@ -416,13 +416,14 @@ Guided mode</h3>
               <div class="ui form" style="width:100%">
                 <div class="grouped fields" style="width:90%; margin:0 auto">
                   <label style="font-size:16px;color:var(--color-text-color);text-align:center;margin-bottom:15px">Great! Follow the instructions available <a style="text-decoration:underline;color:#4183c4 !important">here</a> to generate a Zenodo API token and enter it below.​ <img class="info-new" src="assets/img/info.png">
-                  ​</label> 
+                  ​</label>
                   <div class="ui input">
                     <input type="text" placeholder="Enter here..." oninput="showConfirmBtn('confirm-zenodo-connect')" id="input-zenodo-key">
                   </div>
                   <div id="confirm-zenodo-connect" style="display: none;flex-direction:row;justify-content:center;margin:0 auto">
                     <button class="confirm-btn" onclick="allowContinue(this, 'connect')">Connect</button>
                   </div>
+                  <div class="ui active green inline loader" style="display:none;margin:10px auto" id="div-loading-connect"></div>
                   <p id="para-connected" style="margin:10px auto;font-weight:600;color:green"></p>
                   </div>
                 </div>
@@ -433,7 +434,7 @@ Guided mode</h3>
         <div class="parent-tabs" id="step4-tab" style="overflow-y:auto;">
           <h3 class="question-title" style="color: #101010;font-weight:600;font-size:18px;text-align:left;"><i class="far fa-compass" style="color: var(--color-sidebar);font-size:20px;margin-right:10px"></i>
 Guided mode</h3>
-          <h5 style="text-align:center;color:red;font-size:16px;margin-bottom:50px;margin-top:0"> Step 5: Upload your dataset​​ </h5>
+          <h5 class="step-title" style="margin-bottom:50px;margin-top:0"> Step 6: Upload your dataset​​ </h5>
           <p style="color:#585858;text-align:center;width:80%;margin:0 auto;margin-bottom:20px">Zenodo requires certain information before you can upload. We will complete most of them based on the information already provided in the previous steps, but some still require your inputs.​</p>
 
           <!-- Question 1 -->
@@ -568,7 +569,7 @@ Guided mode</h3>
     <div class="parent-tabs" id="step5-tab" style="overflow-y:auto;">
       <h3 class="question-title" style="color: #101010;font-weight:600;font-size:18px;text-align:left;"><i class="far fa-compass" style="color: var(--color-sidebar);font-size:20px;margin-right:10px"></i>
 Guided mode</h3>
-      <h5 style="text-align:center;color:red;font-size:16px;margin-bottom:50px;margin-top:0"> Creating dataset </h5>
+      <h5 class="step-title" style="margin-bottom:50px;margin-top:0"> Creating dataset </h5>
       <div id="myProgress" style="background:#f1f1f1;width:95%;margin:0 auto">
         <div onclick="move()" id="myBar">0%</div>
       </div>
@@ -580,7 +581,7 @@ Guided mode</h3>
       <h3 class="question-title" style="color: #101010;font-weight:600;font-size:18px;text-align:left;width:150px"><i class="far fa-compass" style="color: var(--color-sidebar);font-size:20px;margin-right:10px"></i>
         Guided mode</h3>
       <div>
-        <h5 style="text-align:center;color:red;font-size:16px"> Step 2: File format conversion​ </h5>
+        <h5 class="step-title"> Step 2: File format conversion​ </h5>
         <p style="font-size:14px;color:var(--color-text-color);text-align:center;margin-bottom:15px;margin-top:30px">For other data types, there are no file format requirements.​ You can continue to the next step.​</p>
       </div>
     </div>

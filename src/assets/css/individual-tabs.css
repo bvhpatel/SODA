@@ -849,13 +849,13 @@
   color: #fff !important;
   font-weight: 600 !important;
 }
-
+/*
 .individual-question.test label {
   color: #696969 !important
-}
+} */
 
 .individual-question.prev label {
-  color: #696969 !important;
+  color: #909090 !important;
   font-size: 16px !important;
 }
 
@@ -863,7 +863,16 @@
   /* margin-top:40px; */
   transform: translateY(-16px);
   transition: transform 0.5s ease-in-out;
-  height: 50%;
+}
+
+.individual-question.test2 label {
+  color: #909090;
+}
+
+.step-title {
+  text-align:center;
+  color:green;
+  font-size:16px
 }
 
 #Question-generate-dataset {
