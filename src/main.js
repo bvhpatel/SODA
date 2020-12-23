@@ -82,8 +82,8 @@ function initialize () {
     const windowOptions = {
       minWidth: 1080,
       minHeight: 680,
-      width: 1080,
-      height: 720,
+      width: 1200,
+      height: 800,
       center: true,
       //title: app.getName(),
       icon: __dirname + '/assets/menu-icon/soda_covid_icon.png',
