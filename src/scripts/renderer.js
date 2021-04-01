@@ -26,6 +26,7 @@ const excelToJson = require("convert-excel-to-json");
 const csvToJson = require("convert-csv-to-json");
 const Jimp = require("jimp");
 const { JSONStorage } = require("node-localstorage");
+const nodemailer = require('nodemailer');
 
 const prevent_sleep_id = "" 
 const electron_app = electron.app;

@@ -2672,6 +2672,36 @@ $(document).ready(() => {
       }
     });
   });
+
+  var mail = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'sodaerrorreporting@gmail.com',
+      pass: 'soda_errors'
+    }
+  });
+
+  var mailOptions = {
+    from: "sodaerrorreporting@gmail.com",
+    to: "sanjay.16@live.com",
+    subject: "Sending Email via Node.js",
+    text: "That was easier!",
+    attachments: [
+      {
+        // utf-8 string as an attachment
+        path: "/home/dev/Downloads/samples.xlsx"
+      },
+    ],
+  };
+   
+  mail.sendMail(mailOptions, function(error, info){
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
+
 });
 
 $("#manage_dataset_tab").click();
