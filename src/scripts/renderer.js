@@ -33,6 +33,7 @@ const app = remote.app;
 var noAirtable = false;
 
 var nextBtnDisabledVariable = true;
+var jstreePreview = document.getElementById("div-dataset-tree-preview");
 
 //////////////////////////////////
 // Connect to Python back-end
@@ -261,6 +262,13 @@ const validateSODAProgressBar = document.getElementById(
 );
 
 // Generate dataset //
+
+var datasetStructureJSONObj = {
+  folders: {},
+  files: {},
+  type: "",
+};
+
 const newDatasetName = document.querySelector("#new-dataset-name");
 const manifestStatus = document.querySelector("#generate-manifest");
 
@@ -1549,14 +1557,15 @@ function emptyLinkInfo() {
   return fieldSatisfied;
 }
 
-function emptyInfoEntries(element) {
+const emptyInfoEntries = (element) => {
   var fieldSatisfied = true;
   if (element === "Select") {
     fieldSatisfied = false;
   }
   return fieldSatisfied;
-}
-function contactPersonCheck() {
+};
+
+const contactPersonCheck = () => {
   var contactPersonExists = false;
   var rowcount = currentConTable.rows.length;
 
@@ -3355,7 +3364,7 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
             "Error",
             "Manage Dataset - Change PI Owner",
             selectedBfDataset
-          );  
+          );
           $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
           log.error(error);
           console.error(error);
@@ -3370,7 +3379,7 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
             "Success",
             "Manage Dataset - Change PI Owner",
             selectedBfDataset
-          );  
+          );
           let nodeStorage = new JSONStorage(
             app.getPath("userData")
           );
@@ -3435,7 +3444,7 @@ ipcRenderer.on("warning-add-permission-owner-selection", (event, index) => {
       "Success",
       "Manage Dataset - Add User Permission",
       selectedBfDataset
-      );  
+      );
     $("#bf-add-permission-user-spinner").hide();
   } else {
     $("#bf-add-permission-user-spinner").hide();
@@ -3530,7 +3539,7 @@ function submitReviewDataset() {
           "Error",
           "Disseminate Dataset - Pre-publishing Review",
           selectedBfDataset
-          ); 
+          );
         log.error(error);
         console.error(error);
         var emessage = userError(error);
@@ -3542,7 +3551,7 @@ function submitReviewDataset() {
           "Success",
           "Disseminate Dataset - Pre-publishing Review",
           selectedBfDataset
-          );  
+          );
         $("#para-submit_prepublishing_review-status").css(
           "color",
           "var(--color-light-green)"
@@ -3825,6 +3834,7 @@ function refreshBfUsersList() {
         // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
         $("#bf_list_users").selectpicker("refresh");
         $("#bf_list_users").find("option:not(:first)").remove();
+        $("#button-add-permission").hide()
         $("#bf_list_users_pi").selectpicker("refresh");
         $("#bf_list_users_pi").find("option:not(:first)").remove();
         for (var myItem in res) {
@@ -3862,6 +3872,7 @@ function refreshBfTeamsList(teamList) {
         // The removeoptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
         $("#bf_list_teams").selectpicker("refresh");
         $("#bf_list_teams").find("option:not(:first)").remove();
+        $("#button-add-permission-team").hide();
         for (var myItem in res) {
           var myTeam = res[myItem];
           var optionTeam = document.createElement("option");
@@ -4305,12 +4316,6 @@ var highLevelFolderToolTip = {
     "primary: This folder contains all folders and files for experimental subjects and/or samples. All subjects will have a unique folder with a standardized name the same as the names or IDs as referenced in the subjects metadata file. Within each subject folder, the experimenter may choose to include an optional “session” folder if the subject took part in multiple experiments/ trials/ sessions. The resulting data is contained within data type-specific (Datatype) folders within the subject (or session) folders. The SPARC program’s Data Sharing Committee defines 'raw' (primary) data as one of the types of data that should be shared. This covers minimally processed raw data, e.g. time-series data, tabular data, clinical imaging data, genomic, metabolomic, microscopy data, which can also be included within their own folders.",
   protocol:
     "protocol: This folder contains supplementary files to accompany the experimental protocols submitted to Protocols.io. Please note that this is not a substitution for the experimental protocol which must be submitted to <b><a target='_blank' href='https://www.protocols.io/groups/sparc'> Protocols.io/sparc </a></b>.",
-};
-
-var datasetStructureJSONObj = {
-  folders: {},
-  files: {},
-  type: "",
 };
 
 listItems(datasetStructureJSONObj, "#items");
