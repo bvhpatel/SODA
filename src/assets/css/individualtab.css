@@ -341,6 +341,10 @@
   -webkit-transition: all 0.25s linear;
 }
 
+.transition-btn.continueb:hover {
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
+}
+
 .transition-btn.back {
   background: #fff;
   border: 1px solid #666666;
