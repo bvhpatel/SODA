@@ -1141,6 +1141,7 @@
   margin-left: 0px;
   margin-top: 0px;
   padding-left: 5px;
+  white-space: pre-line;
 }
 
 .card-container.prepare-submission .card-left {
@@ -1489,16 +1490,13 @@
 
 .start-over {
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 8px;
+  margin: 10px;
   width: 120px;
   height: 35px;
   background-color: #fff;
   color: var(--color-bg-plum);
   font-weight: 600;
   border: 1px solid var(--color-bg-plum);
-  font-size: inherit;
-}
-
-.jstree-default>.jstree-container-ul>.jstree-node {
-  overflow: auto !important
+  font-size: 13px;
 }

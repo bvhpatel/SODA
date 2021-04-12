@@ -333,43 +333,16 @@ function checkValidRenameInput(
   itemElement,
   myBootboxDialog
 ) {
-  double_extensions = [
-    ".ome.tiff",
-    ".ome.tif",
-    ".ome.tf2,",
-    ".ome.tf8",
-    ".ome.btf",
-    ".ome.xml",
-    ".brukertiff.gz",
-    ".mefd.gz",
-    ".moberg.gz",
-    ".nii.gz",
-    ".mgh.gz",
-    ".tar.gz",
-    ".bcl.gz",
-  ];
-
   var duplicate = false;
   // if renaming a file
   if (type === "files") {
-    let double_ext_present = false;
-    for (let index in double_extensions) {
-      if (oldName.search(double_extensions[index]) != -1) {
-        newName =
-          input.trim() +
-          path.parse(path.parse(oldName).name).ext +
-          path.parse(oldName).ext;
-        double_ext_present = true;
-        break;
-      }
-    }
-    if (double_ext_present == false) {
-      newName = input.trim() + path.parse(oldName).ext;
-    }
+    newName = input.trim() + path.parse(oldName).ext;
     // check for duplicate or files with the same name
     for (var i = 0; i < itemElement.length; i++) {
       if (!itemElement[i].innerText.includes("-DELETED")) {
-        if (newName === path.parse(itemElement[i].innerText).base) {
+        if (
+          newName === path.parse(itemElement[i].innerText).base
+        ) {
           duplicate = true;
           break;
         }
@@ -427,22 +400,6 @@ function renameFolder(
   var nameWithoutExtension;
   var highLevelFolderBool;
 
-  double_extensions = [
-    ".ome.tiff",
-    ".ome.tif",
-    ".ome.tf2,",
-    ".ome.tf8",
-    ".ome.btf",
-    ".ome.xml",
-    ".brukertiff.gz",
-    ".mefd.gz",
-    ".moberg.gz",
-    ".nii.gz",
-    ".mgh.gz",
-    ".tar.gz",
-    ".bcl.gz",
-  ];
-
   if (highLevelFolders.includes(currentName)) {
     highLevelFolderBool = true;
   } else {
@@ -457,17 +414,7 @@ function renameFolder(
     type = "folders";
   }
   if (type === "files") {
-    let double_ext_present = false;
-    for (let index in double_extensions) {
-      if (currentName.search(double_extensions[index]) != -1) {
-        nameWithoutExtension = path.parse(path.parse(currentName).name).name;
-        double_ext_present = true;
-        break;
-      }
-    }
-    if (double_ext_present == false) {
-      nameWithoutExtension = path.parse(currentName).name;
-    }
+    nameWithoutExtension = path.parse(currentName).name;
   } else {
     nameWithoutExtension = currentName;
   }
@@ -841,10 +788,10 @@ function triggerManageDetailsPrompts(
 //    b. Show: display: flex (New folder, Import, Back button, and path) + Center the items
 function organizeLandingUIEffect() {
   if ($("#input-global-path").val() === "My_dataset_folder/") {
-    $(".div-organize-dataset-menu").css("visibility", "hidden");
-    $("#organize-path-and-back-button-div").css("visibility", "hidden");
+    $(".div-organize-dataset-menu").css("display", "none");
+    $("#organize-path-and-back-button-div").css("display", "none");
   } else {
-    $("#organize-path-and-back-button-div").css("visibility", "visible");
-    $(".div-organize-dataset-menu").css("visibility", "visible");
+    $("#organize-path-and-back-button-div").css("display", "block");
+    $(".div-organize-dataset-menu").css("display", "flex");
   }
 }

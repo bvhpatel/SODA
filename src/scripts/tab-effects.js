@@ -1444,67 +1444,20 @@ async function transitionSubQuestionsButton(
       $("body").removeClass("waiting");
       return;
     } else {
-      if (result[1][2].length > 0) {
-        // if any manifest files could not be read
-        let missing_files = result[1][2];
-        let message_text = "";
-        message_text =
-          "The manifest files in the following folders could not be read due to formatting issues. Would you like SODA to ignore these manifest files and continue? <br><ul>";
-
-        for (let item in missing_files) {
-          message_text += `<li>${missing_files[item]}</li>`;
-        }
-        message_text += "</ul>";
-
-        bootbox.confirm({
-          message: message_text,
-          buttons: {
-            confirm: {
-              label: "Continue",
-              className: "btn-success",
-            },
-            cancel: {
-              label: "No",
-              className: "btn-danger",
-            },
-          },
-          centerVertical: true,
-          callback: (response) => {
-            if (response !== null && response === true) {
-              sodaJSONObj = result[1][0];
-              if (JSON.stringify(sodaJSONObj["dataset-structure"]) !== "{}") {
-                datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-              } else {
-                datasetStructureJSONObj = { folders: {}, files: {} };
-              }
-              populate_existing_folders(datasetStructureJSONObj);
-              populate_existing_metadata(sodaJSONObj);
-              $("#nextBtn").prop("disabled", false);
-              $("#para-continue-bf-dataset-getting-started").text(
-                "Please continue below."
-              );
-              showHideDropdownButtons("dataset", "show");
-            } else {
-              exitCurate();
-            }
-          },
-        });
+      sodaJSONObj = result[1][0];
+      if (JSON.stringify(sodaJSONObj["dataset-structure"]) !== "{}") {
+        datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
       } else {
-        sodaJSONObj = result[1][0];
-        if (JSON.stringify(sodaJSONObj["dataset-structure"]) !== "{}") {
-          datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-        } else {
-          datasetStructureJSONObj = { folders: {}, files: {} };
-        }
-        populate_existing_folders(datasetStructureJSONObj);
-        populate_existing_metadata(sodaJSONObj);
-        $("#nextBtn").prop("disabled", false);
-        $("#para-continue-bf-dataset-getting-started").text(
-          "Please continue below."
-        );
-        showHideDropdownButtons("dataset", "show");
-        // $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
+        datasetStructureJSONObj = { folders: {}, files: {} };
       }
+      populate_existing_folders(datasetStructureJSONObj);
+      populate_existing_metadata(sodaJSONObj);
+      $("#nextBtn").prop("disabled", false);
+      $("#para-continue-bf-dataset-getting-started").text(
+        "Please continue below."
+      );
+      showHideDropdownButtons("dataset", "show");
+      // $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
     }
     $("body").removeClass("waiting");
     $("#bf-dataset-spinner").css("visibility", "hidden");
@@ -1660,15 +1613,21 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
   hidePrevDivs(currentDiv, category);
   // display the target tab (data-next tab)
   if (!$(target).hasClass("show")) {
-    $(target).addClass("show");
+    setTimeout(function(){
+      $(target).addClass("show");
+    }, 250, $(target))
   }
 
   // handle buttons (if buttons are confirm buttons -> delete after users confirm)
   if (button === "delete") {
     if ($(ev).siblings().length > 0) {
-      $(ev).siblings().hide();
+      setTimeout(function(){
+        $(ev).siblings().hide();
+      }, 250, $(ev).siblings())
     }
-    $(ev).hide();
+    setTimeout(function(){
+      $(ev).hide();
+    }, 250, $(ev))
   } else {
     if ($(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '') !== "None") {
       $(target).children().find(".div-confirm-button button").show();
@@ -2763,50 +2722,6 @@ $(document).ready(() => {
 
 $("#manage_dataset_tab").click();
 
-$("#bf_list_users").on("change", () => {
-  let user_val = $("#bf_list_users").val();
-  let user_role = $("#bf_list_roles").val();
-
-  if (user_val == "Select user" || user_role == "Select role") {
-    $("#button-add-permission").hide();
-  } else {
-    $("#button-add-permission").show();
-  }
-});
-
-$("#bf_list_roles").on("change", () => {
-  let user_val = $("#bf_list_users").val();
-  let user_role = $("#bf_list_roles").val();
-
-  if (user_val == "Select user" || user_role == "Select role") {
-    $("#button-add-permission").hide();
-  } else {
-    $("#button-add-permission").show();
-  }
-});
-
-$("#bf_list_teams").on("change", () => {
-  let team_val = $("#bf_list_teams").val();
-  let team_role = $("#bf_list_roles_teams").val();
-
-  if (team_val == "Select team" || team_role == "Select role") {
-    $("#button-add-permission-team").hide();
-  } else {
-    $("#button-add-permission-team").show();
-  }
-});
-
-$("#bf_list_roles_teams").on("change", () => {
-  let team_val = $("#bf_list_teams").val();
-  let team_role = $("#bf_list_roles_teams").val();
-
-  if (team_val == "Select team" || team_role == "Select role") {
-    $("#button-add-permission-team").hide();
-  } else {
-    $("#button-add-permission-team").show();
-  }
-});
-
 $("body").on("click", ".check", function () {
   $(this).siblings("input[name=dataset_status_radio]:radio").click();
 });
@@ -2933,3 +2848,34 @@ $(".popover-tooltip").each(function () {
     container: $this,
   });
 });
+
+initRipple = function(buttonEle){
+  var inside = document.createElement('div');
+  inside.classList.add('btn_animated-inside');
+  inside.innerHTML = buttonEle.innerHTML;
+  buttonEle.innerHTML = '';
+  buttonEle.appendChild(inside);
+  inside.addEventListener('mousedown', function(){
+     ripple(event, this);
+  });
+}
+ripple = function(event, buttonEle){
+  var rippleEle = document.createElement('span');
+  rippleEle.setAttribute('class', 'ripple');
+  rippleEle.style.top = event.offsetY + 'px';
+  rippleEle.style.left = event.offsetX + 'px';
+  buttonEle.appendChild(rippleEle);
+  setTimeout(function(){
+     rippleEle.classList.add('effect');    
+  }, 0, rippleEle);
+  
+  setTimeout(function(){
+     rippleEle.remove();
+  }, 1000, rippleEle);
+}
+
+var buttons = document.getElementsByClassName('btn_animated');
+for(var i = 0; i < buttons.length; i++){
+  button = buttons[i];
+  initRipple(button);
+}
