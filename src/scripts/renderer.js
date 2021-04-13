@@ -3668,9 +3668,9 @@ function showCurrentSubtitle() {
             bfDatasetSubtitleCharCount
           );
           if (result === 0) {
-            $("#button-add-subtitle").html("Add subtitle");
+            $("#button-add-subtitle > .btn_animated-inside").html("Add subtitle");
           } else {
-            $("#button-add-subtitle").html("Edit subtitle");
+            $("#button-add-subtitle > .btn_animated-inside").html("Edit subtitle");
           }
         }
       }
@@ -3698,9 +3698,9 @@ function showCurrentDescription() {
         } else {
           tuiInstance.setMarkdown(res);
           if ((res = "")) {
-            $("#button-add-description").html("Add description");
+            $("#button-add-description > .btn_animated-inside").html("Add description");
           } else {
-            $("#button-add-description").html("Edit description");
+            $("#button-add-description > .btn_animated-inside").html("Edit description");
           }
         }
       }
