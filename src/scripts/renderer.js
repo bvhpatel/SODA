@@ -27,12 +27,15 @@ const excelToJson = require("convert-excel-to-json");
 const csvToJson = require("convert-csv-to-json");
 const Jimp = require("jimp");
 const { JSONStorage } = require("node-localstorage");
+const fetch = require("node-fetch");
 
 // const prevent_sleep_id = "";
 const electron_app = electron.app;
 const app = remote.app;
 const shell = electron.shell;
 var noAirtable = false;
+
+var AUTH_KEY = "";
 
 var nextBtnDisabledVariable = true;
 var jstreePreview = document.getElementById("div-dataset-tree-preview");
@@ -61,10 +64,30 @@ client.invoke("echo", "server ready", (error, res) => {
       "Establishing Python Connection"
     );
 
+    get_auth_key();
     //Load Default/global Pennsieve account if available
     updateBfAccountList();
   }
 });
+
+const get_authentication = () => {
+  const PENNSIEVE_URL = "https://api.pennsieve.io";
+
+  const url = `${PENNSIEVE_URL}/authentication/cognito-config`;
+  const options = { method: "GET", headers: { Accept: "*/*" } };
+
+  fetch(url, options)
+    .then((res) => res.json())
+    .then((r) => {
+      cognito_app_client_id = r["userPool"]["appClientId"];
+      cognito_region = r["userPool"]["region"];
+
+      console.log(cognito_app_client_id, cognito_region)
+    })
+    .catch((err) => console.error("error:" + err));
+};
+
+get_authentication();
 
 //////////////////////////////////
 // App launch actions
@@ -4939,6 +4962,54 @@ function loadDefaultAccount() {
         refreshBfUsersList();
         refreshBfTeamsList(bfListTeams);
       }
+    }
+  });
+}
+
+function get_auth_key() {
+  client.invoke("api_get_auth_key", (error, res) => {
+    if (error) {
+      console.error(error);
+    } else {
+      AUTH_KEY = res;
+
+      console.time("Execution Time");
+
+      // TESTING
+      let role = "manager";
+      let url = `https://api.pennsieve.io/datasets/paginated?limit=2000&role=${role}&includePublishedDataset=true&api_key=${AUTH_KEY}`;
+
+      const options = { method: "GET", headers: { Accept: "*/*" } };
+      fetch(url, options)
+        .then((res) => res.json())
+        .then((json) => {
+          role = "viewer";
+          url = `https://api.pennsieve.io/datasets/paginated?limit=2000&role=${role}&includePublishedDataset=true&api_key=${AUTH_KEY}`;
+
+          fetch(url, options)
+            .then((res) => res.json())
+            .then((json) => {
+              role = "editor";
+              url = `https://api.pennsieve.io/datasets/paginated?limit=2000&role=${role}&includePublishedDataset=true&api_key=${AUTH_KEY}`;
+
+              fetch(url, options)
+                .then((res) => res.json())
+                .then((json) => {
+                  role = "owner";
+                  url = `https://api.pennsieve.io/datasets/paginated?limit=2000&role=${role}&includePublishedDataset=true&api_key=${AUTH_KEY}`;
+
+                  console.timeEnd("Execution Time");
+                  //  console.log(json);
+                });
+
+              console.timeEnd("Execution Time");
+              // console.log(json);
+            });
+
+          // console.timeEnd("Execution Time");
+          // console.log(json);
+        });
+      // .catch((err) => console.error("error:" + err));
     }
   });
 }

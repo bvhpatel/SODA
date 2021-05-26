@@ -1772,6 +1772,28 @@ def get_number_of_files_and_folders_locally(filepath):
 
     return (totalFiles, totalDir)
 
+def get_auth_key():
+    PENNSIEVE_URL = "https://api.pennsieve.io"
+
+    api_token = "1df2bc95-f588-48b9-a762-bf497fa119d8"
+    # email = "ssoundarajan@calmi2.org"
+    api_secret = "83b12f89-2be0-4271-9d09-41ef80844344"
+    # password = "Aea$!jTI2P!9"
+
+    response = requests.get(f"{PENNSIEVE_URL}/authentication/cognito-config")
+    response.raise_for_status()
+    cognito_app_client_id = response.json()["tokenPool"]["appClientId"]
+    cognito_region = response.json()["region"]
+    cognito_client = boto3.client("cognito-idp",region_name=cognito_region,aws_access_key_id="",aws_secret_access_key="")
+
+    login_response = cognito_client.initiate_auth(
+        AuthFlow="USER_PASSWORD_AUTH",
+        AuthParameters={"USERNAME": api_token, "PASSWORD": api_secret},
+        ClientId=cognito_app_client_id)
+
+    api_key = login_response["AuthenticationResult"]["AccessToken"]
+    return api_key
+
 def get_pennsieve_api_key_secret(email, password, keyname):
 
     PENNSIEVE_URL = "https://api.pennsieve.io"
