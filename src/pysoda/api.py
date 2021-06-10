@@ -17,6 +17,8 @@ from prepare_metadata import save_submission_file, save_ds_description_file, ext
 
 from organize_datasets import generate_dataset_locally, bf_get_dataset_files_folders
 
+from validator import validate_dataset_pipeline
+
 import sys
 import zerorpc
 
@@ -342,11 +344,11 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
-    # def api_get_auth_key(self):
-    #     try:
-    #         return get_auth_key()
-    #     except Exception as e:
-    #         raise e
+    def api_validate_dataset_pipeline(self, selected_bfaccount, selected_bfdataset):
+        try:
+            return validate_dataset_pipeline(selected_bfaccount, selected_bfdataset)
+        except Exception as e:
+            raise e
 
     ### Check Login to Python Server
     def echo(self, text):

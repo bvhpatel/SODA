@@ -1,4 +1,4 @@
-name: env-electron-python
+name: env-electron-python2
 channels:
 - defaults
 - conda-forge
@@ -8,6 +8,7 @@ dependencies:
 - nodejs = 10.13.0
 - libgcc = 7.2.0
 - git = 2.20.1
+- pyyaml = 5.4.1
 - pip
 - pip:
   # pin older version of setuptools to fix this error:
@@ -21,3 +22,13 @@ dependencies:
   - configparser == 4.0.2
   - python-docx == 0.8.10
   - xlrd == 1.2.0
+  - git+https://github.com/tgbugs/augpathlib
+  - git+https://github.com/tgbugs/idlib
+  - git+https://github.com/tgbugs/hyputils
+  - git+https://github.com/tgbugs/orthauth
+  - git+https://github.com/tgbugs/ontquery
+  - git+https://github.com/tgbugs/parsercomb
+  - git+https://github.com/tgbugs/pyontutils
+  - protcur == 0.0.8
+  - git+https://github.com/SciCrunch/scibot
+  - git+https://github.com/SciCrunch/sparc-curation
