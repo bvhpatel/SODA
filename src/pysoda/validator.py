@@ -7,6 +7,7 @@ from sparcur.simple.validate import main as validate
 from configparser import ConfigParser
 import gevent
 import os.path
+import sys
 import shutil
 import yaml
 import json
@@ -16,7 +17,7 @@ from pathlib import Path
 userpath = os.path.expanduser("~")
 configpath = os.path.join(userpath, '.pennsieve', 'config.ini')
 
-local_sparc_dataset_location = "~/files/sparc-datasets"
+local_sparc_dataset_location = str(Path.home()) + "/files/sparc-datasets"
 sparc_organization_id = "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
 parent_folder = SparCurPath(local_sparc_dataset_location).expanduser()
 
@@ -24,11 +25,20 @@ parent_folder = SparCurPath(local_sparc_dataset_location).expanduser()
 local_dataset_folder_path = ""
 validation_json = {}
 
+def get_home_directory(folder):
+    if sys.platform == "win32":
+        return str(Path.home()) + "/AppData/Local/" + folder
+    elif sys.platform == "linux":
+        return str(Path.home()) + "/.config/" + folder
+    elif sys.platform == "darwin":
+        return str(Path.home()) + "/AppData/Local/" + folder
+
+
 # config file locations
-orthauth_path = SparCurPath('~/.config/orthauth').expanduser()
-orthauth_path_secrets = SparCurPath('~/.config/orthauth/secrets.yaml').expanduser()
-pyontutils_path = SparCurPath('~/.config/pyontutils').expanduser()
-pyontutils_path_config = SparCurPath('~/.config/pyontutils/config.yaml').expanduser()
+orthauth_path = SparCurPath(get_home_directory("orthauth")).expanduser()
+orthauth_path_secrets = SparCurPath(get_home_directory("orthauth") + '/secrets.yaml').expanduser()
+pyontutils_path = SparCurPath(get_home_directory("pyontutils")).expanduser()
+pyontutils_path_config = SparCurPath(get_home_directory("pyontutils") + '/config.yaml').expanduser()
 
 # min template for orthauth config file
 orthauth_path_secrets_min_template = {
