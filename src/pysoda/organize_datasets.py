@@ -1,5 +1,5 @@
 ### Import required python modules
-from gevent import monkey; monkey.patch_all()
+# from gevent import monkey; monkey.patch_all()
 import platform
 import os
 from os import listdir, stat, makedirs, mkdir, walk, remove, pardir

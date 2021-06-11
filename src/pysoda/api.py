@@ -1,5 +1,8 @@
+# -*- coding: utf-8 -*-
+
 from __future__ import print_function
-from gevent import monkey; monkey.patch_all()
+from validator import validate_dataset_pipeline
+from gevent import monkey; monkey.patch_all(ssl=False)
 import gevent
 from pysoda import submit_dataset_progress,  \
     bf_add_account_api_key, bf_add_account_username, bf_account_list, bf_dataset_account, bf_account_details, \
@@ -17,12 +20,16 @@ from prepare_metadata import save_submission_file, save_ds_description_file, ext
 
 from organize_datasets import generate_dataset_locally, bf_get_dataset_files_folders
 
-from validator import validate_dataset_pipeline
-
 import sys
 import zerorpc
 
 class SodaApi(object):
+
+    def api_validate_dataset_pipeline(self, selected_bfaccount, selected_bfdataset):
+        try:
+            return validate_dataset_pipeline(selected_bfaccount, selected_bfdataset)
+        except Exception as e:
+            raise e
 
     ### import milestone document
     def api_extract_milestone_info(self, filepath):
@@ -341,12 +348,6 @@ class SodaApi(object):
     def api_get_pennsieve_api_key_secret(self, email, password, keyname=SODA_SPARC_API_KEY):
         try:
             return get_pennsieve_api_key_secret(email, password, keyname)
-        except Exception as e:
-            raise e
-
-    def api_validate_dataset_pipeline(self, selected_bfaccount, selected_bfdataset):
-        try:
-            return validate_dataset_pipeline(selected_bfaccount, selected_bfdataset)
         except Exception as e:
             raise e
 

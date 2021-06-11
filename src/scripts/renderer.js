@@ -44,7 +44,6 @@ var datasetStructureJSONObj = {
   type: "",
 };
 
-
 //////////////////////////////////
 // Connect to Python back-end
 //////////////////////////////////
@@ -8626,3 +8625,108 @@ function addAirtableAccountInsideSweetalert() {
     });
   }
 }
+
+let validation_report_template = `
+  <div class="title active">
+    <i class="dropdown icon"></i>
+      What is a dog?
+  </div>
+  <div class="content active">
+    <p class="visible" style="display: block !important;">A dog is a type of domesticated animal. Known for its loyalty and faithfulness, it can be found as a welcome guest in many households across the world.</p>
+  </div>`;
+
+const create_validation_report = (error_report) => {
+  let accordion_elements = ` <div class="title active"> <i class="dropdown icon"></i>`;
+  let elements = Object.keys(error_report).length;
+
+  if ((elements = 0)) {
+    accordion_elements += ` No errors found  </div> <div class="content active"> - </div>`;
+  } else if ((elements = 1)) {
+    let key = Object.keys(error_report)[0];
+    accordion_elements += ` ${key} </div> <div class="content active"> `;
+    if ("messages" in error_report[key]) {
+      for (let i = 0; i < error_report[key]["messages"]; i++) {
+        accordion_elements += ` <p> ${error_report[key]["messages"][i]} </p>`;
+      }
+    }
+    accordion_elements += `</div>`;
+  } else {
+    let first_key = Object.keys(error_report)[0];
+    for (key in error_report) {
+      if (key == first_key) {
+        accordion_elements += ` ${key} </div> <div class="content active"> `;
+        if ("messages" in error_report[key]) {
+          for (let i = 0; i < error_report[key]["messages"]; i++) {
+            accordion_elements += ` <p> ${error_report[key]["messages"][i]} </p>`;
+          }
+        }
+        accordion_elements += `</div>`;
+      } else {
+        accordion_elements += ` ${key} </div> <div class="content"> `;
+        if ("messages" in error_report[key]) {
+          for (let i = 0; i < error_report[key]["messages"]; i++) {
+            accordion_elements += ` <p> ${error_report[key]["messages"][i]} </p>`;
+          }
+        }
+        accordion_elements += `</div>`;
+      }
+    }
+    accordion_elements += `</div>`;
+  }
+};
+
+$("#validate_dataset_bttn").on("click", () => {
+  setTimeout(() => {
+    log.info("validating dataset");
+    log.info(bfDatasetSubtitle.value);
+
+    $("#dataset_validator_status").text(
+      "Please wait while we retrieve and validate the dataset..."
+    );
+    $("#dataset_validator_spinner").show();
+
+    let selectedBfAccount = defaultBfAccount;
+    let selectedBfDataset = "None";
+
+    datasetList.forEach((item) => {
+      if (item.name == defaultBfDataset) {
+        selectedBfDataset = item.id;
+      }
+    });
+
+    client.invoke(
+      "api_validate_dataset_pipeline",
+      selectedBfAccount,
+      selectedBfDataset,
+      (error, res) => {
+        if (error) {
+          log.error(error);
+          console.error(error);
+          // var emessage = userError(error);
+          $("#dataset_validator_spinner").hide();
+          $("#dataset_validator_status").html(
+            `<span style='color: red;'> ${error}</span>"`
+          );
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Validate Dataset",
+            defaultBfDataset
+          );
+        } else {
+          console.log(res)
+          log.info("Validation succesful");
+          create_validation_report(res);
+          $("#dataset_validator_status").html("");
+          $("#dataset_validator_spinner").hide();
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Validate Dataset",
+            defaultBfDataset
+          );
+        }
+      }
+    );
+  }, delayAnimation);
+});

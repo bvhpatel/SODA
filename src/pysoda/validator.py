@@ -1,29 +1,36 @@
 # -*- coding: utf-8 -*-
-
-### Import required python modules
-
+# from gevent import monkey; monkey.patch_all(ssl=False)
 from sparcur.paths import Path as SparCurPath
 from sparcur.utils import PennsieveId
 from sparcur.simple.retrieve import main as retrieve
 from sparcur.simple.validate import main as validate
 from configparser import ConfigParser
+import gevent
 import os.path
 import shutil
 import yaml
-# from pathlib import Path
+import json
+from pennsieve import Pennsieve
+from pathlib import Path
 
-userpath = SparCurPath.expanduser("~")
+userpath = os.path.expanduser("~")
 configpath = os.path.join(userpath, '.pennsieve', 'config.ini')
 
 local_sparc_dataset_location = "~/files/sparc-datasets"
 sparc_organization_id = "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
-
 parent_folder = SparCurPath(local_sparc_dataset_location).expanduser()
-orthauth_path = SparCurPath('~/.config/orthauth').expanduser()
-orthauth_path_secrets = orthauth_path + "/secrets.yaml"
-pyontutils_path = SparCurPath('~/.config/pyontutils').expanduser()
-pyontutils_path_config = pyontutils_path + "/config.yaml"
 
+# for gevent
+local_dataset_folder_path = ""
+validation_json = {}
+
+# config file locations
+orthauth_path = SparCurPath('~/.config/orthauth').expanduser()
+orthauth_path_secrets = SparCurPath('~/.config/orthauth/secrets.yaml').expanduser()
+pyontutils_path = SparCurPath('~/.config/pyontutils').expanduser()
+pyontutils_path_config = SparCurPath('~/.config/pyontutils/config.yaml').expanduser()
+
+# min template for orthauth config file
 orthauth_path_secrets_min_template = {
     "pennsieve": {
         "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0": { 
@@ -33,38 +40,39 @@ orthauth_path_secrets_min_template = {
         }
     }
 
-pyonutils_config = {
+# min template for pyontutils config file
+pyontutils_config = {
     'auth-stores': {
         'secrets': {
             'path': '{:user-config-path}/orthauth/secrets.yaml'
             }
         },
     'auth-variables': {
-        'curies': 'null',
-        'git-local-base': 'null',
-        'git-remote-base': 'null',
-        'google-api-creds-file': 'null',
-        'google-api-service-account-file': 'null',
-        'google-api-store-file': 'null',
-        'google-api-store-file-readonly': 'null',
-        'nifstd-checkout-ok': 'null',
-        'ontology-local-repo': 'null',
-        'ontology-org': 'null',
-        'ontology-repo': 'null',
-        'patch-config': 'null',
-        'resources': 'null',
-        'scigraph-api': 'https://scigraph.olympiangods.org/scigraph',
-        'scigraph-api-key': 'null',
-        'scigraph-graphload': 'null',
-        'scigraph-services': 'null',
-        'zip-location': 'null'
+        'curies': None,
+        'git-local-base': None,
+        'git-remote-base': None,
+        'google-api-creds-file': None,
+        'google-api-service-account-file': None,
+        'google-api-store-file': None,
+        'google-api-store-file-readonly': None,
+        'nifstd-checkout-ok': None,
+        'ontology-local-repo': None,
+        'ontology-org': None,
+        'ontology-repo': None,
+        'patch-config': None,
+        'resources': None,
+        'scigraph-api': "https://scigraph.olympiangods.org/scigraph",
+        'scigraph-api-key': None,
+        'scigraph-graphload': None,
+        'scigraph-services': None,
+        'zip-location': None
         }
     }
 
-# If this yaml file doesn't exist, or isn't valid
-# delete it and create a fresh copy
+# If orthauth yaml file doesn't exist, or isn't valid
+# delete it and create a fresh copy with the specified Pennsieve account
 def add_orthauth_yaml(ps_account):
-    os.chmod(orthauth_path, 0o0700)
+    os.chmod(orthauth_path, 0o0700) # might not be required
 
     config = ConfigParser()
     if os.path.exists(configpath):
@@ -75,13 +83,15 @@ def add_orthauth_yaml(ps_account):
     yml_obj["pennsieve"][sparc_organization_id]["key"] = config[ps_account]["api_token"]
     yml_obj["pennsieve"][sparc_organization_id]["secret"] = config[ps_account]["api_secret"]
 
+    # delete pre-existing file
     if os.path.exists(orthauth_path_secrets):
         os.remove(orthauth_path_secrets)
 
+    # write yaml object to the secrets file.
     with open(orthauth_path_secrets, 'w') as file:
         yaml.dump(yml_obj, file)
 
-    os.chmod(orthauth_path_secrets, 0o0600)
+    os.chmod(orthauth_path_secrets, 0o0600) # required for the validator
 
     return "Valid"
 
@@ -89,14 +99,14 @@ def add_orthauth_yaml(ps_account):
 def check_prerequisites(ps_account):
     ## pyontutils config
     if not os.path.exists(pyontutils_path):
-        pyontutils_path.mkdir(parents=True, exist_ok=True)
+        pyontutils_path.mkdir(parents = True, exist_ok = True)
 
     with open(pyontutils_path_config, 'w') as file:
-        yaml.dump(pyonutils_config, file)
+        yaml.dump(pyontutils_config, file)
     
-    ## orthauth config
+    # orthauth config folder path
     if not os.path.exists(orthauth_path):
-        orthauth_path.mkdir(parents=True, exist_ok=True)
+        orthauth_path.mkdir(parents = True, exist_ok = True)
 
     # Create yaml if doesn't exist
     if os.path.exists(orthauth_path_secrets):
@@ -114,12 +124,26 @@ def check_prerequisites(ps_account):
 # This pipeline first retrieves a datset to a local folder 
 # and then validates the local dataset
 def validate_dataset_pipeline(ps_account, ps_dataset):
-    
+    # error = ''
+
+    # try:
+    #     bf = Pennsieve(ps_account)
+    # except Exception as e:
+    #     error = error + 'Error: Please select a valid Pennsieve account'
+    #     raise Exception(error)
+
+    # try:
+    #     myds = bf.get_dataset(ps_dataset)
+    # except Exception as e:
+    #     error = error + 'Error: Please select a valid Pennsieve dataset' + '<br>'
+
+    global local_dataset_folder_path
+    global validation_json
+
     check_prerequisites(ps_account)
 
     sparc_dataset_id = ps_dataset
     sparc_dataset_uuid = sparc_dataset_id.replace("N:dataset:", "")
-    local_dataset_folder_path = ""
 
     try:
         organization = PennsieveId(sparc_organization_id)
@@ -127,23 +151,69 @@ def validate_dataset_pipeline(ps_account, ps_dataset):
     except Exception as e:
         raise e
 
+    # create dataset folder for the retrieve
     if not os.path.exists(parent_folder):
-        parent_folder.mkdir(parents=True, exist_ok=True)
+        parent_folder.mkdir(parents = True, exist_ok = True)
 
+    def temp_retrieve_function(sparc_dataset, organization, parent_folder):
+        global local_dataset_folder_path
+        gevent.sleep(0)
+        local_dataset_folder_path = retrieve(id = sparc_dataset, dataset_id = sparc_dataset, project_id = organization, parent_parent_path = parent_folder)
+        gevent.sleep(0)
+    
+    gev = []
     try:
-        if organization != "" and sparc_dataset != "": 
-            local_dataset_folder_path = retrieve(id = sparc_dataset, dataset_id = sparc_dataset, project_id = organization, parent_parent_path = parent_folder)
+        # retrieve the dataset from Pennsive. --check for heartbeat errors here
+        if organization != "" and sparc_dataset != "":
+            gevent.sleep(0)
+            gev.append(gevent.spawn(temp_retrieve_function, sparc_dataset, organization, parent_folder))
+            gevent.sleep(0)
+            gevent.joinall(gev) 
+            gevent.sleep(0)
+            try:
+                gev[0].get()
+            except Exception as e:
+                raise e
+            # gev.append(gevent.spawn(temp_retrieve_function))
+            # gevent.sleep(0)
+            # gevent.joinall(gev) 
+            # # local_dataset_folder_path = retrieve(id = sparc_dataset, dataset_id = sparc_dataset, project_id = organization, parent_parent_path = parent_folder)
         else:
             raise Exception("Retrieve Errror")
     except Exception as e:
         raise e
 
-    try:
+    validation_json = {}
+    def temp_validate_function(local_dataset_folder_path):
+        global validation_json
+        gevent.sleep(0)
         validation_json = validate(local_dataset_folder_path)
+        gevent.sleep(0)
+
+    # local_dataset_folder_path = r"/home/dev/files/sparc-datasets/2f4afec4-6e4d-4c20-b913-8e115fc8631b/Acute effects of gastric electrical stimulation (GES) settings on neural activity accessed with functional magnetic resonance maging (fMRI) in rats"
+
+    try:
+        gevent.sleep(0)
+        gev.append(gevent.spawn(temp_validate_function, local_dataset_folder_path))
+        gevent.sleep(0)
+        gevent.joinall(gev) 
+        gevent.sleep(0)
+        try:
+            gev[0].get()
+        except Exception as e:
+            raise e
+        # # validate the local dataset. The report will be returned --check for heartbeat errrors here
+        # # gev.append(gevent.spawn(temp_validate_function))
+        # gevent.sleep(0)
+        # gevent.joinall([gevent.spawn(temp_validate_function, local_dataset_folder_path)]) 
+        # gevent.sleep(0)
+        # # validation_json = validate(local_dataset_folder_path)
     except Exception as e:
         raise e
 
     path_error_report = validation_json["status"]["path_error_report"]
+    # path_error_report = {}
+    # blob = json.dumps(validation_json, indent=4, sort_keys=True, default=str)
 
     # Delete the local dataset. 
     # FUTURE: Look into setting an expiration date for this one.
@@ -154,4 +224,5 @@ def validate_dataset_pipeline(ps_account, ps_dataset):
         # no folder present
         print("Error: %s : %s" % (dir_path, e.strerror))
 
-    return path_error_report
+    # return the error report. We can deal with the validation on the front end.
+    return (local_dataset_folder_path, path_error_report)
