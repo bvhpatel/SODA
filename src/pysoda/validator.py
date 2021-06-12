@@ -17,14 +17,6 @@ from pathlib import Path
 userpath = os.path.expanduser("~")
 configpath = os.path.join(userpath, '.pennsieve', 'config.ini')
 
-local_sparc_dataset_location = str(Path.home()) + "/files/sparc-datasets"
-sparc_organization_id = "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
-parent_folder = SparCurPath(local_sparc_dataset_location).expanduser()
-
-# for gevent
-local_dataset_folder_path = ""
-validation_json = {}
-
 def get_home_directory(folder):
     if sys.platform == "win32":
         return str(Path.home()) + "/AppData/Local/" + folder
@@ -33,6 +25,13 @@ def get_home_directory(folder):
     elif sys.platform == "darwin":
         return str(Path.home()) + "/AppData/Local/" + folder
 
+local_sparc_dataset_location = str(Path.home()) + "/files/sparc-datasets"
+sparc_organization_id = "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
+parent_folder = SparCurPath(local_sparc_dataset_location).expanduser()
+
+# for gevent
+local_dataset_folder_path = ""
+validation_json = {}
 
 # config file locations
 orthauth_path = SparCurPath(get_home_directory("orthauth")).expanduser()
@@ -134,19 +133,99 @@ def check_prerequisites(ps_account):
 # This pipeline first retrieves a datset to a local folder 
 # and then validates the local dataset
 def validate_dataset_pipeline(ps_account, ps_dataset):
-    # error = ''
+    # return
+    # global local_dataset_folder_path
+    # global validation_json
+
+    check_prerequisites(ps_account)
+
+    sparc_dataset_id = ps_dataset
+    sparc_dataset_uuid = sparc_dataset_id.replace("N:dataset:", "")
+
+    try:
+        organization = PennsieveId(sparc_organization_id)
+        sparc_dataset = PennsieveId(sparc_dataset_id)
+    except Exception as e:
+        raise e
+
+    # create dataset folder for the retrieve
+    if not os.path.exists(parent_folder):
+        parent_folder.mkdir(parents = True, exist_ok = True)
+
+    local_dataset_folder_path = retrieve(id = sparc_dataset, dataset_id = sparc_dataset, project_id = organization, parent_parent_path = parent_folder)
+    
+
+    # def temp_retrieve_function(sparc_dataset, organization, parent_folder):
+    #     global local_dataset_folder_path
+    #     gevent.sleep(0)
+    #     local_dataset_folder_path = retrieve(id = sparc_dataset, dataset_id = sparc_dataset, project_id = organization, parent_parent_path = parent_folder)
+    #     gevent.sleep(0)
+    
+    # gev = []
+    # try:
+    #     # retrieve the dataset from Pennsive. --check for heartbeat errors here
+    #     if organization != "" and sparc_dataset != "":
+    #         gevent.sleep(0)
+    #         gev.append(gevent.spawn(temp_retrieve_function, sparc_dataset, organization, parent_folder))
+    #         gevent.sleep(0)
+    #         gevent.joinall(gev) 
+    #         gevent.sleep(0)
+    #         try:
+    #             gev[0].get()
+    #         except Exception as e:
+    #             raise e
+    #     else:
+    #         raise Exception("Retrieve Errror")
+    # except Exception as e:
+    #     raise e
+
+    validation_json = {}
+    validation_json = validate(local_dataset_folder_path)
+
+
+    # def temp_validate_function(local_dataset_folder_path):
+    #     global validation_json
+    #     gevent.sleep(0)
+    #     validation_json = validate(local_dataset_folder_path)
+    #     gevent.sleep(0)
+
+    # local_dataset_folder_path = r"/home/dev/files/sparc-datasets/2f4afec4-6e4d-4c20-b913-8e115fc8631b/Acute effects of gastric electrical stimulation (GES) settings on neural activity accessed with functional magnetic resonance maging (fMRI) in rats"
 
     # try:
-    #     bf = Pennsieve(ps_account)
+    #     gevent.sleep(0)
+    #     gev.append(gevent.spawn(temp_validate_function, local_dataset_folder_path))
+    #     gevent.sleep(0)
+    #     gevent.joinall(gev) 
+    #     gevent.sleep(0)
+    #     try:
+    #         gev[0].get()
+    #     except Exception as e:
+    #         raise e
     # except Exception as e:
-    #     error = error + 'Error: Please select a valid Pennsieve account'
-    #     raise Exception(error)
+    #     raise e
 
-    # try:
-    #     myds = bf.get_dataset(ps_dataset)
-    # except Exception as e:
-    #     error = error + 'Error: Please select a valid Pennsieve dataset' + '<br>'
+    try:
+        path_error_report = validation_json["status"]["path_error_report"]
+    except Exception as e:
+        path_error_report = validation_json["status"]
 
+    # path_error_report = validation_json["status"]["path_error_report"]
+    # path_error_report = {}
+    # blob = json.dumps(validation_json, indent=4, sort_keys=True, default=str)
+
+    # Delete the local dataset. 
+    # FUTURE: Look into setting an expiration date for this one.
+    dir_path = SparCurPath(local_sparc_dataset_location + '/' + sparc_dataset_uuid).expanduser()
+    try:
+        shutil.rmtree(dir_path)
+    except OSError as e:
+        # no folder present
+        print("Error: %s : %s" % (dir_path, e.strerror))
+
+    # return the error report. We can deal with the validation on the front end.
+    return path_error_report
+
+def retrieve_dataset_pipeline(ps_account, ps_dataset):
     global local_dataset_folder_path
     global validation_json
 
@@ -167,72 +246,73 @@ def validate_dataset_pipeline(ps_account, ps_dataset):
 
     def temp_retrieve_function(sparc_dataset, organization, parent_folder):
         global local_dataset_folder_path
-        gevent.sleep(0)
         local_dataset_folder_path = retrieve(id = sparc_dataset, dataset_id = sparc_dataset, project_id = organization, parent_parent_path = parent_folder)
-        gevent.sleep(0)
+        return
     
     gev = []
     try:
         # retrieve the dataset from Pennsive. --check for heartbeat errors here
         if organization != "" and sparc_dataset != "":
             gevent.sleep(0)
-            gev.append(gevent.spawn(temp_retrieve_function, sparc_dataset, organization, parent_folder))
-            gevent.sleep(0)
-            gevent.joinall(gev) 
-            gevent.sleep(0)
-            try:
-                gev[0].get()
-            except Exception as e:
-                raise e
-            # gev.append(gevent.spawn(temp_retrieve_function))
+            # gev.append(gevent.spawn(temp_retrieve_function, sparc_dataset, organization, parent_folder))
+            local_dataset_folder_path = retrieve(id = sparc_dataset, dataset_id = sparc_dataset, project_id = organization, parent_parent_path = parent_folder)
             # gevent.sleep(0)
             # gevent.joinall(gev) 
-            # # local_dataset_folder_path = retrieve(id = sparc_dataset, dataset_id = sparc_dataset, project_id = organization, parent_parent_path = parent_folder)
+            # gevent.sleep(0)
+            # try:
+            #     gev[0].get()
+            # except Exception as e:
+            #     raise e
         else:
             raise Exception("Retrieve Errror")
+
+        return str(local_dataset_folder_path)
     except Exception as e:
         raise e
 
+def val_dataset_pipeline(ps_account, ps_dataset):
+    global local_dataset_folder_path
+    global validation_json
+
+    sparc_dataset_id = ps_dataset
+    sparc_dataset_uuid = sparc_dataset_id.replace("N:dataset:", "")
+
     validation_json = {}
-    def temp_validate_function(local_dataset_folder_path):
+    def temp_validate_function(local_dataset_folder):
         global validation_json
-        gevent.sleep(0)
-        validation_json = validate(local_dataset_folder_path)
-        gevent.sleep(0)
+        validation_json = validate(local_dataset_folder)
 
     # local_dataset_folder_path = r"/home/dev/files/sparc-datasets/2f4afec4-6e4d-4c20-b913-8e115fc8631b/Acute effects of gastric electrical stimulation (GES) settings on neural activity accessed with functional magnetic resonance maging (fMRI) in rats"
-
+    gev = []
     try:
         gevent.sleep(0)
         gev.append(gevent.spawn(temp_validate_function, local_dataset_folder_path))
+        # validation_json = validate(local_dataset_folder_path)
         gevent.sleep(0)
         gevent.joinall(gev) 
-        gevent.sleep(0)
+        # gevent.sleep(0)
         try:
             gev[0].get()
         except Exception as e:
             raise e
-        # # validate the local dataset. The report will be returned --check for heartbeat errrors here
-        # # gev.append(gevent.spawn(temp_validate_function))
-        # gevent.sleep(0)
-        # gevent.joinall([gevent.spawn(temp_validate_function, local_dataset_folder_path)]) 
-        # gevent.sleep(0)
-        # # validation_json = validate(local_dataset_folder_path)
     except Exception as e:
         raise e
 
-    path_error_report = validation_json["status"]["path_error_report"]
+    try:
+        path_error_report = validation_json["status"]["path_error_report"]
+    except Exception as e:
+        path_error_report = validation_json["status"]
     # path_error_report = {}
     # blob = json.dumps(validation_json, indent=4, sort_keys=True, default=str)
 
     # Delete the local dataset. 
     # FUTURE: Look into setting an expiration date for this one.
-    dir_path = SparCurPath(local_sparc_dataset_location + '/' + sparc_dataset_uuid).expanduser()
-    try:
-        shutil.rmtree(dir_path)
-    except OSError as e:
-        # no folder present
-        print("Error: %s : %s" % (dir_path, e.strerror))
+    # dir_path = SparCurPath(local_sparc_dataset_location + '/' + sparc_dataset_uuid).expanduser()
+    # try:
+    #     shutil.rmtree(dir_path)
+    # except OSError as e:
+    #     # no folder present
+    #     print("Error: %s : %s" % (dir_path, e.strerror))
 
     # return the error report. We can deal with the validation on the front end.
-    return (local_dataset_folder_path, path_error_report)
+    return path_error_report

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
-from validator import validate_dataset_pipeline
+from validator import validate_dataset_pipeline, retrieve_dataset_pipeline, val_dataset_pipeline
 from gevent import monkey; monkey.patch_all(ssl=False)
 import gevent
 from pysoda import submit_dataset_progress,  \
@@ -28,6 +28,18 @@ class SodaApi(object):
     def api_validate_dataset_pipeline(self, selected_bfaccount, selected_bfdataset):
         try:
             return validate_dataset_pipeline(selected_bfaccount, selected_bfdataset)
+        except Exception as e:
+            raise e
+
+    def api_retrieve_dataset_pipeline(self, selected_bfaccount, selected_bfdataset):
+        try:
+            return retrieve_dataset_pipeline(selected_bfaccount, selected_bfdataset)
+        except Exception as e:
+            raise e
+
+    def api_val_dataset_pipeline(self, selected_bfaccount, selected_bfdataset):
+        try:
+            return val_dataset_pipeline(selected_bfaccount, selected_bfdataset)
         except Exception as e:
             raise e
 

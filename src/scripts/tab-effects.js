@@ -2849,10 +2849,13 @@ $(document).ready(() => {
     $(".section").addClass("fullShown");
   });
 
+  // $('.ui.accordion').accordion();
+
   $(".footer-div div button").click(() => {
     $("#main-nav").removeClass("active");
     $("#sidebarCollapse").removeClass("active");
     $(".section").removeClass("fullShown");
+
   });
 
   // Blackfynn transition warning message
