@@ -49,8 +49,11 @@ var datasetStructureJSONObj = {
 //////////////////////////////////
 let client = new zerorpc.Client({ timeout: 300000 });
 client.connect("tcp://127.0.0.1:4242");
-let client2 = new zerorpc.Client({ timeout: 300000, heartbeatInterval: 10000 });
-client2.connect("tcp://127.0.0.1:4242");
+let validation_client = new zerorpc.Client({
+  timeout: 300000,
+  heartbeatInterval: 10000,
+});
+validation_client.connect("tcp://127.0.0.1:4242");
 
 client.invoke("echo", "server ready", (error, res) => {
   if (error || res !== "server ready") {
@@ -8741,8 +8744,8 @@ $("#validate_dataset_bttn").on("click", () => {
     log.info("validating dataset");
     log.info(bfDatasetSubtitle.value);
 
-    // let client2 = new zerorpc.Client({ timeout: 300000, heartbeatInterval: 3000000 });
-    // client2.connect("tcp://127.0.0.1:4242");
+    // let validation_client = new zerorpc.Client({ timeout: 300000, heartbeatInterval: 3000000 });
+    // validation_client.connect("tcp://127.0.0.1:4242");
 
     $("#dataset_validator_status").text(
       "Please wait while we retrieve and validate the dataset..."
@@ -8758,7 +8761,7 @@ $("#validate_dataset_bttn").on("click", () => {
       }
     });
 
-    // client2.invoke(
+    // validation_client.invoke(
     //   "api_retrieve_dataset_pipeline",
     //   selectedBfAccount,
     //   selectedBfDataset,
@@ -8779,7 +8782,7 @@ $("#validate_dataset_bttn").on("click", () => {
     //       // );
     //     } else {
     //       console.log(res)
-    //       client2.invoke(
+    //       validation_client.invoke(
     //         "api_val_dataset_pipeline",
     //         selectedBfAccount,
     //         selectedBfDataset,
@@ -8828,7 +8831,7 @@ $("#validate_dataset_bttn").on("click", () => {
     //   }
     // );
 
-    client2.invoke(
+    validation_client.invoke(
       "api_validate_dataset_pipeline",
       selectedBfAccount,
       selectedBfDataset,
