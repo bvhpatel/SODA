@@ -8842,7 +8842,7 @@ $("#validate_dataset_bttn").on("click", () => {
           // var emessage = userError(error);
           $("#dataset_validator_spinner").hide();
           $("#dataset_validator_status").html(
-            `<span style='color: red;'> ${error}</span>"`
+            `<span style='color: red;'> ${error}</span>`
           );
           ipcRenderer.send(
             "track-event",
