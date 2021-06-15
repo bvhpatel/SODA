@@ -610,33 +610,33 @@ $(document).ready(function () {
   $("#bf_list_roles_team").selectpicker("refresh");
 });
 
-$(document).ready(function () {
-  var accountDetails = $("#para-account-detail-curate");
-  //Observe the paragraph
-  this.observer = new MutationObserver(
-    function (mutations) {
-      client.invoke(
-        "api_bf_dataset_account",
-        defaultBfAccount,
-        (error, result) => {
-          if (error) {
-            log.error(error);
-            console.log(error);
-            var emessage = error;
-          } else {
-            datasetList = [];
-            datasetList = result;
-            refreshDatasetList();
-          }
-        }
-      );
-    }.bind(this)
-  );
-  this.observer.observe(accountDetails.get(0), {
-    characterData: true,
-    childList: true,
-  });
-});
+// $(document).ready(function () {
+//   var accountDetails = $("#para-account-detail-curate");
+//   //Observe the paragraph
+//   this.observer = new MutationObserver(
+//     function (mutations) {
+//       client.invoke(
+//         "api_bf_dataset_account",
+//         defaultBfAccount,
+//         (error, result) => {
+//           if (error) {
+//             log.error(error);
+//             console.log(error);
+//             var emessage = error;
+//           } else {
+//             datasetList = [];
+//             datasetList = result;
+//             refreshDatasetList();
+//           }
+//         }
+//       );
+//     }.bind(this)
+//   );
+//   this.observer.observe(accountDetails.get(0), {
+//     characterData: true,
+//     childList: true,
+//   });
+// });
 
 const get_api_key = async (login, password, key_name) => {
   return new Promise((resolve) => {

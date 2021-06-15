@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
-from validator import validate_dataset_pipeline, ps_retrieve_dataset, val_dataset_pipeline
+from validator import validate_dataset_pipeline, val_dataset_pipeline  
 from gevent import monkey; monkey.patch_all(ssl=False)
 import gevent
 from pysoda import submit_dataset_progress,  \
@@ -18,7 +18,7 @@ from curate import validate_dataset, create_folder_level_manifest, \
 
 from prepare_metadata import save_submission_file, save_ds_description_file, extract_milestone_info, import_milestone
 
-from organize_datasets import generate_dataset_locally, bf_get_dataset_files_folders
+from organize_datasets import generate_dataset_locally, bf_get_dataset_files_folders, ps_retrieve_dataset
 
 import sys
 import zerorpc
@@ -31,7 +31,7 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
-    def api_retrieve_dataset_pipeline(self, soda_json_obj):
+    def api_ps_retrieve_dataset(self, soda_json_obj):
         try:
             return ps_retrieve_dataset(soda_json_obj)
         except Exception as e:

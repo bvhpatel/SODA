@@ -49,21 +49,6 @@ var datasetStructureJSONObj = {
 //////////////////////////////////
 let client = new zerorpc.Client({ timeout: 300000 });
 client.connect("tcp://127.0.0.1:4242");
-// let client = new zerorpc.Client({
-//   timeout: 300000,
-//   heartbeatInterval: 10000,
-// });
-// client.connect("tcp://127.0.0.1:4242");
-
-client.invoke("echo", "server ready", (error, res) => {
-  if (error || res !== "server ready") {
-    log.error(error);
-    console.error(error);
-  } else {
-    console.log("Connected to Python back-end 2 successfully");
-    log.info("Connected to Python back-end 2 successfully");
-  }
-});
 
 client.invoke("echo", "server ready", (error, res) => {
   if (error || res !== "server ready") {
@@ -859,6 +844,10 @@ const bfAddLicenseBtn = document.getElementById("button-add-license");
 const datasetLicenseStatus = document.querySelector(
   "#para-dataset-license-status"
 );
+
+setInterval(() => {
+  console.log(datasetList)
+}, 1000)
 
 // Pennsieve dataset permission //
 //const bfPermissionForm = document.querySelector("#pennsieve-permission-form");
@@ -2123,7 +2112,7 @@ const contactPersonCheck = (no) => {
 function grabDSInfoEntries() {
   var rawName =
     datasetDescriptionFileDataset.options[
-      datasetDescriptionFileDataset.selectedIndex
+    datasetDescriptionFileDataset.selectedIndex
     ];
   var name;
   if (rawName === undefined) {
@@ -2370,9 +2359,9 @@ function detectEmptyRequiredFields(funding) {
   var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied];
   var emptyMessageArray = [
     "- Missing required fields under Dataset Info section: " +
-      dsEmptyField.join(", "),
+    dsEmptyField.join(", "),
     "- Missing required fields under Contributor Info section: " +
-      conEmptyField.join(", "),
+    conEmptyField.join(", "),
     "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url",
   ];
   var allFieldsSatisfied = true;
@@ -7350,9 +7339,9 @@ document
     for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
       if (
         "manifest.xlsx" in
-          sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
         sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-          "manifest.xlsx"
+        "manifest.xlsx"
         ]["forTreeview"]
       ) {
         delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
@@ -8787,9 +8776,9 @@ $("#validate_dataset_bttn").on("click", () => {
     };
 
     client.invoke(
-      "api_retrieve_dataset_pipeline",
+      "api_ps_retrieve_dataset",
       temp_object,
-      (error, res) => {
+      async (error, res) => {
         if (error) {
           log.error(error);
           console.error(error);
@@ -8805,44 +8794,64 @@ $("#validate_dataset_bttn").on("click", () => {
           //   defaultBfDataset
           // );
         } else {
-          // console.log(res);
+          console.log(res);
           $("#dataset_validator_status").text(
             "Please wait while we validate the dataset..."
           );
-          client.invoke(
-            "api_val_dataset_pipeline",
-            selectedBfAccount,
-            selectedBfDataset,
-            (error, res) => {
-              if (error) {
-                log.error(error);
-                console.error(error);
-                // var emessage = userError(error);
-                $("#dataset_validator_spinner").hide();
-                $("#dataset_validator_status").html(
-                  `<span style='color: red;'> ${error}</span>`
-                );
-                // ipcRenderer.send(
-                //   "track-event",
-                //   "Error",
-                //   "Validate Dataset",
-                //   defaultBfDataset
-                // );
-              } else {
-                console.log(res);
-                // log.info("Validation succesful");
-                create_validation_report(res);
-                $("#dataset_validator_status").html("");
-                $("#dataset_validator_spinner").hide();
-                // ipcRenderer.send(
-                //   "track-event",
-                //   "Success",
-                //   "Validate Dataset",
-                //   defaultBfDataset
-                // );
-              }
+
+          let validation_client = new zerorpc.Client({
+            timeout: 300000,
+            heartbeatInterval: 10000,
+          });
+          validation_client.connect("tcp://127.0.0.1:4242");
+
+          validation_client.invoke("echo", "server ready", (error, res) => {
+            if (error || res !== "server ready") {
+              log.error(error);
+              console.error(error);
+            } else {
+              console.log("Connected to validation backend successfully");
+              log.info("Connected to validation backend successfully");
+
+              validation_client.invoke(
+                "api_val_dataset_pipeline",
+                selectedBfAccount,
+                selectedBfDataset,
+                (error, res) => {
+                  if (error) {
+                    log.error(error);
+                    console.error(error);
+                    // var emessage = userError(error);
+                    $("#dataset_validator_spinner").hide();
+                    $("#dataset_validator_status").html(
+                      `<span style='color: red;'> ${error}</span>`
+                    );
+                    // ipcRenderer.send(
+                    //   "track-event",
+                    //   "Error",
+                    //   "Validate Dataset",
+                    //   defaultBfDataset
+                    // );
+                  } else {
+                    console.log(res);
+
+                    // log.info("Validation succesful");
+                    create_validation_report(res);
+                    $("#dataset_validator_status").html("");
+                    $("#dataset_validator_spinner").hide();
+                    // ipcRenderer.send(
+                    //   "track-event",
+                    //   "Success",
+                    //   "Validate Dataset",
+                    //   defaultBfDataset
+                    // );
+                  }
+                }
+              );
             }
-          );
+          });
+
+
           // console.log(res)
           // log.info("Validation succesful");
           // create_validation_report(res);
