@@ -49,11 +49,11 @@ var datasetStructureJSONObj = {
 //////////////////////////////////
 let client = new zerorpc.Client({ timeout: 300000 });
 client.connect("tcp://127.0.0.1:4242");
-let validation_client = new zerorpc.Client({
-  timeout: 300000,
-  heartbeatInterval: 10000,
-});
-validation_client.connect("tcp://127.0.0.1:4242");
+// let client = new zerorpc.Client({
+//   timeout: 300000,
+//   heartbeatInterval: 10000,
+// });
+// client.connect("tcp://127.0.0.1:4242");
 
 client.invoke("echo", "server ready", (error, res) => {
   if (error || res !== "server ready") {
@@ -4968,6 +4968,22 @@ function loadDefaultAccount() {
         showHideDropdownButtons("account", "show");
         refreshBfUsersList();
         refreshBfTeamsList(bfListTeams);
+        client.invoke(
+          "api_bf_dataset_account",
+          defaultBfAccount,
+          (error, result) => {
+            if (error) {
+              log.error(error);
+              console.log(error);
+              var emessage = error;
+            } else {
+              log.info("Request successful");
+              datasetList = [];
+              datasetList = result;
+              refreshDatasetList();
+            }
+          }
+        );
       }
     }
   });
@@ -8748,21 +8764,102 @@ $("#validate_dataset_bttn").on("click", () => {
     // validation_client.connect("tcp://127.0.0.1:4242");
 
     $("#dataset_validator_status").text(
-      "Please wait while we retrieve and validate the dataset..."
+      "Please wait while we retrieve the dataset..."
     );
     $("#dataset_validator_spinner").show();
 
     let selectedBfAccount = defaultBfAccount;
-    let selectedBfDataset = "None";
+    let selectedBfDataset = defaultBfDataset;
 
-    datasetList.forEach((item) => {
-      if (item.name == defaultBfDataset) {
-        selectedBfDataset = item.id;
+    // datasetList.forEach((item) => {
+    //   if (item.name == defaultBfDataset) {
+    //     selectedBfDataset = item.id;
+    //   }
+    // });
+
+    temp_object = {
+      "bf-account-selected": {
+        "account-name": selectedBfAccount,
+      },
+      "bf-dataset-selected": {
+        "dataset-name": selectedBfDataset,
+      },
+    };
+
+    client.invoke(
+      "api_retrieve_dataset_pipeline",
+      temp_object,
+      (error, res) => {
+        if (error) {
+          log.error(error);
+          console.error(error);
+          // var emessage = userError(error);
+          $("#dataset_validator_spinner").hide();
+          $("#dataset_validator_status").html(
+            `<span style='color: red;'> ${error}</span>`
+          );
+          // ipcRenderer.send(
+          //   "track-event",
+          //   "Error",
+          //   "Validate Dataset",
+          //   defaultBfDataset
+          // );
+        } else {
+          // console.log(res);
+          $("#dataset_validator_status").text(
+            "Please wait while we validate the dataset..."
+          );
+          client.invoke(
+            "api_val_dataset_pipeline",
+            selectedBfAccount,
+            selectedBfDataset,
+            (error, res) => {
+              if (error) {
+                log.error(error);
+                console.error(error);
+                // var emessage = userError(error);
+                $("#dataset_validator_spinner").hide();
+                $("#dataset_validator_status").html(
+                  `<span style='color: red;'> ${error}</span>`
+                );
+                // ipcRenderer.send(
+                //   "track-event",
+                //   "Error",
+                //   "Validate Dataset",
+                //   defaultBfDataset
+                // );
+              } else {
+                console.log(res);
+                // log.info("Validation succesful");
+                create_validation_report(res);
+                $("#dataset_validator_status").html("");
+                $("#dataset_validator_spinner").hide();
+                // ipcRenderer.send(
+                //   "track-event",
+                //   "Success",
+                //   "Validate Dataset",
+                //   defaultBfDataset
+                // );
+              }
+            }
+          );
+          // console.log(res)
+          // log.info("Validation succesful");
+          // create_validation_report(res);
+          // $("#dataset_validator_status").html("");
+          // $("#dataset_validator_spinner").hide();
+          // ipcRenderer.send(
+          //   "track-event",
+          //   "Success",
+          //   "Validate Dataset",
+          //   defaultBfDataset
+          // );
+        }
       }
-    });
+    );
 
     // validation_client.invoke(
-    //   "api_retrieve_dataset_pipeline",
+    //   "api_validate_dataset_pipeline",
     //   selectedBfAccount,
     //   selectedBfDataset,
     //   (error, res) => {
@@ -8774,96 +8871,26 @@ $("#validate_dataset_bttn").on("click", () => {
     //       $("#dataset_validator_status").html(
     //         `<span style='color: red;'> ${error}</span>`
     //       );
-    //       // ipcRenderer.send(
-    //       //   "track-event",
-    //       //   "Error",
-    //       //   "Validate Dataset",
-    //       //   defaultBfDataset
-    //       // );
-    //     } else {
-    //       console.log(res)
-    //       validation_client.invoke(
-    //         "api_val_dataset_pipeline",
-    //         selectedBfAccount,
-    //         selectedBfDataset,
-    //         (error, res) => {
-    //           if (error) {
-    //             log.error(error);
-    //             console.error(error);
-    //             // var emessage = userError(error);
-    //             $("#dataset_validator_spinner").hide();
-    //             $("#dataset_validator_status").html(
-    //               `<span style='color: red;'> ${error}</span>`
-    //             );
-    //             // ipcRenderer.send(
-    //             //   "track-event",
-    //             //   "Error",
-    //             //   "Validate Dataset",
-    //             //   defaultBfDataset
-    //             // );
-    //           } else {
-    //             console.log(res)
-    //             // log.info("Validation succesful");
-    //             create_validation_report(res);
-    //             $("#dataset_validator_status").html("");
-    //             $("#dataset_validator_spinner").hide();
-    //             // ipcRenderer.send(
-    //             //   "track-event",
-    //             //   "Success",
-    //             //   "Validate Dataset",
-    //             //   defaultBfDataset
-    //             // );
-    //           }
-    //         }
+    //       ipcRenderer.send(
+    //         "track-event",
+    //         "Error",
+    //         "Validate Dataset",
+    //         defaultBfDataset
     //       );
-    //       // console.log(res)
-    //       // log.info("Validation succesful");
-    //       // create_validation_report(res);
-    //       // $("#dataset_validator_status").html("");
-    //       // $("#dataset_validator_spinner").hide();
-    //       // ipcRenderer.send(
-    //       //   "track-event",
-    //       //   "Success",
-    //       //   "Validate Dataset",
-    //       //   defaultBfDataset
-    //       // );
+    //     } else {
+    //       console.log(res);
+    //       log.info("Validation succesful");
+    //       create_validation_report(res);
+    //       $("#dataset_validator_status").html("");
+    //       $("#dataset_validator_spinner").hide();
+    //       ipcRenderer.send(
+    //         "track-event",
+    //         "Success",
+    //         "Validate Dataset",
+    //         defaultBfDataset
+    //       );
     //     }
     //   }
     // );
-
-    validation_client.invoke(
-      "api_validate_dataset_pipeline",
-      selectedBfAccount,
-      selectedBfDataset,
-      (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-          // var emessage = userError(error);
-          $("#dataset_validator_spinner").hide();
-          $("#dataset_validator_status").html(
-            `<span style='color: red;'> ${error}</span>`
-          );
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            "Validate Dataset",
-            defaultBfDataset
-          );
-        } else {
-          console.log(res);
-          log.info("Validation succesful");
-          create_validation_report(res);
-          $("#dataset_validator_status").html("");
-          $("#dataset_validator_spinner").hide();
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            "Validate Dataset",
-            defaultBfDataset
-          );
-        }
-      }
-    );
   }, delayAnimation);
 });
