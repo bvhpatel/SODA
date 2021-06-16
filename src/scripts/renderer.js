@@ -2058,7 +2058,7 @@ const emptyStudyInfoEntries = () => {
   var emptyFieldArray = [];
   /// check for number of keywords
   for (var element in inforObj) {
-    if (inforObj[element] == "studyCollectionTitle") {
+    if (element == "studyCollectionTitle") {
       continue;
     }
     if (inforObj[element].length === 0) {
