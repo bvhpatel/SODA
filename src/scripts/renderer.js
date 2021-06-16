@@ -2403,11 +2403,11 @@ function detectEmptyRequiredFields(funding) {
   var emptyMessageArray = [
     "- Missing required fields under Dataset Info section: " +
       dsEmptyField.join(", "),
+    "- Missing required fields under Study Info section: " +
+      studyEmptyField.join(", "),
     "- Missing required fields under Contributor Info section: " +
       conEmptyField.join(", "),
     "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url",
-    "- Missing required fields under Study Info section: " +
-      studyEmptyField.join(", "),
   ];
   var allFieldsSatisfied = true;
   errorMessage = [];
@@ -2434,10 +2434,6 @@ generateDSBtn.addEventListener("click", (event) => {
 
   /// raise a warning if empty required fields are found
   if (allFieldsSatisfied === false) {
-    // ipcRenderer.send(
-    //   "warning-missing-items-ds-description",
-    //   errorMessage.join("\n")
-    // );
     var textErrorMessage = "";
     for (var i = 0; i < errorMessage.length; i++) {
       textErrorMessage += errorMessage[i] + "<br>";
@@ -2506,7 +2502,6 @@ ipcRenderer.on(
         var studyInfoValueArray = grabStudyInfoEntries();
 
         //// process obtained values to pass to an array ///
-        ///////////////////////////////////////////////////
         var keywordVal = [];
         for (var i = 0; i < datasetInfoValueArray["keywords"].length; i++) {
           keywordVal.push(datasetInfoValueArray["keywords"][i].value);
