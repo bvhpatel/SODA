@@ -36,7 +36,8 @@ import itertools
 
 from openpyxl import load_workbook
 from openpyxl import Workbook
-from openpyxl.styles import PatternFill, Font
+from openpyxl.styles import PatternFill, Font, Alignment
+from openpyxl.styles.borders import Border, Side
 from docx import Document
 
 from datetime import datetime, timezone
@@ -125,6 +126,8 @@ def rename_headers(workbook, max_len, start_index):
     """
     Rename header columns if values exceed 3. Change Additional Values to Value 4, 5,...
     """
+    if max_len <= 3:
+        workbook.delete_cols(7, 1) ## Delete the value n column
 
     columns_list = excel_columns(start_index=start_index)
     if max_len >= start_index:
@@ -140,46 +143,73 @@ def rename_headers(workbook, max_len, start_index):
                                end_color='9CC2E5',
                                fill_type='solid')
 
-            font = Font(bold=True)
+            font = Font(name='Calibri', size=11, bold=True)
+            cell.alignment = Alignment(vertical="top")
             cell.fill = blueFill
             cell.font = font
+
+            thin_border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+            cell.border = thin_border
 
     else:
 
         delete_range = len(columns_list) - max_len - 1
         workbook.delete_cols(4+max_len, delete_range)
 
+    if max_len > 4:
+        columns_list = excel_columns(start_index=start_index)
+        for i, column in zip(range(2, max_len+1), columns_list[1:]):
+
+            lightgreyFill = PatternFill(start_color='CCCCCC', end_color='CCCCCC', fill_type='solid')
+            darkgreyFill = PatternFill(start_color='B2B2B2', end_color='B2B2B2', fill_type='solid')
+            workbook[column + "2"].fill = lightgreyFill
+            workbook[column + "3"].fill = lightgreyFill
+            workbook[column + "4"].fill = darkgreyFill
+            workbook[column + "5"].fill = lightgreyFill
+            workbook[column + "6"].fill = lightgreyFill
+            workbook[column + "9"].fill = lightgreyFill
+            workbook[column + "10"].fill = darkgreyFill
+            workbook[column + "11"].fill = lightgreyFill
+            workbook[column + "12"].fill = lightgreyFill
+            workbook[column + "13"].fill = lightgreyFill
+            workbook[column + "14"].fill = lightgreyFill
+            workbook[column + "15"].fill = darkgreyFill
+            workbook[column + "20"].fill = darkgreyFill
+            workbook[column + "25"].fill = darkgreyFill
+            workbook[column + "26"].fill = lightgreyFill
+            workbook[column + "27"].fill = lightgreyFill
 
 ### Prepare dataset-description file
 
 def populate_dataset_info(workbook, val_array):
     ## name, description, samples, subjects
-    workbook["D2"] = val_array[0]
-    workbook["D3"] = val_array[1]
-    workbook["D17"] = val_array[3]
-    workbook["D16"] = val_array[4]
+    workbook["D5"] = val_array[0]
+    workbook["D6"] = val_array[1]
+    workbook["D27"] = val_array[3]
+    workbook["D26"] = val_array[4]
+    workbook["D3"] = val_array[5]
 
     ## keywords
     for i, column in zip(range(len(val_array[2])), excel_columns(start_index=3)):
-        workbook[column + "4"] = val_array[2][i]
+        workbook[column + "7"] = val_array[2][i]
 
     return val_array[2]
 
 def populate_contributor_info(workbook, val_array):
     ## award info
     for i, column in zip(range(len(val_array["funding"])), excel_columns(start_index=3)):
-        workbook[column + "11"] = val_array["funding"][i]
+        workbook[column + "8"] = val_array["funding"][i]
 
     ### Acknowledgments
-    workbook["D10"] = val_array["acknowledgment"]
+    workbook["D9"] = val_array["acknowledgment"]
 
     ### Contributors
     for contributor, column in zip(val_array['contributors'], excel_columns(start_index=3)):
-        workbook[column + "5"] = contributor["conName"]
-        workbook[column + "6"] = contributor["conID"]
-        workbook[column + "7"] = contributor["conAffliation"]
-        workbook[column + "9"] = contributor["conContact"]
-        workbook[column + "8"] = contributor["conRole"]
+        workbook[column + "16"] = contributor["conName"]
+        workbook[column + "17"] = contributor["conID"]
+        workbook[column + "18"] = contributor["conAffliation"]
+        # workbook[column + "9"] = contributor["conContact"]
+        workbook[column + "19"] = contributor["conRole"]
 
     return [val_array["funding"], val_array['contributors']]
 
@@ -188,49 +218,51 @@ def populate_links_info(workbook, val_array):
     total_link_array = val_array["Originating Article DOI"] + val_array["Protocol URL or DOI*"] + val_array["Additional Link"]
     for i, column in zip(range(len(total_link_array)), excel_columns(start_index=3)):
         if total_link_array[i]["link type"] == "Originating Article DOI":
-            workbook[column + "12"] = total_link_array[i]["link"]
-            workbook[column + "13"] = ""
-            workbook[column + "14"] = ""
-            workbook[column + "15"] = total_link_array[i]["description"]
+            workbook[column + "23"] = total_link_array[i]["link"]
+            workbook[column + "24"] = "DOI" #FIX ME get from UI
+            workbook[column + "22"] = "IsDescribedBy"    #FIX ME get from tagify UI
+            workbook[column + "21"] = total_link_array[i]["description"]
         if total_link_array[i]["link type"] == "Protocol URL or DOI*":
-            workbook[column + "12"] = ""
-            workbook[column + "13"] = total_link_array[i]["link"]
-            workbook[column + "14"] = ""
-            workbook[column + "15"] = total_link_array[i]["description"]
+            workbook[column + "23"] = total_link_array[i]["link"]
+            workbook[column + "24"] = "DOI" #FIX ME get from UI
+            workbook[column + "22"] = "IsProtocolFor"    #FIX ME get from tagify UI
+            workbook[column + "21"] = total_link_array[i]["description"]
         if total_link_array[i]["link type"] == "Additional Link":
-            workbook[column + "12"] = ""
-            workbook[column + "13"] = ""
-            workbook[column + "14"] = total_link_array[i]["link"]
-            workbook[column + "15"] = total_link_array[i]["description"]
+            workbook[column + "23"] = total_link_array[i]["link"]
+            workbook[column + "24"] = "DOI" #FIX ME get from UI
+            workbook[column + "22"] = "Describes"    #FIX ME get from tagify UI
+            workbook[column + "21"] = total_link_array[i]["description"]
 
     return total_link_array
 
 def populate_completeness_info(workbook, val_array, bfaccountname):
     ## completeness, parent dataset ID, title Respectively
-    workbook["D18"] = val_array["completeness"]
-    workbook["D20"] = val_array["completeDSTitle"]
+    workbook["D11"] = val_array["studyPurpose"]
+    workbook["D12"] = val_array["studyDataCollection"]
+    workbook["D13"] = val_array["studyPrimaryConclusion"]
+    workbook["D14"] = val_array["studyCollectionTitle"]
 
     ## parent Datasets
-    parentds_id_array = []
-    try:
-        bf = Pennsieve(bfaccountname)
+    # parentds_id_array = []
+    # try:
+    #     bf = Pennsieve(bfaccountname)
 
-        for dataset in val_array["parentDS"]:
+    #     for dataset in val_array["parentDS"]:
 
-            myds = bf.get_dataset(dataset)
-            dataset_id = myds.id
-            parentds_id_array.append(dataset_id)
+    #         myds = bf.get_dataset(dataset)
+    #         dataset_id = myds.id
+    #         parentds_id_array.append(dataset_id)
 
-            workbook["D19"] = ", ".join(parentds_id_array)
+    #         workbook["D19"] = ", ".join(parentds_id_array)
 
-    except Exception as err:
-        # NOTE: Pennsieve package 3.2.0 misspells 'invalid'
-        if 'Invalid profile name' in str(err) or "Invaid profile name" in str(err):
-            raise Exception("Please connect SODA with Pennsieve to use this feature!")
-        raise
+    # except Exception as err:
+    #     # NOTE: Pennsieve package 3.2.0 misspells 'invalid'
+    #     if 'Invalid profile name' in str(err) or "Invaid profile name" in str(err):
+    #         raise Exception("Please connect SODA with Pennsieve to use this feature!")
+    #     raise
 
 ### generate the file
-def save_ds_description_file(bfaccountname, filepath, dataset_str, misc_str, optional_str, con_str):
+def save_ds_description_file(bfaccountname, filepath, dataset_str, misc_str, study_info_str, con_str):
     source = join(TEMPLATE_PATH, "dataset_description.xlsx")
     destination = filepath
     shutil.copyfile(source, destination)
@@ -239,16 +271,16 @@ def save_ds_description_file(bfaccountname, filepath, dataset_str, misc_str, opt
     val_arr_ds = json.loads(dataset_str)
     val_arr_con = json.loads(con_str)
     val_arr_misc = json.loads(misc_str)
-    val_arr_optional = json.loads(optional_str)
+    val_arr_studyInfo = json.loads(study_info_str)
 
     # write to excel file
     wb = load_workbook(destination)
     ws1 = wb['Sheet1']
 
     keyword_array = populate_dataset_info(ws1, val_arr_ds)
-    (funding_array, contributor_role_array) = populate_contributor_info(ws1, val_arr_con)
-    total_link_array = populate_links_info(ws1, val_arr_misc)
-    populate_completeness_info(ws1, val_arr_optional, bfaccountname)
+    (funding_array, contributor_role_array) = populate_contributor_info(ws1, val_arr_con) #FIX ME
+    total_link_array = populate_links_info(ws1, val_arr_misc) #FIX ME
+    populate_completeness_info(ws1, val_arr_studyInfo, bfaccountname) #FiX ME
 
     # keywords
     keyword_len = len(keyword_array)

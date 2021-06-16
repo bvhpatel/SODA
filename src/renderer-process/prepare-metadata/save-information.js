@@ -1,39 +1,51 @@
-
 function showDSInfo() {
   document.getElementById("div-ds-dataset-info").style.display = "block";
+  document.getElementById("div-ds-study-info").style.display = "none";
   document.getElementById("div-ds-award-info").style.display = "none";
   document.getElementById("div-ds-contributor-info").style.display = "none";
   document.getElementById("div-ds-misc-info").style.display = "none";
-  document.getElementById("div-ds-optional-info").style.display = "none";
+  // document.getElementById("div-ds-optional-info").style.display = "none";
+}
+function showStudyInfo() {
+  document.getElementById("div-ds-dataset-info").style.display = "none";
+  document.getElementById("div-ds-study-info").style.display = "block";
+  document.getElementById("div-ds-award-info").style.display = "none";
+  document.getElementById("div-ds-contributor-info").style.display = "none";
+  document.getElementById("div-ds-misc-info").style.display = "none";
+  // document.getElementById("div-ds-optional-info").style.display = "none";
 }
 function showAwardInfo() {
   document.getElementById("div-ds-dataset-info").style.display = "none";
+  document.getElementById("div-ds-study-info").style.display = "none";
   document.getElementById("div-ds-award-info").style.display = "block";
   document.getElementById("div-ds-contributor-info").style.display = "none";
   document.getElementById("div-ds-misc-info").style.display = "none";
-  document.getElementById("div-ds-optional-info").style.display = "none";
+  // document.getElementById("div-ds-optional-info").style.display = "none";
 }
 function showContributorInfo() {
   document.getElementById("div-ds-dataset-info").style.display = "none";
+  document.getElementById("div-ds-study-info").style.display = "none";
   document.getElementById("div-ds-award-info").style.display = "none";
   document.getElementById("div-ds-contributor-info").style.display = "block";
   document.getElementById("div-ds-misc-info").style.display = "none";
-  document.getElementById("div-ds-optional-info").style.display = "none";
+  // document.getElementById("div-ds-optional-info").style.display = "none";
 }
 function showMiscInfo() {
   document.getElementById("div-ds-dataset-info").style.display = "none";
+  document.getElementById("div-ds-study-info").style.display = "none";
   document.getElementById("div-ds-award-info").style.display = "none";
   document.getElementById("div-ds-contributor-info").style.display = "none";
   document.getElementById("div-ds-misc-info").style.display = "block";
-  document.getElementById("div-ds-optional-info").style.display = "none";
+  // document.getElementById("div-ds-optional-info").style.display = "none";
 }
-function showOptionalInfo() {
-  document.getElementById("div-ds-dataset-info").style.display = "none";
-  document.getElementById("div-ds-award-info").style.display = "none";
-  document.getElementById("div-ds-contributor-info").style.display = "none";
-  document.getElementById("div-ds-misc-info").style.display = "none";
-  document.getElementById("div-ds-optional-info").style.display = "block";
-}
+// function showOptionalInfo() {
+//   document.getElementById("div-ds-dataset-info").style.display = "none";
+//   document.getElementById("div-ds-study-info").style.display = "none";
+//   document.getElementById("div-ds-award-info").style.display = "none";
+//   document.getElementById("div-ds-contributor-info").style.display = "none";
+//   document.getElementById("div-ds-misc-info").style.display = "none";
+//   // document.getElementById("div-ds-optional-info").style.display = "block";
+// }
 
 var domStrings = {
   dataset: [
@@ -42,11 +54,17 @@ var domStrings = {
     document.getElementById("ds-keywords"),
     document.getElementById("ds-samples-no"),
     document.getElementById("ds-subjects-no"),
+    document.getElementById("ds-type"),
+  ],
+  study_purpose: [
+    document.getElementById("ds-study-purpose"),
+    document.getElementById("ds-study-data-collection"),
+    document.getElementById("ds-study-primary-conclusion"),
   ],
   optional: [
-    document.getElementById("input-completeness"),
-    document.getElementById("input-parent-ds"),
-    document.getElementById("input-completeds-title"),
+    // document.getElementById("input-completeness"),
+    // document.getElementById("input-parent-ds"),
+    // document.getElementById("input-completeds-title"),
   ],
 };
 //// check if all fields have been filled
@@ -113,83 +131,104 @@ function checkOtherInfoFields() {
   }
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
   document.getElementById("ds-dataset-info").addEventListener("click", () => {
     showDSInfo();
-    $('.multisteps-form__progress-btn').removeClass("js-active1");
+    $(".multisteps-form__progress-btn").removeClass("js-active1");
     document.getElementById("ds-dataset-info").classList.add("js-active1");
+  });
+  document.getElementById("ds-study-info").addEventListener("click", () => {
+    showStudyInfo();
+    $(".multisteps-form__progress-btn").removeClass("js-active1");
+    document.getElementById("ds-study-info").classList.add("js-active1");
   });
   document.getElementById("ds-award-info").addEventListener("click", () => {
     showAwardInfo();
-    $('.multisteps-form__progress-btn').removeClass("js-active1");
+    $(".multisteps-form__progress-btn").removeClass("js-active1");
     document.getElementById("ds-award-info").classList.add("js-active1");
   });
   //
-  document.getElementById("ds-contributor-info").addEventListener("click", () => {
-    showContributorInfo();
-    $('.multisteps-form__progress-btn').removeClass("js-active1");
-    $("#ds-contributor-info").addClass("js-active1");
-  });
+  document
+    .getElementById("ds-contributor-info")
+    .addEventListener("click", () => {
+      showContributorInfo();
+      $(".multisteps-form__progress-btn").removeClass("js-active1");
+      $("#ds-contributor-info").addClass("js-active1");
+    });
   document.getElementById("ds-misc-info").addEventListener("click", () => {
     showMiscInfo();
-    $('.multisteps-form__progress-btn').removeClass("js-active1");
+    $(".multisteps-form__progress-btn").removeClass("js-active1");
     $("#ds-misc-info").addClass("js-active1");
   });
-  document.getElementById("ds-optional-info").addEventListener("click", () => {
-    showOptionalInfo();
-    $('.multisteps-form__progress-btn').removeClass("js-active1");
-    $("#ds-optional-info").addClass("js-active1");
-  });
+  // document.getElementById("ds-optional-info").addEventListener("click", () => {
+  //   showOptionalInfo();
+  //   $(".multisteps-form__progress-btn").removeClass("js-active1");
+  //   $("#ds-optional-info").addClass("js-active1");
+  // });
 
   ///prev buttons
   document
-  .getElementById("button-prev-contributor-award")
-  .addEventListener("click", () => {
-    document.getElementById("ds-award-info").click();
-    checkFieldsContributors();
-  });
+    .getElementById("button-prev-contributor-award")
+    .addEventListener("click", () => {
+      document.getElementById("ds-award-info").click();
+      checkFieldsContributors();
+    });
   document
-  .getElementById("button-prev-award-ds")
-  .addEventListener("click", () => {
-    document.getElementById("ds-dataset-info").click();
-    checkFieldsContributors();
-  });
+    .getElementById("button-prev-study-info")
+    .addEventListener("click", () => {
+      document.getElementById("ds-dataset-info").click();
+      checkFieldsContributors();
+    });
   document
-  .getElementById("button-prev-misc-contributor")
-  .addEventListener("click", () => {
-    document.getElementById("ds-contributor-info").click();
-    checkOtherInfoFields();
-  });
+    .getElementById("button-prev-award-ds")
+    .addEventListener("click", () => {
+      document.getElementById("ds-study-info").click();
+      checkFieldsContributors();
+    });
   document
-  .getElementById("button-prev-optional-misc")
-  .addEventListener("click", () => {
-    document.getElementById("ds-misc-info").click();
-    checkFields("ds-optional-info", domStrings.optional);
-  });
+    .getElementById("button-prev-misc-contributor")
+    .addEventListener("click", () => {
+      document.getElementById("ds-contributor-info").click();
+      checkOtherInfoFields();
+    });
+  document;
+  // .getElementById("button-prev-optional-misc")
+  // .addEventListener("click", () => {
+  //   document.getElementById("ds-misc-info").click();
+  //   checkFields("ds-optional-info", domStrings.optional);
+  // });
 
   //next buttons
   document
-  .getElementById("button-next-ds-award")
-  .addEventListener("click", () => {
-    document.getElementById("ds-award-info").click();
-    checkFields("ds-dataset-info", domStrings.dataset);
-  });
+    .getElementById("button-next-ds-study")
+    .addEventListener("click", () => {
+      document.getElementById("ds-study-info").click();
+      checkFields("ds-study-info", domStrings.dataset);
+    });
   document
-  .getElementById("button-next-award-contributor")
-  .addEventListener("click", () => {
-    document.getElementById("ds-contributor-info").click();
-    checkFields("ds-dataset-info", domStrings.dataset);
-  });
+    .getElementById("button-next-study-info")
+    .addEventListener("click", () => {
+      document.getElementById("ds-award-info").click();
+      checkFields("ds-study-info", domStrings.dataset);
+      checkFields("ds-dataset-info", domStrings.study_purpose);
+    });
   document
-  .getElementById("button-next-contributor-misc")
-  .addEventListener("click", () => {
-    document.getElementById("ds-misc-info").click();
-    checkFieldsContributors();
-  });
+    .getElementById("button-next-award-contributor")
+    .addEventListener("click", () => {
+      document.getElementById("ds-contributor-info").click();
+      checkFields("ds-study-info", domStrings.dataset);
+      checkFields("ds-dataset-info", domStrings.study_purpose);
+    });
   document
-  .getElementById("button-next-misc-optional")
-  .addEventListener("click", () => {
-    document.getElementById("ds-optional-info").click();
-    checkOtherInfoFields();
-  });
-})
+    .getElementById("button-next-contributor-misc")
+    .addEventListener("click", () => {
+      document.getElementById("ds-misc-info").click();
+      checkFieldsContributors();
+    });
+  // document
+  //   .getElementById("button-next-misc-optional")
+  //   .addEventListener("click", () => {
+  //     document.getElementById("ds-optional-info").click();
+  //     checkOtherInfoFields();
+  //   });
+});

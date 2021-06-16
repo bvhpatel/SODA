@@ -44,7 +44,6 @@ var datasetStructureJSONObj = {
   type: "",
 };
 
-
 //////////////////////////////////
 // Connect to Python back-end
 //////////////////////////////////
@@ -989,16 +988,16 @@ var otherFundingInput = document.getElementById("ds-other-funding"),
     duplicates: false,
   });
 
-var parentDSTagify = new Tagify(parentDSDropdown, {
-  enforceWhitelist: true,
-  whitelist: [],
-  duplicates: false,
-  dropdown: {
-    maxItems: Infinity,
-    enabled: 0,
-    closeOnSelect: true,
-  },
-});
+// var parentDSTagify = new Tagify(parentDSDropdown, {
+//   enforceWhitelist: true,
+//   whitelist: [],
+//   duplicates: false,
+//   dropdown: {
+//     maxItems: Infinity,
+//     enabled: 0,
+//     closeOnSelect: true,
+//   },
+// });
 
 /// initiate tagify for contributor roles
 var currentContributortagify = new Tagify(contributorRoles, {
@@ -1043,17 +1042,17 @@ var currentAffliationtagify = new Tagify(affiliationInput, {
   duplicates: false,
 });
 
-var completenessInput = document.getElementById("ds-completeness"),
-  completenessTagify = new Tagify(completenessInput, {
-    whitelist: ["hasChildren", "hasNext"],
-    enforceWhitelist: true,
-    duplicates: false,
-    maxTags: 2,
-    dropdown: {
-      enabled: 0,
-      closeOnSelect: true,
-    },
-  });
+// var completenessInput = document.getElementById("ds-completeness"),
+//   completenessTagify = new Tagify(completenessInput, {
+//     whitelist: ["hasChildren", "hasNext"],
+//     enforceWhitelist: true,
+//     duplicates: false,
+//     maxTags: 2,
+//     dropdown: {
+//       enabled: 0,
+//       closeOnSelect: true,
+//     },
+//   });
 
 ///////////////////// Airtable Authentication /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -2053,6 +2052,23 @@ const emptyDSInfoEntries = () => {
   return [fieldSatisfied, emptyFieldArray];
 };
 
+const emptyStudyInfoEntries = () => {
+  var fieldSatisfied = true;
+  var inforObj = grabStudyInfoEntries();
+  var emptyFieldArray = [];
+  /// check for number of keywords
+  for (var element in inforObj) {
+    if (inforObj[element] == "studyCollectionTitle") {
+      continue;
+    }
+    if (inforObj[element].length === 0) {
+      fieldSatisfied = false;
+      emptyFieldArray.push(element);
+    }
+  }
+  return [fieldSatisfied, emptyFieldArray];
+};
+
 function emptyLinkInfo() {
   var tableCurrentLinks = document.getElementById("doi-table");
   var fieldSatisfied = false;
@@ -2106,11 +2122,11 @@ const contactPersonCheck = (no) => {
 };
 
 function grabDSInfoEntries() {
-  var rawName =
+  let rawName =
     datasetDescriptionFileDataset.options[
       datasetDescriptionFileDataset.selectedIndex
     ];
-  var name;
+  let name;
   if (rawName === undefined) {
     name = "N/A";
   } else {
@@ -2119,16 +2135,37 @@ function grabDSInfoEntries() {
       name = "N/A";
     }
   }
-  var description = document.getElementById("ds-description").value;
-  var keywordArray = keywordTagify.value;
-  var samplesNo = document.getElementById("ds-samples-no").value;
-  var subjectsNo = document.getElementById("ds-subjects-no").value;
+  let subtitle = document.getElementById("ds-description").value;
+  let keywordArray = keywordTagify.value;
+  let samplesNo = document.getElementById("ds-samples-no").value;
+  let subjectsNo = document.getElementById("ds-subjects-no").value;
+  let dsType = document.getElementById("ds-type").value;
+
   return {
     name: name,
-    description: description,
+    description: subtitle,
     keywords: keywordArray,
     "number of samples": samplesNo,
     "number of subjects": subjectsNo,
+    type: dsType,
+  };
+}
+
+function grabStudyInfoEntries() {
+  var studypurpose = document.getElementById("ds-study-purpose").value;
+  var studydatacollection = document.getElementById("ds-study-data-collection")
+    .value;
+  var studyprimaryconclusion = document.getElementById(
+    "ds-study-primary-conclusion"
+  ).value;
+  var studycollectiontitle = document.getElementById(
+    "ds-study-collection-title"
+  ).value;
+  return {
+    studyPurpose: studypurpose,
+    studyDataCollection: studydatacollection,
+    studyPrimaryConclusion: studyprimaryconclusion,
+    studyCollectionTitle: studycollectiontitle,
   };
 }
 
@@ -2194,7 +2231,7 @@ function grabCellConInfo(rowcountCon) {
 
     var conAffliationInfo = [];
     var conRoleInfo = [];
-    var contactCheck = "No";
+    // var contactCheck = "No";
     var conID = "";
 
     for (var j = 1; j < currentConTable.rows[i].cells.length; j++) {
@@ -2223,7 +2260,7 @@ function grabCellConInfo(rowcountCon) {
             .find("label")
             .find("input")[0];
           if (contactLabel && contactLabel.checked) {
-            contactCheck = "Yes";
+            conRoleInfo.push("CorrespondingAuthor");
           }
         } else if (inputField.prop("id").includes("input-con-ID")) {
           conID = $($(currentConTable.rows[i].cells[j])[0])
@@ -2239,7 +2276,7 @@ function grabCellConInfo(rowcountCon) {
       conID: conID,
       conAffliation: conAffliationInfo.join("; "),
       conRole: conRoleInfo.join(", "),
-      conContact: contactCheck,
+      // conContact: contactCheck,
     };
     currentConInfo.push(myCurrentCon);
   }
@@ -2329,6 +2366,11 @@ function detectEmptyRequiredFields(funding) {
   var dsSatisfied = dsContent[0];
   var dsEmptyField = dsContent[1];
 
+  /// study info
+  let studyContent = emptyStudyInfoEntries();
+  var studySatisfied = studyContent[0];
+  var studyEmptyField = studyContent[1];
+
   /// protocol info check
   var protocolSatisfied = emptyLinkInfo();
 
@@ -2352,13 +2394,20 @@ function detectEmptyRequiredFields(funding) {
   }
 
   /// detect empty required fields and raise a warning
-  var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied];
+  var emptyArray = [
+    dsSatisfied,
+    conSatisfied,
+    protocolSatisfied,
+    studySatisfied,
+  ];
   var emptyMessageArray = [
     "- Missing required fields under Dataset Info section: " +
       dsEmptyField.join(", "),
     "- Missing required fields under Contributor Info section: " +
       conEmptyField.join(", "),
     "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url",
+    "- Missing required fields under Study Info section: " +
+      studyEmptyField.join(", "),
   ];
   var allFieldsSatisfied = true;
   errorMessage = [];
@@ -2454,6 +2503,7 @@ ipcRenderer.on(
         $("#generate-dd-spinner").hide();
       } else {
         var datasetInfoValueArray = grabDSInfoEntries();
+        var studyInfoValueArray = grabStudyInfoEntries();
 
         //// process obtained values to pass to an array ///
         ///////////////////////////////////////////////////
@@ -2475,12 +2525,13 @@ ipcRenderer.on(
         var miscObj = grabProtocolSection();
 
         /// grab entries from other optional info section
-        var completenessSectionObj = grabCompletenessInfo();
+        // var completenessSectionObj = grabCompletenessInfo();
 
         ///////////// stringify JSON objects //////////////////////
         json_str_ds = JSON.stringify(dsSectionArray);
+        json_str_study = JSON.stringify(studyInfoValueArray);
         json_str_misc = JSON.stringify(miscObj);
-        json_str_completeness = JSON.stringify(completenessSectionObj);
+        // json_str_completeness = JSON.stringify(completenessSectionObj);
         json_str_con = JSON.stringify(contributorObj);
 
         /// get current, selected Pennsieve account
@@ -2494,7 +2545,8 @@ ipcRenderer.on(
             destinationPath,
             json_str_ds,
             json_str_misc,
-            json_str_completeness,
+            // json_str_completeness,
+            json_str_study,
             json_str_con,
             (error, res) => {
               if (error) {
@@ -4905,7 +4957,7 @@ function refreshDatasetList() {
   });
 
   populateDatasetDropdowns(filteredDatasets);
-  parentDSTagify.settings.whitelist = getParentDatasets();
+  // parentDSTagify.settings.whitelist = getParentDatasets();
   return filteredDatasets.length;
 }
 

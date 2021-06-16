@@ -1027,7 +1027,7 @@ function addNewRow(table) {
       );
       if (contactPersonBoolean) {
         $("#para-save-contributor-status").text(
-          "One contact person is already added above. Only one contact person is allowed for a dataset."
+          "One corresponding author is already added above. Only corresponding author person is allowed for a dataset."
         );
         return;
       }
@@ -1425,7 +1425,7 @@ function onChangeContactLabel(no) {
   if (contactPersonBoolean) {
     $("#ds-contact-person-" + no).prop("checked", false);
     $("#para-save-contributor-status").text(
-      "One contact person is already added above. Only one contact person is allowed for a dataset."
+      "One corresponding author is already added above. Only one corresponding author is allowed for a dataset."
     );
   }
 }

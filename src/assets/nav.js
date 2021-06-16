@@ -38,12 +38,16 @@ function handleSectionTrigger(event) {
 }
 
 function considerNextBtn() {
-  if (nextBtnDisabledVariable !== undefined) {
-    if (nextBtnDisabledVariable === true) {
-      $("#nextBtn").prop("disabled", true)
-    } else {
-      $("#nextBtn").prop("disabled", false)
+  try {
+    if (nextBtnDisabledVariable !== undefined && nextBtnDisabledVariable !== null) {
+      if (nextBtnDisabledVariable === true) {
+        $("#nextBtn").prop("disabled", true)
+      } else {
+        $("#nextBtn").prop("disabled", false)
+      }
     }
+  } catch (error) {
+    console.error(error);
   }
 }
 
