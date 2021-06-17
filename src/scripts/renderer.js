@@ -4532,6 +4532,157 @@ function showCurrentSubtitle() {
   }
 }
 
+const fill_dataset_description_study_fields = (description) => {
+  let startpos, endpos;
+  let purpose, data_collection, primary_conclusion;
+
+  let pos1 = Math.max(
+    description.search("[*][*]Study Purpose[*][*]"),
+    description.search("[*][*]Study purpose[*][*]"),
+    description.search("[*][*]study purpose[*][*]")
+  );
+  let pos2 = Math.max(
+    description.search("[*][*]Study Purpose:[*][*]"),
+    description.search("[*][*]Study purpose:[*][*]"),
+    description.search("[*][*]study purpose:[*][*]")
+  );
+  let pos3 = Math.max(
+    description.search("[*][*]Study Purpose :[*][*]"),
+    description.search("[*][*]Study purpose :[*][*]"),
+    description.search("[*][*]study purpose :[*][*]")
+  );
+
+  if (pos1 != -1) {
+    temp_description = description.substring(pos1);
+    startpos = temp_description.search(":");
+    endpos = temp_description.search("\n");
+    if (startpos != -1 && endpos != -1) {
+      purpose = temp_description.substring(startpos + 2, endpos);
+      $("#ds-study-purpose").val(purpose);
+    } else {
+      $("#ds-study-purpose").val("");
+    }
+  } else if (pos2 != -1) {
+    temp_description = description.substring(pos2);
+    startpos = temp_description.search(":");
+    endpos = temp_description.search("\n");
+    if (startpos != -1 && endpos != -1) {
+      purpose = temp_description.substring(startpos + 4, endpos);
+      $("#ds-study-purpose").val(purpose);
+    } else {
+      $("#ds-study-purpose").val("");
+    }
+  } else if (pos3 != -1) {
+    temp_description = description.substring(pos3);
+    startpos = temp_description.search(":");
+    endpos = temp_description.search("\n");
+    if (startpos != -1 && endpos != -1) {
+      purpose = temp_description.substring(startpos + 4, endpos);
+      $("#ds-study-purpose").val(purpose);
+    } else {
+      $("#ds-study-purpose").val("");
+    }
+  }
+
+  pos1 = Math.max(
+    description.search("[*][*]Data Collection[*][*]"),
+    description.search("[*][*]Data collection[*][*]"),
+    description.search("[*][*]data collection[*][*]")
+  );
+  pos2 = Math.max(
+    description.search("[*][*]Data Collection:[*][*]"),
+    description.search("[*][*]Data collection:[*][*]"),
+    description.search("[*][*]data collection:[*][*]")
+  );
+  pos3 = Math.max(
+    description.search("[*][*]Data Collection :[*][*]"),
+    description.search("[*][*]Data collection :[*][*]"),
+    description.search("[*][*]data collection :[*][*]")
+  );
+
+  if (pos1 != -1) {
+    temp_description = description.substring(pos1);
+    startpos = temp_description.search(":");
+    endpos = temp_description.search("\n");
+    if (startpos != -1 && endpos != -1) {
+      data_collection = temp_description.substring(startpos + 2, endpos);
+      $("#ds-study-data-collection").val(data_collection);
+    } else {
+      $("#ds-study-data-collection").val("");
+    }
+  } else if (pos2 != -1) {
+    temp_description = description.substring(pos2);
+    startpos = temp_description.search(":");
+    endpos = temp_description.search("\n");
+    if (startpos != -1 && endpos != -1) {
+      data_collection = temp_description.substring(startpos + 4, endpos);
+      $("#ds-study-data-collection").val(data_collection);
+    } else {
+      $("#ds-study-data-collection").val("");
+    }
+  } else if (pos3 != -1) {
+    temp_description = description.substring(pos3);
+    startpos = temp_description.search(":");
+    endpos = temp_description.search("\n");
+    if (startpos != -1 && endpos != -1) {
+      data_collection = temp_description.substring(startpos + 4, endpos);
+      $("#ds-study-data-collection").val(data_collection);
+    } else {
+      $("#ds-study-data-collection").val("");
+    }
+  }
+
+  pos1 = Math.max(
+    description.search("[*][*]Primary Conclusion[*][*]"),
+    description.search("[*][*]Primary conclusion[*][*]"),
+    description.search("[*][*]primary conclusion[*][*]")
+  );
+  pos2 = Math.max(
+    description.search("[*][*]Primary Conclusion:[*][*]"),
+    description.search("[*][*]Primary conclusion:[*][*]"),
+    description.search("[*][*]primary conclusion:[*][*]")
+  );
+  pos3 = Math.max(
+    description.search("[*][*]Primary Conclusion :[*][*]"),
+    description.search("[*][*]Primary conclusion :[*][*]"),
+    description.search("[*][*]primary conclusion :[*][*]")
+  );
+
+  if (pos1 != -1) {
+    temp_description = description.substring(pos1);
+    startpos = temp_description.search(":");
+    endpos = temp_description.search("\n");
+    if (startpos != -1 && endpos != -1) {
+      primary_conclusion = temp_description.substring(startpos + 2, endpos);
+      $("#ds-study-primary-conclusion").val(primary_conclusion);
+    } else {
+      $("#ds-study-primary-conclusion").val("");
+    }
+  } else if (pos2 != -1) {
+    temp_description = description.substring(pos2);
+    startpos = temp_description.search(":");
+    endpos = temp_description.search("\n");
+    if (startpos != -1 && endpos != -1) {
+      primary_conclusion = temp_description.substring(startpos + 4, endpos);
+      $("#ds-study-primary-conclusion").val(primary_conclusion);
+    } else {
+      $("#ds-study-primary-conclusion").val("");
+    }
+  } else if (pos3 != -1) {
+    temp_description = description.substring(pos3);
+    startpos = temp_description.search(":");
+    endpos = temp_description.search("\n");
+    if (startpos != -1 && endpos != -1) {
+      primary_conclusion = temp_description.substring(startpos + 4, endpos);
+      $("#ds-study-primary-conclusion").val(primary_conclusion);
+    } else {
+      $("#ds-study-primary-conclusion").val("");
+    }
+  }
+
+  return;
+};
+
 function showCurrentDescription() {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
@@ -4551,11 +4702,12 @@ function showCurrentDescription() {
           console.error(error);
         } else {
           tuiInstance.setMarkdown(res);
-          if ((res = "")) {
+          if (res == "") {
             $("#button-add-description > .btn_animated-inside").html(
               "Add description"
             );
           } else {
+            fill_dataset_description_study_fields(res);
             $("#button-add-description > .btn_animated-inside").html(
               "Edit description"
             );
