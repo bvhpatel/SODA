@@ -172,7 +172,7 @@ $(document).ready(function () {
   // });
 
   checkAirtableStatus();
-  
+
   ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
     if (dirpath.length > 0) {
       $("#generate-submission-spinner").show();
@@ -1545,3 +1545,20 @@ function resetDD() {
     }
   });
 }
+
+$("#add-protocol-btn").on("click", () => {
+  // $("#doi-table").show();
+  $("#identifier-desc").val("");
+  $("#identifier").val("");
+  $("#identifier-type").val("");
+  $("#add-protocol-link-modal").modal("show");
+  // $(".selection.dropdown").dropdown();
+  // $("#relation-type").dropdown();
+  // edit_banner_image_modal
+
+//   $('.ui.modal')
+//   .modal('show')
+// ;
+  
+  // $("#doi-table").show();
+});

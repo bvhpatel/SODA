@@ -710,6 +710,7 @@ const dsContributorArrayFirst1 = document.getElementById(
 );
 
 var contributorRoles = document.getElementById("input-con-role-1");
+var relationTypes = document.getElementById("relation-type");
 const affiliationInput = document.getElementById("input-con-affiliation-1");
 const addCurrentContributorsBtn = document.getElementById(
   "button-ds-add-contributor"
@@ -1039,6 +1040,55 @@ var currentAffliationtagify = new Tagify(affiliationInput, {
     closeOnSelect: true, // keep the dropdown open after selecting a suggestion
   },
   delimiters: null,
+  duplicates: false,
+});
+
+var relationTypestagify = new Tagify(relationTypes, {
+  whitelist: [
+    "IsProtocolFor",
+    "HasProtocol",
+    "IsSoftwareFor",
+    "HasSoftware",
+    "IsCitedBy",
+    "Cites",
+    "IsSupplementTo",
+    "IsSupplementedBy",
+    "IsContinuedByContinues",
+    "IsDescribedBy",
+    "Describes",
+    "HasMetadata",
+    "IsMetadataFor",
+    "HasVersion",
+    "IsVersionOf",
+    "IsNewVersionOf",
+    "IsPreviousVersionOf",
+    "IsPartOf",
+    "HasPart",
+    "IsPublishedIn",
+    "IsReferencedBy",
+    "References",
+    "IsDocumentedBy",
+    "Documents",
+    "IsCompiledBy",
+    "Compiles",
+    "IsVariantFormOf",
+    "IsOriginalFormOf",
+    "IsIdenticalTo",
+    "IsReviewedBy",
+    "Reviews",
+    "IsDerivedFrom",
+    "IsSourceOf",
+    "IsRequiredBy",
+    "Requires",
+    "IsObsoletedBy",
+    "Obsoletes",
+  ],
+  dropdown: {
+    classname: "color-blue",
+    enabled: 0, // show the dropdown immediately on focus
+    maxItems: 25,
+    closeOnSelect: true, // keep the dropdown open after selecting a suggestion
+  },
   duplicates: false,
 });
 

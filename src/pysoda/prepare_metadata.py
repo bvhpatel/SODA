@@ -196,6 +196,10 @@ def populate_dataset_info(workbook, val_array):
     return val_array[2]
 
 def populate_contributor_info(workbook, val_array):
+    ## Clear prexisting items
+    workbook["D19"] = ""
+    workbook["E19"] = ""
+
     ## award info
     for i, column in zip(range(len(val_array["funding"])), excel_columns(start_index=3)):
         workbook[column + "8"] = val_array["funding"][i]
@@ -214,6 +218,12 @@ def populate_contributor_info(workbook, val_array):
     return [val_array["funding"], val_array['contributors']]
 
 def populate_links_info(workbook, val_array):
+    ## clear pre-existing items
+    workbook["D21"] = ""
+    workbook["D22"] = ""
+    workbook["E21"] = ""
+    workbook["E22"] = ""
+
     ## originating DOI, Protocol DOI
     total_link_array = val_array["Originating Article DOI"] + val_array["Protocol URL or DOI*"] + val_array["Additional Link"]
     for i, column in zip(range(len(total_link_array)), excel_columns(start_index=3)):
