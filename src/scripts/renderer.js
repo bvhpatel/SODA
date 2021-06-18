@@ -695,6 +695,8 @@ var currentContributorsLastNames = [];
 var currentContributorsFirstNames = [];
 var globalContributorNameObject = {};
 
+var relatedLinksObject = [];
+
 // Prepare Submission File
 const airtableAccountBootboxMessage =
   "<form><div class='form-group row'><label for='bootbox-airtable-key-name' class='col-sm-3 col-form-label'> Key name:</label><div class='col-sm-9'><input type='text' id='bootbox-airtable-key-name' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-airtable-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-airtable-key' type='text' class='form-control'/></div></div></form>";
@@ -981,7 +983,6 @@ var progressFilePath = path.join(homeDirectory, "SODA", "Progress");
 var keywordInput = document.getElementById("ds-keywords"),
   keywordTagify = new Tagify(keywordInput, {
     duplicates: false,
-    maxTags: 5,
   });
 
 var otherFundingInput = document.getElementById("ds-other-funding"),
@@ -2120,16 +2121,26 @@ const emptyStudyInfoEntries = () => {
 };
 
 function emptyLinkInfo() {
-  var tableCurrentLinks = document.getElementById("doi-table");
+  // var tableCurrentLinks = document.getElementById("doi-table");
   var fieldSatisfied = false;
-  for (var i = 0; i < tableCurrentLinks.rows.length - 1; i++) {
+  relatedLinksObject.forEach((link_object, link_index) => {
     if (
-      $(tableCurrentLinks.rows[i].cells[0]).find("select").val() ==
-      "Protocol URL or DOI*"
+      link_object["relationType"].includes("IsProtocolFor") ||
+      link_object["relationType"].includes("HasProtocol") ||
+      link_object["identifierDescription"].search("protocol") != -1 ||
+      link_object["identifierDescription"].search("Protocol") != -1
     ) {
       fieldSatisfied = true;
     }
-  }
+  });
+  // for (var i = 0; i < tableCurrentLinks.rows.length - 1; i++) {
+  //   if (
+  //     $(tableCurrentLinks.rows[i].cells[0]).find("select").val() ==
+  //     "Protocol URL or DOI*"
+  //   ) {
+  //     fieldSatisfied = true;
+  //   }
+  // }
   return fieldSatisfied;
 }
 
@@ -2251,7 +2262,6 @@ function grabConInfoEntries() {
   contributorObj["funding"] = fundingArray;
   contributorObj["acknowledgment"] = acknowledgment;
   contributorObj["contributors"] = res;
-  console.log(contributorObj["contributors"]);
   return contributorObj;
 }
 
@@ -2335,40 +2345,16 @@ function grabCellConInfo(rowcountCon) {
 }
 
 function grabProtocolSection() {
-  var miscObj = {};
-  /// Additional link description
-  var rowcountLink = document.getElementById("doi-table").rows.length;
-  var addlLinkInfo = [];
-  for (i = 1; i < rowcountLink - 1; i++) {
-    var addlLink = {
-      "link type": $(document.getElementById("doi-table").rows[i].cells[0])
-        .find("select")
-        .val(),
-      link: $(document.getElementById("doi-table").rows[i].cells[1])
-        .find("input")
-        .val(),
-      description: $(document.getElementById("doi-table").rows[i].cells[2])
-        .find("input")
-        .val(),
-    };
-    addlLinkInfo.push(addlLink);
-  }
-  //// categorize links based on types
-  var originatingDOIArray = [];
-  var protocolArray = [];
-  var additionalLinkArray = [];
-  for (var i = 0; i < addlLinkInfo.length; i++) {
-    if (addlLinkInfo[i]["link type"] === "Originating Article DOI") {
-      originatingDOIArray.push(addlLinkInfo[i]);
-    } else if (addlLinkInfo[i]["link type"] === "Protocol URL or DOI*") {
-      protocolArray.push(addlLinkInfo[i]);
-    } else {
-      additionalLinkArray.push(addlLinkInfo[i]);
-    }
-  }
-  miscObj["Originating Article DOI"] = originatingDOIArray;
-  miscObj["Protocol URL or DOI*"] = protocolArray;
-  miscObj["Additional Link"] = additionalLinkArray;
+  let miscObj = relatedLinksObject;
+
+  miscObj.forEach((link_object, link_index) => {
+    let relation_type = "";
+    link_object.relationType.forEach((relation, index) => {
+      relation_type += relation + ",";
+    });
+    miscObj[link_index].relationType = relation_type.slice(0, -1);
+  });
+
   return miscObj;
 }
 
@@ -4632,6 +4618,8 @@ const fill_dataset_description_study_fields = (description) => {
     } else {
       $("#ds-study-purpose").val("");
     }
+  } else {
+    $("#ds-study-purpose").val("");
   }
 
   pos1 = Math.max(
@@ -4680,6 +4668,8 @@ const fill_dataset_description_study_fields = (description) => {
     } else {
       $("#ds-study-data-collection").val("");
     }
+  } else {
+    $("#ds-study-data-collection").val("");
   }
 
   pos1 = Math.max(
@@ -4728,6 +4718,8 @@ const fill_dataset_description_study_fields = (description) => {
     } else {
       $("#ds-study-primary-conclusion").val("");
     }
+  } else {
+    $("#ds-study-primary-conclusion").val("");
   }
 
   return;

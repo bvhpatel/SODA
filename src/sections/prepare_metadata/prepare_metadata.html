@@ -2766,8 +2766,7 @@
                       <textarea
                         id="ds-description-acknowledgments"
                         class="form-container-textarea"
-                      >
-                      </textarea>
+                      ></textarea>
                     </div>
                     <div class="tooltipnew demo-controls-end">
                       <img
@@ -3135,397 +3134,259 @@
                 style="width: 90%; margin: 0 auto; font-size: 13px"
                 class="datasetsaveoption"
               >
-                <h5 align="center" style="color: #000">
-                  <br />To add a link to your dataset_description file, select
-                  the link type from the dropdown list and provide the link and
-                  its description.
-                </h5>
-
-                <table
-                  class="ui celled table"
-                  style="text-align: center; display: none"
-                  id="doi-table"
-                >
-                  <style>
-                    /* style for grabbed contributor row for moving contributors */
-                    .grab {
-                      cursor: grab;
-                    }
-                    .grabbed {
-                      box-shadow: 0 0 6px #000;
-                    }
-                    .grabCursor,
-                    .grabCursor * {
-                      cursor: grabbing !important;
-                    }
-                  </style>
-                  <thead class="full-width">
-                    <tr>
-                      <th style="width: 10%">Index</th>
-                      <th style="width: 80%">Identifier</th>
-                      <th style="width: 10%">
-                        <i
-                          class="fas fa-info-circle popover-tooltip"
-                          data-content="Click on each symbol (Edit, Delete) to edit/delete an identifier."
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                        ></i>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody></tbody>
-                  <!-- <thead class="full-width">
-                    <tr>
-                      <th style="width: 25%">
-                        Link type
-                        <div class="tooltipnew contributor">
-                          <img class="info" src="assets/img/info.png" />
-                          <span
-                            class="tooltiptext contributor"
-                            style="width: 300px; font-weight: bold"
-                          >
-                            Select the nature of the link:
-                            <br />
-                            - Protocol URLs or DOIs: URLs (if still private) /
-                            DOIs (if public) of protocols from protocols.io
-                            related to this dataset.
-                            <br />
-                            - Originating Article DOIs: DOIs of published
-                            articles that were generated from this dataset.
-                            <br />
-                            - Additional links: URLs of additional resources
-                            used by this dataset (e.g., a link to a code
-                            repository).
-                          </span>
-                        </div>
-                      </th>
-                      <th style="width: 30%">
-                        Link
-                        <div class="tooltipnew contributor">
-                          <img class="info" src="assets/img/info.png" />
-                          <span
-                            class="tooltiptext contributor"
-                            style="width: 300px; font-weight: bold"
-                          >
-                            Enter the link.
-                          </span>
-                        </div>
-                      </th>
-                      <th style="width: 35%">
-                        Description
-                        <div class="tooltipnew contributor">
-                          <img class="info" src="assets/img/info.png" />
-                          <span
-                            class="tooltiptext contributor"
-                            style="width: 300px; font-weight: bold"
-                          >
-                            Optionally provide a short description of the link.
-                          </span>
-                        </div>
-                      </th>
-                      <th style="width: 10%">
-                        <div class="tooltipnew contributor">
-                          <img class="info" src="assets/img/info.png" />
-                          <span
-                            class="tooltiptext contributor"
-                            style="width: 300px; font-weight: bold"
-                          >
-                            Click on "Add" to register specified link to SODA's
-                            link table. All links and descriptions added to the
-                            table will be included in your dataset description
-                            file when it is generated.
-                            <br /><br />
-                            Note that at least one "Protocol URLs or DOIs" link
-                            is mandatory. The remaining is optional.
-                          </span>
-                        </div>
-                      </th>
-                    </tr>
-                  </thead> -->
-                  <!-- <tbody>
-                    <tr id="row-current-link1">
-                      <td class="doi-table-row">
-                        <select
-                          id="select-misc-link"
-                          class="form-container-input-bf"
-                          style="font-size: 13px; line-height: 2"
-                        >
-                          <option value="Select" disabled>
-                            Select an option
-                          </option>
-                          <option value="Protocol URL or DOI*">
-                            Protocol URL or DOI*
-                          </option>
-                          <option value="Originating Article DOI">
-                            Originating Article DOI
-                          </option>
-                          <option value="Additional Link">
-                            Additional Link
-                          </option>
-                        </select>
-                      </td>
-                      <td class="doi-table-row">
-                        <input
-                          id="input-misc-links"
-                          class="form-container-input-bf"
-                          contenteditable="true"
-                          style="font-size: 13px; line-height: 2"
-                        />
-                      </td>
-                      <td class="doi-table-row">
-                        <input
-                          id="input-misc-link-description"
-                          style="line-height: 2"
-                          contenteditable="true"
-                        />
-                      </td>
-                      <th>
-                        <div
-                          onclick="addNewRow('doi-table')"
-                          class="doi-add-row-button"
-                          style="
-                            border-radius: 2px;
-                            color: #fff;
-                            padding: 5px !important;
-                            width: 40px;
-                            font-size: 13px;
-                            height: 30px;
-                            background: dodgerblue;
-                            display: block;
-                          "
-                        >
-                          Add
-                        </div>
-                        <div
-                          class="ui small basic icon buttons doi-helper-buttons"
-                          style="display: none"
-                        >
-                          <button onclick="delete_link(1)" class="ui button">
-                            <i
-                              class="trash alternate outline icon"
-                              style="color: red"
-                            ></i>
-                          </button>
-                        </div>
-                      </th>
-                    </tr>
-                  </tbody> -->
-                </table>
-                <button
-                  id="add-protocol-btn"
-                  style="
-                    border-radius: 5px;
-                    width: 120px;
-                    height: 35px;
-                    background-color: #fff;
-                    color: teal;
-                    font-weight: 600;
-                    border: 1px solid teal;
-                    font-size: inherit;
-                  "
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    style="vertical-align: middle"
-                    width="18"
-                    height="18"
-                    fill="currentColor"
-                    class="bi bi-plus"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
-                    />
-                  </svg>
-                  Add a protocol or supporting article
-                </button>
-                <!-- <table
-                  class="ui celled table"
-                  style="text-align: center"
-                  id="doi-table"
-                >
-                  <style>
-                    /* style for grabbed contributor row for moving contributors */
-                    .grab {
-                      cursor: grab;
-                    }
-                    .grabbed {
-                      box-shadow: 0 0 6px #000;
-                    }
-                    .grabCursor,
-                    .grabCursor * {
-                      cursor: grabbing !important;
-                    }
-                  </style>
-                  <thead class="full-width">
-                    <tr>
-                      <th style="width: 25%">
-                        Link type
-                        <div class="tooltipnew contributor">
-                          <img class="info" src="assets/img/info.png" />
-                          <span
-                            class="tooltiptext contributor"
-                            style="width: 300px; font-weight: bold"
-                          >
-                            Select the nature of the link:
-                            <br />
-                            - Protocol URLs or DOIs: URLs (if still private) /
-                            DOIs (if public) of protocols from protocols.io
-                            related to this dataset.
-                            <br />
-                            - Originating Article DOIs: DOIs of published
-                            articles that were generated from this dataset.
-                            <br />
-                            - Additional links: URLs of additional resources
-                            used by this dataset (e.g., a link to a code
-                            repository).
-                          </span>
-                        </div>
-                      </th>
-                      <th style="width: 30%">
-                        Link
-                        <div class="tooltipnew contributor">
-                          <img class="info" src="assets/img/info.png" />
-                          <span
-                            class="tooltiptext contributor"
-                            style="width: 300px; font-weight: bold"
-                          >
-                            Enter the link.
-                          </span>
-                        </div>
-                      </th>
-                      <th style="width: 35%">
-                        Description
-                        <div class="tooltipnew contributor">
-                          <img class="info" src="assets/img/info.png" />
-                          <span
-                            class="tooltiptext contributor"
-                            style="width: 300px; font-weight: bold"
-                          >
-                            Optionally provide a short description of the link.
-                          </span>
-                        </div>
-                      </th>
-                      <th style="width: 10%">
-                        <div class="tooltipnew contributor">
-                          <img class="info" src="assets/img/info.png" />
-                          <span
-                            class="tooltiptext contributor"
-                            style="width: 300px; font-weight: bold"
-                          >
-                            Click on "Add" to register specified link to SODA's
-                            link table. All links and descriptions added to the
-                            table will be included in your dataset description
-                            file when it is generated.
-                            <br /><br />
-                            Note that at least one "Protocol URLs or DOIs" link
-                            is mandatory. The remaining is optional.
-                          </span>
-                        </div>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr id="row-current-link1">
-                      <td class="doi-table-row">
-                        <select
-                          id="select-misc-link"
-                          class="form-container-input-bf"
-                          style="font-size: 13px; line-height: 2"
-                        >
-                          <option value="Select" disabled>
-                            Select an option
-                          </option>
-                          <option value="Protocol URL or DOI*">
-                            Protocol URL or DOI*
-                          </option>
-                          <option value="Originating Article DOI">
-                            Originating Article DOI
-                          </option>
-                          <option value="Additional Link">
-                            Additional Link
-                          </option>
-                        </select>
-                      </td>
-                      <td class="doi-table-row">
-                        <input
-                          id="input-misc-links"
-                          class="form-container-input-bf"
-                          contenteditable="true"
-                          style="font-size: 13px; line-height: 2"
-                        />
-                      </td>
-                      <td class="doi-table-row">
-                        <input
-                          id="input-misc-link-description"
-                          style="line-height: 2"
-                          contenteditable="true"
-                        />
-                      </td>
-                      <th>
-                        <div
-                          onclick="addNewRow('doi-table')"
-                          class="doi-add-row-button"
-                          style="
-                            border-radius: 2px;
-                            color: #fff;
-                            padding: 5px !important;
-                            width: 40px;
-                            font-size: 13px;
-                            height: 30px;
-                            background: dodgerblue;
-                            display: block;
-                          "
-                        >
-                          Add
-                        </div>
-                        <div
-                          class="ui small basic icon buttons doi-helper-buttons"
-                          style="display: none"
-                        >
-                          <button onclick="delete_link(1)" class="ui button">
-                            <i
-                              class="trash alternate outline icon"
-                              style="color: red"
-                            ></i>
-                          </button>
-                        </div>
-                      </th>
-                    </tr>
-                  </tbody>
-                </table> -->
-                <p
-                  id="para-save-link-status"
-                  style="
-                    text-align: center;
-                    font-size: 14px;
-                    padding-top: 0;
-                    margin-right: 5px;
-                    margin-bottom: 0;
-                    margin-top: 15px;
-                    color: red;
-                  "
-                ></p>
-
                 <div
-                  style="display: flex; justify-content: center; margin: 20px"
+                  style="
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    flex-direction: column;
+                  "
                 >
+                  <h5 align="center" style="color: #000">
+                    <br />To add a link to your dataset_description file, select
+                    the link type from the dropdown list and provide the link
+                    and its description.
+                  </h5>
+
+                  <table
+                    class="ui celled table"
+                    style="text-align: center; display: none"
+                    id="doi-table"
+                  >
+                    <style>
+                      /* style for grabbed contributor row for moving contributors */
+                      .grab {
+                        cursor: grab;
+                      }
+                      .grabbed {
+                        box-shadow: 0 0 6px #000;
+                      }
+                      .grabCursor,
+                      .grabCursor * {
+                        cursor: grabbing !important;
+                      }
+                    </style>
+                    <thead class="full-width">
+                      <tr>
+                        <th style="width: 10%">Index</th>
+                        <th style="width: 80%">Identifier</th>
+                        <th style="width: 10%">
+                          <i
+                            class="fas fa-info-circle popover-tooltip"
+                            data-content="Click on each symbol (Edit, Delete) to edit/delete an identifier."
+                            rel="popover"
+                            data-placement="right"
+                            data-html="true"
+                            data-trigger="hover"
+                          ></i>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody id="doi-table-body"></tbody>
+                  </table>
                   <button
-                    id="button-prev-misc-contributor"
-                    class="demo-button-prev-next"
-                    style="width: 70px; height: 32px; margin-right: 10px"
+                    id="add-protocol-btn"
+                    style="
+                      border-radius: 5px;
+                      width: 260px;
+                      height: 45px;
+                      background-color: #fff;
+                      color: teal;
+                      font-weight: 600;
+                      border: 1px solid teal;
+                      font-size: 14px;
+                      margin-top: 20px;
+                    "
                   >
-                    <i class="fas fa-long-arrow-alt-left"></i>
+                    <i class="fas fa-plus"></i>
+                    Add a protocol or supporting article
                   </button>
-                  <!-- <button
-                    id="button-next-misc-optional"
-                    class="demo-button-prev-next"
-                    style="width: 70px; height: 32px"
+                  <!-- <table
+                    class="ui celled table"
+                    style="text-align: center"
+                    id="doi-table"
                   >
-                    <i class="fas fa-long-arrow-alt-right"></i>
-                  </button> -->
+                    <style>
+                      /* style for grabbed contributor row for moving contributors */
+                      .grab {
+                        cursor: grab;
+                      }
+                      .grabbed {
+                        box-shadow: 0 0 6px #000;
+                      }
+                      .grabCursor,
+                      .grabCursor * {
+                        cursor: grabbing !important;
+                      }
+                    </style>
+                    <thead class="full-width">
+                      <tr>
+                        <th style="width: 25%">
+                          Link type
+                          <div class="tooltipnew contributor">
+                            <img class="info" src="assets/img/info.png" />
+                            <span
+                              class="tooltiptext contributor"
+                              style="width: 300px; font-weight: bold"
+                            >
+                              Select the nature of the link:
+                              <br />
+                              - Protocol URLs or DOIs: URLs (if still private) /
+                              DOIs (if public) of protocols from protocols.io
+                              related to this dataset.
+                              <br />
+                              - Originating Article DOIs: DOIs of published
+                              articles that were generated from this dataset.
+                              <br />
+                              - Additional links: URLs of additional resources
+                              used by this dataset (e.g., a link to a code
+                              repository).
+                            </span>
+                          </div>
+                        </th>
+                        <th style="width: 30%">
+                          Link
+                          <div class="tooltipnew contributor">
+                            <img class="info" src="assets/img/info.png" />
+                            <span
+                              class="tooltiptext contributor"
+                              style="width: 300px; font-weight: bold"
+                            >
+                              Enter the link.
+                            </span>
+                          </div>
+                        </th>
+                        <th style="width: 35%">
+                          Description
+                          <div class="tooltipnew contributor">
+                            <img class="info" src="assets/img/info.png" />
+                            <span
+                              class="tooltiptext contributor"
+                              style="width: 300px; font-weight: bold"
+                            >
+                              Optionally provide a short description of the link.
+                            </span>
+                          </div>
+                        </th>
+                        <th style="width: 10%">
+                          <div class="tooltipnew contributor">
+                            <img class="info" src="assets/img/info.png" />
+                            <span
+                              class="tooltiptext contributor"
+                              style="width: 300px; font-weight: bold"
+                            >
+                              Click on "Add" to register specified link to SODA's
+                              link table. All links and descriptions added to the
+                              table will be included in your dataset description
+                              file when it is generated.
+                              <br /><br />
+                              Note that at least one "Protocol URLs or DOIs" link
+                              is mandatory. The remaining is optional.
+                            </span>
+                          </div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr id="row-current-link1">
+                        <td class="doi-table-row">
+                          <select
+                            id="select-misc-link"
+                            class="form-container-input-bf"
+                            style="font-size: 13px; line-height: 2"
+                          >
+                            <option value="Select" disabled>
+                              Select an option
+                            </option>
+                            <option value="Protocol URL or DOI*">
+                              Protocol URL or DOI*
+                            </option>
+                            <option value="Originating Article DOI">
+                              Originating Article DOI
+                            </option>
+                            <option value="Additional Link">
+                              Additional Link
+                            </option>
+                          </select>
+                        </td>
+                        <td class="doi-table-row">
+                          <input
+                            id="input-misc-links"
+                            class="form-container-input-bf"
+                            contenteditable="true"
+                            style="font-size: 13px; line-height: 2"
+                          />
+                        </td>
+                        <td class="doi-table-row">
+                          <input
+                            id="input-misc-link-description"
+                            style="line-height: 2"
+                            contenteditable="true"
+                          />
+                        </td>
+                        <th>
+                          <div
+                            onclick="addNewRow('doi-table')"
+                            class="doi-add-row-button"
+                            style="
+                              border-radius: 2px;
+                              color: #fff;
+                              padding: 5px !important;
+                              width: 40px;
+                              font-size: 13px;
+                              height: 30px;
+                              background: dodgerblue;
+                              display: block;
+                            "
+                          >
+                            Add
+                          </div>
+                          <div
+                            class="ui small basic icon buttons doi-helper-buttons"
+                            style="display: none"
+                          >
+                            <button onclick="delete_link(1)" class="ui button">
+                              <i
+                                class="trash alternate outline icon"
+                                style="color: red"
+                              ></i>
+                            </button>
+                          </div>
+                        </th>
+                      </tr>
+                    </tbody>
+                  </table> -->
+                  <p
+                    id="para-save-link-status"
+                    style="
+                      text-align: center;
+                      font-size: 14px;
+                      padding-top: 0;
+                      margin-right: 5px;
+                      margin-bottom: 0;
+                      margin-top: 15px;
+                      color: red;
+                    "
+                  ></p>
+
+                  <div
+                    style="display: flex; justify-content: center; margin: 20px"
+                  >
+                    <button
+                      id="button-prev-misc-contributor"
+                      class="demo-button-prev-next"
+                      style="width: 70px; height: 32px; margin-right: 10px"
+                    >
+                      <i class="fas fa-long-arrow-alt-left"></i>
+                    </button>
+                    <!-- <button
+                      id="button-next-misc-optional"
+                      class="demo-button-prev-next"
+                      style="width: 70px; height: 32px"
+                    >
+                      <i class="fas fa-long-arrow-alt-right"></i>
+                    </button> -->
+                  </div>
                 </div>
               </div>
 
@@ -3713,66 +3574,6 @@
       </button>
     </div>
 
-    <!-- <div class="ui modal">
-      <i class="close icon"></i>
-      <div class="header">
-        Profile Picture
-      </div>
-      <div class="content">
-        <form class="ui form">
-          <div class="field" style="width: 100%">
-            <label>Identifier description</label>
-            <input
-              id="identifier-desc"
-              type="text"
-              name="identifier-desc"
-              placeholder="Protocol for dataset"
-            />
-          </div>
-          <div class="field" style="width: 100%">
-            <label>Identifier</label>
-            <input
-              id="identifier"
-              type="text"
-              name="identifier"
-              placeholder="https://doi.org/my.doi"
-            />
-          </div>
-          <div class="field" style="width: 100%">
-            <label>Identifier type</label>
-            <input
-              id="identifier-type"
-              type="text"
-              name="identifier-type"
-              placeholder="DOI"
-            />
-          </div>
-          <div class="field" style="width: 100%">
-            <label>Relation type</label>
-            <div class="ui selection dropdown">
-              <input type="hidden" name="relation-type" />
-              <i class="dropdown icon"></i>
-              <div class="default text">Relation type</div>
-              <div class="menu">
-                <div class="item" data-value="1">Male</div>
-                <div class="item" data-value="0">Female</div>
-              </div>
-            </div>
-          </div>
-          <button class="ui button" type="submit">Submit</button> 
-         </form>
-      </div>
-      <div class="actions">
-        <div class="ui black deny button">
-          Nope
-        </div>
-        <div class="ui positive right labeled icon button">
-          Yep, that's me
-          <i class="checkmark icon"></i>
-        </div>
-      </div>
-    </div>  -->
-
     <!-- Modal -->
     <div
       class="modal fade"
@@ -3809,8 +3610,19 @@
           <div class="modal-body">
             <form class="ui form">
               <div class="field" style="width: 100%">
-                <label>Identifier description</label>
+                <label
+                  >Identifier description
+                  <i
+                    class="fas fa-info-circle popover-tooltip"
+                    data-content="A description of the referent of the related identifier."
+                    rel="popover"
+                    data-html="true"
+                    data-placement="bottom"
+                    data-trigger="hover"
+                  ></i
+                ></label>
                 <input
+                  class="relation-type-input"
                   id="identifier-desc"
                   type="text"
                   name="identifier-desc"
@@ -3818,8 +3630,19 @@
                 />
               </div>
               <div class="field" style="width: 100%">
-                <label>Identifier</label>
+                <label
+                  >Identifier
+                  <i
+                    class="fas fa-info-circle popover-tooltip"
+                    data-content="The identifier for something related to this dataset."
+                    rel="popover"
+                    data-html="true"
+                    data-placement="bottom"
+                    data-trigger="hover"
+                  ></i>
+                </label>
                 <input
+                  class="relation-type-input"
                   id="identifier"
                   type="text"
                   name="identifier"
@@ -3827,8 +3650,19 @@
                 />
               </div>
               <div class="field" style="width: 100%">
-                <label>Identifier type</label>
+                <label
+                  >Identifier type
+                  <i
+                    class="fas fa-info-circle popover-tooltip"
+                    data-content="The type of the identifier. Usually either a 'URL' or 'DOI'"
+                    rel="popover"
+                    data-html="true"
+                    data-placement="bottom"
+                    data-trigger="hover"
+                  ></i
+                ></label>
                 <input
+                  class="relation-type-input"
                   id="identifier-type"
                   type="text"
                   name="identifier-type"
@@ -3836,60 +3670,33 @@
                 />
               </div>
               <div class="field" style="width: 100%">
-                <label>Relation type</label>
+                <label
+                  >Relation type
+                  <i
+                    class="fas fa-info-circle popover-tooltip"
+                    data-content="The relationship that this dataset has to the related identifier. For example the originating article would be this dataset IsDescribedBy originating article."
+                    rel="popover"
+                    data-html="true"
+                    data-placement="bottom"
+                    data-trigger="hover"
+                  ></i
+                ></label>
                 <input
+                  class="relation-type-input"
                   id="relation-type"
                   type="text"
                   name="relation-type"
                   placeholder=""
                 />
               </div>
-              <!-- <div class="field" style="width: 100%">
-                <label>Relation type</label>
-                <div class="ui selection dropdown">
-                  <input type="hidden" name="relation-type" />
-                  <i class="dropdown icon"></i>
-                  <div class="default text">Relation type</div>
-                  <div class="menu">
-                    <div class="item" data-value="1">Male</div>
-                    <div class="item" data-value="0">Female</div>
-                  </div>
-                </div>
-              </div> -->
-              <!-- <button class="ui button" type="submit">Submit</button>  -->
-             </form>
-            <!-- <div
-              style="
-                display: flex;
-                justify-content: center;
-                flex-direction: column;
-              "
-            >
-              <div class="ui labeled input">
-                <div class="ui label">Identifier description</div>
-                <input id="identifier-desc" type="text" placeholder="Protocol for dataset" />
-              </div>
-              <div class="ui labeled input">
-                <div class="ui label">Identifier</div>
-                <input id="identifier" type="text" placeholder="https://doi.org/my.doi" />
-              </div>
-              <div class="ui labeled input">
-                <div class="ui label">Identifier type</div>
-                <input id="identifier-type" type="text" placeholder="DOI" />
-              </div>
-              <div>
-                <select id="relation-type" name="relation-type" multiple="" class="ui fluid dropdown">
-                  <option value="IsProtocolFor">IsProtocolFor</option>
-                  <option value="HasProtocol">HasProtocol</option>
-                </select>
-              </div>
-            </div> -->
+            </form>
           </div>
           <div
             class="modal-footer"
             style="display: flex; justify-content: space-between"
           >
             <button id="add-protocol-link-ds-desc">Add Link</button>
+            <button id="edit-protocol-link-ds-desc">Edit Link</button>
             <button data-dismiss="modal" id="cancel-link-ds-desc">
               Cancel
             </button>

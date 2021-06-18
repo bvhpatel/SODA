@@ -988,26 +988,27 @@ function addNewRow(table) {
   var currentRow = document.getElementById(table).rows[
     document.getElementById(table).rows.length - 1
   ];
-  if (table === "doi-table") {
-    if (
-      $(document.getElementById("doi-table").rows[rowIndex - 1].cells[1])
-        .find("input")
-        .val() == ""
-    ) {
-      $("#para-save-link-status").text("Please enter a link to add!");
-    } else {
-      $(".doi-helper-buttons").css("display", "inline-flex");
-      $(".doi-add-row-button").css("display", "none");
-      // check for unique row id in case users delete old rows and append new rows (same IDs!)
-      var newRowIndex = checkForUniqueRowID("row-current-link", rowIndex);
-      var row = (document.getElementById(table).insertRow(rowIndex).outerHTML =
-        "<tr id='row-current-link" +
-        newRowIndex +
-        "'><td><select id='select-misc-link' class='form-container-input-bf' style='font-size:13px;line-height:2;'><option value='Select' disabled>Select an option</option><option value='Protocol URL or DOI*'>Protocol URL or DOI*</option><option value='Originating Article DOI'>Originating Article DOI</option><option value='Additional Link'>Additional Link</option></select></td><td><input type='text' contenteditable='true'></input></td><td><input type='text' contenteditable='true'></input></td><td><div onclick='addNewRow(\"doi-table\")' class='ui right floated medium primary labeled icon button doi-add-row-button' style='display:block;font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue'><i class='plus icon' style='padding:8px'></i>Add</div><div class='ui small basic icon buttons doi-helper-buttons' style='display:none'><button onclick='delete_link(" +
-        rowIndex +
-        ")'' class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>");
-    }
-  } else if (table === "table-current-contributors") {
+  // if (table === "doi-table") {
+  //   if (
+  //     $(document.getElementById("doi-table").rows[rowIndex - 1].cells[1])
+  //       .find("input")
+  //       .val() == ""
+  //   ) {
+  //     $("#para-save-link-status").text("Please enter a link to add!");
+  //   } else {
+  //     $(".doi-helper-buttons").css("display", "inline-flex");
+  //     $(".doi-add-row-button").css("display", "none");
+  //     // check for unique row id in case users delete old rows and append new rows (same IDs!)
+  //     var newRowIndex = checkForUniqueRowID("row-current-link", rowIndex);
+  //     var row = (document.getElementById(table).insertRow(rowIndex).outerHTML =
+  //       "<tr id='row-current-link" +
+  //       newRowIndex +
+  //       "'><td><select id='select-misc-link' class='form-container-input-bf' style='font-size:13px;line-height:2;'><option value='Select' disabled>Select an option</option><option value='Protocol URL or DOI*'>Protocol URL or DOI*</option><option value='Originating Article DOI'>Originating Article DOI</option><option value='Additional Link'>Additional Link</option></select></td><td><input type='text' contenteditable='true'></input></td><td><input type='text' contenteditable='true'></input></td><td><div onclick='addNewRow(\"doi-table\")' class='ui right floated medium primary labeled icon button doi-add-row-button' style='display:block;font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue'><i class='plus icon' style='padding:8px'></i>Add</div><div class='ui small basic icon buttons doi-helper-buttons' style='display:none'><button onclick='delete_link(" +
+  //       rowIndex +
+  //       ")'' class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>");
+  //   }
+  // } else
+  if (table === "table-current-contributors") {
     // check if all the fields are populated before Adding
     var empty = checkEmptyConRowInfo(table, currentRow);
     if (empty) {
@@ -1534,6 +1535,8 @@ function resetDD() {
       parentDSTagify.removeAllTags();
       completenessTagify.removeAllTags();
 
+      relatedLinksObject = [];
+
       // 3. deleting table rows
       changeAwardInputDsDescription();
       $("#doi-table").find("tr").slice(1, -1).remove();
@@ -1547,18 +1550,167 @@ function resetDD() {
 }
 
 $("#add-protocol-btn").on("click", () => {
-  // $("#doi-table").show();
   $("#identifier-desc").val("");
   $("#identifier").val("");
   $("#identifier-type").val("");
+  $("#relation-type").val("");
+  relationTypestagify.removeAllTags();
+  $("#add-protocol-link-ds-desc").show();
+  $("#add-protocol-link-ds-desc").prop("disabled", true);
+  $("#edit-protocol-link-ds-desc").hide();
   $("#add-protocol-link-modal").modal("show");
-  // $(".selection.dropdown").dropdown();
-  // $("#relation-type").dropdown();
-  // edit_banner_image_modal
-
-//   $('.ui.modal')
-//   .modal('show')
-// ;
-  
-  // $("#doi-table").show();
 });
+
+$(".relation-type-input").on("change", () => {
+  let identifier_desc = $("#identifier-desc").val();
+  let identifier = $("#identifier").val();
+  let identifier_type = $("#identifier-type").val();
+  let relation_type = [];
+  let relations = [];
+
+  if ($("#relation-type").val() !== "") {
+    relation_type = JSON.parse($("#relation-type").val());
+  }
+
+  relation_type.forEach((item, index) => {
+    relations.push(item.value);
+  });
+
+  if (
+    identifier_desc == "" ||
+    identifier == "" ||
+    identifier_type == "" ||
+    relations.length == 0
+  ) {
+    $("#add-protocol-link-ds-desc").prop("disabled", true);
+    $("#edit-protocol-link-ds-desc").prop("disabled", true);
+  } else {
+    $("#add-protocol-link-ds-desc").prop("disabled", false);
+    $("#edit-protocol-link-ds-desc").prop("disabled", false);
+  }
+});
+
+const renderDOITable = () => {
+  let table_body = "";
+
+  relatedLinksObject.forEach((link_object, link_index) => {
+    let table_row = `<tr>
+    <td style="vertical-align:middle">${link_index + 1}</td>
+    <td style="vertical-align:middle">${link_object.identifier}</td>
+    <td style="vertical-align:middle"><div style="display:flex;flex-direction:row; justify-content:center"><div class='ui small basic icon buttons contributor-helper-buttons'><button class='ui button' onclick='editDOI(\"${
+      link_object.identifier
+    }\")'><i class='pen  icon' style='color:blue'></i></button></div>
+    <div class='ui small basic icon buttons contributor-helper-buttons'><button class='ui button' onclick='deleteDOI(\"${
+      link_object.identifier
+    }\")'><i class='trash alternate outline icon' style='color:red'></i></button></div></div></td>
+  </tr>`;
+    table_body += table_row;
+  });
+  $("#doi-table-body").html(table_body);
+};
+
+$("#add-protocol-link-ds-desc").on("click", () => {
+  let identifier_desc = $("#identifier-desc").val();
+  let identifier = $("#identifier").val();
+  let identifier_type = $("#identifier-type").val();
+  let relation_type = JSON.parse($("#relation-type").val());
+  let relations = [];
+
+  relation_type.forEach((item, index) => {
+    relations.push(item.value);
+  });
+
+  let relationObject = {
+    identifierDescription: identifier_desc,
+    identifier: identifier,
+    identifierType: identifier_type,
+    relationType: relations,
+  };
+
+  relatedLinksObject.push(relationObject);
+
+  renderDOITable();
+
+  $("#add-protocol-link-modal").modal("hide");
+  $("#doi-table").show();
+});
+
+var globalEditIdentifier = "";
+
+$("#edit-protocol-link-ds-desc").on("click", () => {
+  let identifier_desc = $("#identifier-desc").val();
+  let identifier = $("#identifier").val();
+  let identifier_type = $("#identifier-type").val();
+  let relation_type = JSON.parse($("#relation-type").val());
+  let relations = [];
+
+  relation_type.forEach((item, index) => {
+    relations.push(item.value);
+  });
+  relatedLinksObject.forEach((link_object, link_index) => {
+    if (link_object.identifier == globalEditIdentifier) {
+      relatedLinksObject[link_index].identifier = identifier;
+      relatedLinksObject[link_index].identifierDescription = identifier_desc;
+      relatedLinksObject[link_index].identifierType = identifier_type;
+      relatedLinksObject[link_index].relationType = relations;
+    }
+  });
+
+  renderDOITable();
+
+  $("#add-protocol-link-modal").modal("hide");
+  $("#doi-table").show();
+});
+
+const editDOI = (edit_identifier) => {
+  globalEditIdentifier = edit_identifier;
+  $("#relation-type").val("");
+  $("#add-protocol-link-ds-desc").hide();
+  $("#edit-protocol-link-ds-desc").show();
+  $("#add-protocol-link-modal").modal("show");
+  relatedLinksObject.forEach((link_object, link_index) => {
+    if (link_object.identifier == edit_identifier) {
+      $("#identifier-desc").val(link_object.identifierDescription);
+      $("#identifier-type").val(link_object.identifierType);
+      $("#identifier").val(link_object.identifier);
+      relationTypestagify.removeAllTags();
+      relationTypestagify.addTags(link_object.relationType);
+      renderDOITable();
+    }
+  });
+  $("#doi-table").show();
+};
+
+const deleteDOI = (del_identifier) => {
+  Swal.fire({
+    backdrop: "rgba(0,0,0, 0.4)",
+    heightAuto: false,
+    cancelButtonText: "Keep this link",
+    confirmButtonText: "Remove this link",
+    focusCancel: true,
+    icon: "warning",
+    reverseButtons: reverseSwalButtons,
+    showCancelButton: true,
+    text: `This will remove the ${del_identifier} identifier ?`,
+    showClass: {
+      popup: "animate__animated animate__zoomIn animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
+  }).then((result) => {
+    if (result.isConfirmed) {
+      relatedLinksObject.forEach((link_object, link_index) => {
+        if (link_object.identifier == del_identifier) {
+          relatedLinksObject.splice(link_index, 1);
+        }
+      });
+      renderDOITable();
+      if (relatedLinksObject.length == 0) {
+        $("#doi-table").hide();
+      } else {
+        $("#doi-table").show();
+      }
+    }
+  });
+};

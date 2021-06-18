@@ -116,19 +116,22 @@ function checkOtherInfoFields() {
   var div = "ds-misc-info";
   var tableCurrentLinks = document.getElementById("doi-table");
   var fieldSatisfied = false;
-  for (var i = 1; i < tableCurrentLinks.rows.length; i++) {
-    if (
-      tableCurrentLinks.rows[i].cells[0].innerHTML === "Protocol URL or DOI*"
-    ) {
-      fieldSatisfied = true;
-    }
+  if ($("#ds-type").value == "experimental") {
+    // FIX add filtration here
   }
-  if (fieldSatisfied) {
-    document.getElementById(div).className =
-      "multisteps-form__progress-btn js-active2";
-  } else {
-    document.getElementById(div).className = "multisteps-form__progress-btn";
-  }
+  // for (var i = 1; i < tableCurrentLinks.rows.length; i++) {
+  //   if (
+  //     tableCurrentLinks.rows[i].cells[0].innerHTML === "Protocol URL or DOI*"
+  //   ) {
+  //     fieldSatisfied = true;
+  //   }
+  // }
+  // if (fieldSatisfied) {
+  //   document.getElementById(div).className =
+  //     "multisteps-form__progress-btn js-active2";
+  // } else {
+  //   document.getElementById(div).className = "multisteps-form__progress-btn";
+  // }
 }
 
 $(document).ready(function () {

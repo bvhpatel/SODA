@@ -225,25 +225,13 @@ def populate_links_info(workbook, val_array):
     workbook["E22"] = ""
 
     ## originating DOI, Protocol DOI
-    total_link_array = val_array["Originating Article DOI"] + val_array["Protocol URL or DOI*"] + val_array["Additional Link"]
-    for i, column in zip(range(len(total_link_array)), excel_columns(start_index=3)):
-        if total_link_array[i]["link type"] == "Originating Article DOI":
-            workbook[column + "23"] = total_link_array[i]["link"]
-            workbook[column + "24"] = "DOI" #FIX ME get from UI
-            workbook[column + "22"] = "IsDescribedBy"    #FIX ME get from tagify UI
-            workbook[column + "21"] = total_link_array[i]["description"]
-        if total_link_array[i]["link type"] == "Protocol URL or DOI*":
-            workbook[column + "23"] = total_link_array[i]["link"]
-            workbook[column + "24"] = "DOI" #FIX ME get from UI
-            workbook[column + "22"] = "IsProtocolFor"    #FIX ME get from tagify UI
-            workbook[column + "21"] = total_link_array[i]["description"]
-        if total_link_array[i]["link type"] == "Additional Link":
-            workbook[column + "23"] = total_link_array[i]["link"]
-            workbook[column + "24"] = "DOI" #FIX ME get from UI
-            workbook[column + "22"] = "Describes"    #FIX ME get from tagify UI
-            workbook[column + "21"] = total_link_array[i]["description"]
+    for i, column in zip(range(len(val_array)), excel_columns(start_index=3)):
+        workbook[column + "21"] = val_array[i]["identifierDescription"]
+        workbook[column + "22"] = val_array[i]["relationType"]
+        workbook[column + "23"] = val_array[i]["identifier"]
+        workbook[column + "24"] = val_array[i]["identifierType"]
 
-    return total_link_array
+    return val_array
 
 def populate_completeness_info(workbook, val_array, bfaccountname):
     ## completeness, parent dataset ID, title Respectively
