@@ -1344,21 +1344,40 @@ body.swal2-shown > [aria-hidden="true"] {
 
 .swal2-footer {
   color: #363636 !important;
-  justify-content: flex-end !important;
-  padding-right: 20px !important;
+  /* justify-content: flex-end !important; */
+  /* padding-right: 20px !important; */
 }
 
 .swal2-footer a {
   text-decoration: underline !important;
-  color: var(--color-light-green) !important;
+  /* color: var(--color-light-green) !important; */
 }
 
-.swal-left-align{
+.swal-left-align {
   text-align: left !important;
 }
 
 .search-select-box {
   width: 100% !important;
+}
+
+.swal2-input {
+  outline: none !important;
+  border-width: 0 0 1px !important;
+  border-color: gray !important;
+  box-shadow: none !important;
+  border-radius: 0px !important;
+}
+
+.swal2-input:focus {
+  outline: none !important;
+  border-width: 0 0 2px !important;
+  border-color: #13716d !important;
+}
+
+.swal2-input::-webkit-input-placeholder {
+  color: black;
+  font-weight: bold;
 }
 
 .search-select-box button {
@@ -1371,7 +1390,7 @@ body.swal2-shown > [aria-hidden="true"] {
 
 .swal2-actions {
   z-index: 0 !important;
-  margin-top: 30px !important;
+  /* margin-top: 30px !important; */
 }
 
 .dropdown-menu.show {
@@ -1379,9 +1398,9 @@ body.swal2-shown > [aria-hidden="true"] {
   width: 70% !important;
 }
 
-.swal2-header {
-  margin-bottom: 15px !important;
-}
+/* .swal2-header {
+  margin-bottom: 15px !important; 
+} */
 
 .jstree-default .jstree-themeicon-custom {
   color: var(--color-bg-yellow) !important;
@@ -1408,6 +1427,11 @@ body.swal2-shown > [aria-hidden="true"] {
 /* .swal2-content {
   text-align: left !important;
 } */
+
+/* Use this for any hide animations on sweet alert. Seems to look okay and makes the message disappear faster */
+.animate_fastest {
+  --animate-duration: 0.3s;
+}
 
 #data {
   font-size: 14px !important;

@@ -5,7 +5,9 @@ function disseminatePublish() {
 
 function refreshDatasetStatus() {
   var account = $("#current-bf-account").text();
-  var dataset = $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '');
+  var dataset = $(".bf-dataset-span")
+    .html()
+    .replace(/^\s+|\s+$/g, "");
   disseminateShowPublishingStatus("", account, dataset);
 }
 
@@ -26,14 +28,70 @@ const disseminateDataset = (option) => {
   if (option === "share-with-curation-team") {
     $("#share-curation-team-spinner").show();
     $("#para-share-curation_team-status").text("");
-    ipcRenderer.send(
-      "warning-share-with-curation-team",
-      formBannerHeight.value
-    );
+    // ipcRenderer.send(
+    //   "warning-share-with-curation-team",
+    //   formBannerHeight.value
+    // );
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      cancelButtonText: "No",
+      confirmButtonText: "Yes",
+      focusCancel: true,
+      icon: "warning",
+      reverseButtons: reverseSwalButtons,
+      showCancelButton: true,
+      text:
+        "This will inform the Curation Team that your dataset is ready to be reviewed. It is then advised not to make changes to the dataset until the Curation Team contacts you. Would you like to continue?",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        var account = $("#current-bf-account").text();
+        var dataset = $(".bf-dataset-span")
+          .html()
+          .replace(/^\s+|\s+$/g, "");
+        disseminateCurationTeam(account, dataset);
+      } else {
+        $("#share-curation-team-spinner").hide();
+      }
+    });
   } else if (option === "share-with-sparc-consortium") {
     $("#share-with-sparc-consortium-spinner").show();
     $("#para-share-with-sparc-consortium-status").text("");
-    ipcRenderer.send("warning-share-with-consortium", formBannerHeight.value);
+    // ipcRenderer.send("warning-share-with-consortium", formBannerHeight.value);
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+      focusCancel: true,
+      heightAuto: false,
+      icon: "warning",
+      reverseButtons: reverseSwalButtons,
+      showCancelButton: true,
+      text:
+        "Sharing will give viewer permissions to any SPARC investigator who has signed the SPARC Non-disclosure form and will allow them to see your data. This step must be done only once your dataset has been approved by the Curation Team. Would you like to continue?",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        var account = $("#current-bf-account").text();
+        var dataset = $(".bf-dataset-span")
+          .html()
+          .replace(/^\s+|\s+$/g, "");
+        disseminateConsortium(account, dataset);
+      } else {
+        $("#share-with-sparc-consortium-spinner").hide();
+      }
+    });
   } else if (option === "submit-pre-publishing") {
     $("#submit_prepublishing_review-spinner").show();
     $("#para-submit_prepublishing_review-status").text("");
@@ -43,14 +101,36 @@ const disseminateDataset = (option) => {
 };
 
 const unshareDataset = (option) => {
-  $(".spinner.post-curation").show();
+  let message_text = "";
   if (option === "share-with-curation-team") {
-    $("#para-share-curation_team-status").text("");
-    disseminateCurationTeam(defaultBfAccount, defaultBfDataset, "unshare");
+    message_text =
+      "Are you sure you want to remove SPARC Data Curation Team from this dataset and revert the status of this dataset back to 'Work In Progress (Investigator)'?";
   } else if (option === "share-with-sparc-consortium") {
-    $("#para-share-with-sparc-consortium-status").text("");
-    disseminateConsortium(defaultBfAccount, defaultBfDataset, "unshare");
+    message_text =
+      "Are you sure you want to remove SPARC Embargoed Data Sharing Group from this dataset and revert the status of this dataset back to 'Curated & Awaiting PI Approval (Curators)'?";
   }
+
+  Swal.fire({
+    backdrop: "rgba(0,0,0, 0.4)",
+    confirmButtonText: "Continue",
+    focusCancel: true,
+    heightAuto: false,
+    icon: "warning",
+    reverseButtons: reverseSwalButtons,
+    showCancelButton: true,
+    text: message_text,
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $(".spinner.post-curation").show();
+      if (option === "share-with-curation-team") {
+        $("#para-share-curation_team-status").text("");
+        disseminateCurationTeam(defaultBfAccount, defaultBfDataset, "unshare");
+      } else if (option === "share-with-sparc-consortium") {
+        $("#para-share-with-sparc-consortium-status").text("");
+        disseminateConsortium(defaultBfAccount, defaultBfDataset, "unshare");
+      }
+    }
+  });
 };
 
 $(document).ready(function () {
@@ -64,40 +144,49 @@ $(document).ready(function () {
     }
   });
 
-  ipcRenderer.on(
-    "warning-share-with-curation-team-selection",
-    (event, index) => {
-      if (index === 0) {
-        var account = $("#current-bf-account").text();
-        var dataset = $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '');
-        disseminateCurationTeam(account, dataset);
-      } else {
-        $("#share-curation-team-spinner").hide();
-      }
-    }
-  );
-  ipcRenderer.on("warning-share-with-consortium-selection", (event, index) => {
-    if (index === 0) {
-      var account = $("#current-bf-account").text();
-      var dataset = $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '');
-      disseminateConsortium(account, dataset);
-    } else {
-      $("#share-with-sparc-consortium-spinner").show();
-    }
-  });
+  // ipcRenderer.on(
+  //   "warning-share-with-curation-team-selection",
+  //   (event, index) => {
+  //     if (index === 0) {
+  //       var account = $("#current-bf-account").text();
+  //       var dataset = $(".bf-dataset-span")
+  //         .html()
+  //         .replace(/^\s+|\s+$/g, "");
+  //       disseminateCurationTeam(account, dataset);
+  //     } else {
+  //       $("#share-curation-team-spinner").hide();
+  //     }
+  //   }
+  // );
+
+  // ipcRenderer.on("warning-share-with-consortium-selection", (event, index) => {
+  //   if (index === 0) {
+  //     var account = $("#current-bf-account").text();
+  //     var dataset = $(".bf-dataset-span")
+  //       .html()
+  //       .replace(/^\s+|\s+$/g, "");
+  //     disseminateConsortium(account, dataset);
+  //   } else {
+  //     $("#share-with-sparc-consortium-spinner").show();
+  //   }
+  // });
+
   checkAirtableStatus();
+  
   ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
     if (dirpath.length > 0) {
       $("#generate-submission-spinner").show();
       var destinationPath = path.join(dirpath[0], filename);
       if (fs.existsSync(destinationPath)) {
-        var emessage = "File '" + filename + "' already exists in " + dirpath[0];
-        // ipcRenderer.send("open-error-metadata-file-exits", emessage);
-        Swal.fire(
-          'Metadata file already exists',
-          `${emessage}`,
-          'error'
-        )
+        var emessage =
+          "File '" + filename + "' already exists in " + dirpath[0];
+        Swal.fire({
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          icon: "error",
+          text: `${emessage}`,
+          title: "Metadata file already exists",
+        });
         $("#generate-submission-spinner").hide();
       } else {
         var awardRes = $("#submission-SPARC-award-span").text();
@@ -170,7 +259,7 @@ $(document).ready(function () {
       if (filepath != null) {
         // used to communicate value to button-import-milestone click event-listener
         document.getElementById("input-milestone-select-reupload").placeholder =
-        filepath[0];
+          filepath[0];
         $("#div-confirm-select-SPARC-awards").show();
         $("#div-cancel-reupload-DDD").hide();
         ipcRenderer.send(
@@ -187,6 +276,9 @@ $(document).ready(function () {
 const disseminateCurationTeam = (account, dataset, share_status = "") => {
   var selectedTeam = "SPARC Data Curation Team";
   var selectedRole = "manager";
+
+  $("#curation-team-share-btn").prop("disabled", true);
+  $("#curation-team-unshare-btn").prop("disabled", true);
 
   if (share_status === "unshare") {
     selectedRole = "remove current permissions";
@@ -206,6 +298,9 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
         $("#para-share-curation_team-status").text(emessage);
         $("#share-curation-team-spinner").hide();
         $(".spinner.post-curation").hide();
+        $("#curation-team-share-btn").prop("disabled", false);
+        $("#curation-team-unshare-btn").prop("disabled", false);
+
         ipcRenderer.send(
           "track-event",
           "Error",
@@ -233,6 +328,9 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
               $("#para-share-curation_team-status").css("color", "red");
               $("#para-share-curation_team-status").text(emessage);
               $("#share-curation-team-spinner").hide();
+              $("#curation-team-share-btn").prop("disabled", false);
+              $("#curation-team-unshare-btn").prop("disabled", false);
+
               ipcRenderer.send(
                 "track-event",
                 "Error",
@@ -274,6 +372,8 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
               );
               disseminiateShowCurrentDatasetStatus("", account, dataset);
               $(".spinner.post-curation").hide();
+              $("#curation-team-share-btn").prop("disabled", false);
+              $("#curation-team-unshare-btn").prop("disabled", false);
             }
           }
         );
@@ -285,6 +385,10 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
 function disseminateConsortium(bfAcct, bfDS, share_status = "") {
   var selectedTeam = "SPARC Embargoed Data Sharing Group";
   var selectedRole = "viewer";
+
+  $("#sparc-consortium-share-btn").prop("disabled", true);
+  $("#sparc-consortium-unshare-btn").prop("disabled", true);
+
   if (share_status === "unshare") {
     selectedRole = "remove current permissions";
   }
@@ -303,6 +407,8 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
         $("#para-share-with-sparc-consortium-status").text(emessage);
         $("#share-with-sparc-consortium-spinner").hide();
         $(".spinner.post-curation").hide();
+        $("#sparc-consortium-share-btn").prop("disabled", false);
+        $("#sparc-consortium-unshare-btn").prop("disabled", false);
         ipcRenderer.send(
           "track-event",
           "Error",
@@ -335,6 +441,8 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
               $("#para-share-with-sparc-consortium-status").css("color", "red");
               $("#para-share-with-sparc-consortium-status").text(emessage);
               $("#share-with-sparc-consortium-spinner").hide();
+              $("#sparc-consortium-share-btn").prop("disabled", false);
+              $("#sparc-consortium-unshare-btn").prop("disabled", false);
               $(".spinner.post-curation").hide();
             } else {
               $("#para-share-with-sparc-consortium-status").css(
@@ -361,6 +469,8 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
               showCurrentPermission();
               showCurrentDatasetStatus();
               disseminiateShowCurrentDatasetStatus("", bfAcct, bfDS);
+              $("#sparc-consortium-share-btn").prop("disabled", false);
+              $("#sparc-consortium-unshare-btn").prop("disabled", false);
               $("#share-with-sparc-consortium-spinner").hide();
               $(".spinner.post-curation").hide();
             }
@@ -373,7 +483,7 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
 
 function disseminateShowCurrentPermission(bfAcct, bfDS) {
   $("#para-share-curation_team-status").css("color", "#000");
-  currentDatasetPermission.innerHTML = `Loading current permissions... <div id="restart_loader" class="ui active green inline loader tiny"></div>`;
+  currentDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
   if (bfDS === "Select dataset") {
     currentDatasetPermission.innerHTML = "None";
     // bfCurrentPermissionProgress.style.display = "none";
@@ -450,7 +560,11 @@ function disseminiateShowCurrentDatasetStatus(callback, account, dataset) {
 }
 
 function checkDatasetDisseminate() {
-  if ($(".bf-dataset-span.disseminate").html().replace(/^\s+|\s+$/g, '') !== "None") {
+  if (
+    $(".bf-dataset-span.disseminate")
+      .html()
+      .replace(/^\s+|\s+$/g, "") !== "None"
+  ) {
     if (
       $("#Post-curation-question-1").hasClass("prev") &&
       !$("#Post-curation-question-4").hasClass("show")
@@ -470,9 +584,9 @@ $(".bf-dataset-span.submit-review").on("DOMSubtreeModified", function () {
   }
 });
 
-                  /*
-                  The below is for Prepare metadata section
-                  */
+/*
+  The below is for Prepare metadata section
+*/
 
 // Main function to check Airtable status upon loading soda
 ///// config and load live data from Airtable
@@ -807,9 +921,9 @@ $("#input-milestone-date-raw").change(function () {
   }
 });
 
-$(document).ready(function() {
+$(document).ready(function () {
   $("#a-SPARC-awards-not-listed").click(editSPARCAwardsBootbox);
-})
+});
 
 // Preview submission file entries before Generating
 function showPreviewSubmission() {
@@ -906,8 +1020,14 @@ function addNewRow(table) {
       return;
     }
     if ($(currentRow).find("label").find("input")[0].checked) {
-      var currentContactPersonIDNumber = $($(currentRow).find("label").find("input")[0]).prop("id").slice(-1);
-      var contactPersonBoolean = contactPersonCheck(currentContactPersonIDNumber);
+      var currentContactPersonIDNumber = $(
+        $(currentRow).find("label").find("input")[0]
+      )
+        .prop("id")
+        .slice(-1);
+      var contactPersonBoolean = contactPersonCheck(
+        currentContactPersonIDNumber
+      );
       if (contactPersonBoolean) {
         $("#para-save-contributor-status").text(
           "One contact person is already added above. Only one contact person is allowed for a dataset."
@@ -1337,12 +1457,20 @@ function onChangeContactLabel(no) {
 
 function resetSubmission() {
   Swal.fire({
-    text: "Are you sure you want to start over and reset your progress?",
-    icon: "warning",
-    showCancelButton: true,
-    heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     confirmButtonText: "I want to start over!",
+    focusCancel: true,
+    heightAuto: false,
+    icon: "warning",
+    reverseButtons: reverseSwalButtons,
+    showCancelButton: true,
+    text: "Are you sure you want to start over and reset your progress?",
+    showClass: {
+      popup: "animate__animated animate__zoomIn animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
   }).then((result) => {
     if (result.isConfirmed) {
       // 1. remove Prev and Show from all individual-question except for the first one
@@ -1384,12 +1512,20 @@ function resetSubmission() {
 
 function resetDD() {
   Swal.fire({
-    text: "Are you sure you want to start over and reset your progress?",
-    icon: "warning",
-    showCancelButton: true,
-    heightAuto: false,
-    backdrop:"rgba(0,0,0, 0.4)",
+    backdrop: "rgba(0,0,0, 0.4)",
     confirmButtonText: "I want to start over!",
+    focusCancel: true,
+    heightAuto: false,
+    icon: "warning",
+    reverseButtons: reverseSwalButtons,
+    showCancelButton: true,
+    text: "Are you sure you want to start over and reset your progress?",
+    showClass: {
+      popup: "animate__animated animate__zoomIn animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
   }).then((result) => {
     if (result.isConfirmed) {
       // 1. remove Prev and Show from all individual-question except for the first one

@@ -1,4 +1,5 @@
 var metadataFile = "";
+var jstreePreview = document.getElementById("div-dataset-tree-preview");
 
 // Function to clear the confirm options in the curate feature
 const confirm_click_account_function = () => {
@@ -470,42 +471,43 @@ const verify_missing_files = (mode) => {
 
   message_text += "</ul>";
 
-  bootbox.confirm({
-    message: message_text,
-    centerVertical: true,
-    buttons: {
-      confirm: {
-        label: "Yes",
-        className: "btn-success",
-      },
-      cancel: {
-        label: "No",
-        className: "btn-danger",
-      },
+  Swal.fire({
+    backdrop: "rgba(0,0,0, 0.4)",
+    cancelButtonText: "Cancel",
+    confirmButtonText: "OK",
+    heightAuto: false,
+    icon: "warning",
+    reverseButtons: reverseSwalButtons,
+    showCancelButton: true,
+    text: message_text,
+    showClass: {
+      popup: "animate__animated animate__zoomIn animate__faster",
     },
-    callback: (result) => {
-      if (result == true) {
-        remove_missing_files();
-        if (mode === "pre-existing") {
-          document.getElementById("div-progress-file-loader").style.display =
-            "none";
-          $("body").removeClass("waiting");
-          document.getElementById("nextBtn").disabled = false;
-          document.getElementById("para-progress-file-status").innerHTML =
-            "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>";
-        } else if (mode === "new") {
-          document.getElementById("div-progress-file-loader").style.display =
-            "none";
-          $("body").removeClass("waiting");
-          document.getElementById("para-progress-file-status").innerHTML = "";
-        }
-      } else {
+    hideClass: {
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
+  }).then((result) => {
+    if (result.isConfirmed) {
+      remove_missing_files();
+      if (mode === "pre-existing") {
+        document.getElementById("div-progress-file-loader").style.display =
+          "none";
+        $("body").removeClass("waiting");
+        document.getElementById("nextBtn").disabled = false;
+        document.getElementById("para-progress-file-status").innerHTML =
+          "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>";
+      } else if (mode === "new") {
         document.getElementById("div-progress-file-loader").style.display =
           "none";
         $("body").removeClass("waiting");
         document.getElementById("para-progress-file-status").innerHTML = "";
       }
-    },
+    } else {
+      document.getElementById("div-progress-file-loader").style.display =
+        "none";
+      $("body").removeClass("waiting");
+      document.getElementById("para-progress-file-status").innerHTML = "";
+    }
   });
 };
 
@@ -636,6 +638,26 @@ $(document).ready(function () {
   });
 });
 
+const get_api_key = async (login, password, key_name) => {
+  return new Promise((resolve) => {
+    client.invoke(
+      "api_get_pennsieve_api_key_secret",
+      login,
+      password,
+      key_name,
+      (error, res) => {
+        if (error) {
+          log.error(error);
+          console.error(error);
+          resolve(["failed", error]);
+        } else {
+          resolve(res);
+        }
+      }
+    );
+  });
+};
+
 async function openDropdownPrompt(dropdown, show_timer = true) {
   // if users edit current account
   if (dropdown === "bf") {
@@ -690,13 +712,13 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
     if (bfAccountSwal === null) {
       if (bfacct !== "Select") {
         Swal.fire({
-          title: "Loading your account details...",
-          timer: 2000,
-          heightAuto: false,
-          timerProgressBar: true,
-          backdrop: "rgba(0,0,0, 0.4)",
           allowEscapeKey: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
           showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          title: "Loading your account details...",
         });
         $("#Question-getting-started-BF-account")
           .nextAll()
@@ -733,10 +755,10 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
             log.error(error);
             console.error(error);
             Swal.fire({
+              backdrop: "rgba(0,0,0, 0.4)",
+              heightAuto: false,
               icon: "error",
               text: error,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
               footer:
                 "<a href='https://docs.pennsieve.io/docs/configuring-the-client-credentials'>Why do I have this issue?</a>",
             });
@@ -771,8 +793,149 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
         Swal.showValidationMessage("Please select an account!");
       }
     } else if (bfAccountSwal === false) {
-      // // else, if users click Add account
-      showBFAddAccountBootbox();
+      Swal.fire({
+        allowOutsideClick: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        cancelButtonText: "Use my API key instead",
+        confirmButtonText: "Connect to Pennsieve",
+        showCloseButton: true,
+        focusConfirm: true,
+        heightAuto: false,
+        reverseButtons: reverseSwalButtons,
+        showCancelButton: false,
+        title: `<span style="text-align:center">Connect your Pennsieve account using your email and password <i class="fas fa-info-circle swal-popover" data-content="Your email and password will not be saved and not seen by anyone." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></span>`,
+        html: `<input type="text" id="ps_login" class="swal2-input" placeholder="Email Address for Pennsieve">
+        <input type="password" id="ps_password" class="swal2-input" placeholder="Password">`,
+        showClass: {
+          popup: "animate__animated animate__fadeInDown animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp animate__faster",
+        },
+        footer:
+          '<a onclick="showBFAddAccountSweetalert()">I want to connect with an API key instead</a>',
+        didOpen: () => {
+          $(".swal-popover").popover();
+        },
+        preConfirm: async () => {
+          Swal.resetValidationMessage();
+          Swal.showLoading();
+          const login = Swal.getPopup().querySelector("#ps_login").value;
+          const password = Swal.getPopup().querySelector("#ps_password").value;
+          if (!login || !password) {
+            Swal.hideLoading();
+            Swal.showValidationMessage(`Please enter login and password`);
+          } else {
+            let key_name = SODA_SPARC_API_KEY;
+            let response = await get_api_key(login, password, key_name);
+            if (response[0] == "failed") {
+              Swal.hideLoading();
+              Swal.showValidationMessage(userError(response[1]));
+            } else if (response[0] == "success") {
+              return {
+                key: response[1],
+                secret: response[2],
+                name: response[3],
+              };
+            }
+          }
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({
+            allowEscapeKey: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            heightAuto: false,
+            showConfirmButton: false,
+            title: "Adding account...",
+            didOpen: () => {
+              Swal.showLoading();
+            },
+          });
+          let key_name = result.value.name;
+          let apiKey = result.value.key;
+          let apiSecret = result.value.secret;
+          client.invoke(
+            "api_bf_add_account_username",
+            key_name,
+            apiKey,
+            apiSecret,
+            (error, res) => {
+              if (error) {
+                log.error(error);
+                console.error(error);
+                Swal.showValidationMessage(userError(error));
+                Swal.close();
+              } else {
+                bfAccountOptions[key_name] = key_name;
+                defaultBfAccount = key_name;
+                defaultBfDataset = "Select dataset";
+                updateBfAccountList();
+                client.invoke(
+                  "api_bf_account_details",
+                  key_name,
+                  (error, res) => {
+                    if (error) {
+                      log.error(error);
+                      console.error(error);
+                      Swal.fire({
+                        backdrop: "rgba(0,0,0, 0.4)",
+                        heightAuto: false,
+                        icon: "error",
+                        text: "Something went wrong!",
+                        footer:
+                          '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
+                      });
+                      showHideDropdownButtons("account", "hide");
+                      confirm_click_account_function();
+                    } else {
+                      $("#para-account-detail-curate").html(res);
+                      $("#current-bf-account").text(key_name);
+                      $("#current-bf-account-generate").text(key_name);
+                      $("#create_empty_dataset_BF_account_span").text(key_name);
+                      $(".bf-account-span").text(key_name);
+                      $("#current-bf-dataset").text("None");
+                      $("#current-bf-dataset-generate").text("None");
+                      $(".bf-dataset-span").html("None");
+                      $("#para-account-detail-curate-generate").html(res);
+                      $("#para_create_empty_dataset_BF_account").html(res);
+                      $(".bf-account-details-span").html(res);
+                      $("#para-continue-bf-dataset-getting-started").text("");
+
+                      $("#current_curation_team_status").text("None");
+                      $("#curation-team-share-btn").hide();
+                      $("#curation-team-unshare-btn").hide();
+                      $("#current_sparc_consortium_status").text("None");
+                      $("#sparc-consortium-share-btn").hide();
+                      $("#sparc-consortium-unshare-btn").hide();
+
+                      showHideDropdownButtons("account", "show");
+                      confirm_click_account_function();
+                    }
+                  }
+                );
+                Swal.fire({
+                  allowEscapeKey: false,
+                  heightAuto: false,
+                  backdrop: "rgba(0,0,0, 0.4)",
+                  icon: "success",
+                  showConfirmButton: false,
+                  timer: 3000,
+                  timerProgressBar: true,
+                  title:
+                    "Successfully added! <br/>Loading your account details...",
+                });
+              }
+            }
+          );
+        }
+        // if (result.isDismissed) {
+        //   if (result.dismiss === Swal.DismissReason.cancel) {
+        //     // else, if users click Add account
+        //     showBFAddAccountBootbox();
+        //   }
+        // }
+      });
     }
   } else if (dropdown === "dataset") {
     $(".svg-change-current-account.dataset").css("display", "none");
@@ -819,17 +982,27 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
       // $("#bf-dataset-select-div").hide();
 
       const { value: bfDS } = await Swal.fire({
-        title:
-          "<h3 style='margin-bottom:20px !important'>Select your dataset</h3>",
-        html: datasetPermissionDiv,
-        showCloseButton: true,
-        showCancelButton: true,
+        backdrop: "rgba(0,0,0, 0.4)",
+        cancelButtonText: "Cancel",
+        confirmButtonText: "Confirm",
+        focusCancel: true,
         focusConfirm: false,
         heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: "Confirm",
-        cancelButtonText: "Cancel",
-        focusCancel: true,
+        allowOutsideClick: false,
+        allowEscapeKey: true,
+        html: datasetPermissionDiv,
+        reverseButtons: reverseSwalButtons,
+        showCloseButton: true,
+        showCancelButton: true,
+        title:
+          "<h3 style='margin-bottom:20px !important'>Select your dataset</h3>",
+        showClass: {
+          popup: "animate__animated animate__fadeInDown animate__faster",
+        },
+        hideClass: {
+          popup:
+            "animate__animated animate__fadeOutUp animate__faster animate_fastest",
+        },
         willOpen: () => {
           $("#curatebfdatasetlist").selectpicker("hide");
           $("#curatebfdatasetlist").selectpicker("refresh");
@@ -884,13 +1057,13 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
       if (bfDS) {
         if (show_timer) {
           Swal.fire({
-            title: "Loading your dataset details...",
+            allowEscapeKey: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            heightAuto: false,
+            showConfirmButton: false,
             timer: 2000,
             timerProgressBar: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            allowEscapeKey: false,
-            showConfirmButton: false,
+            title: "Loading your dataset details...",
           });
         }
 
@@ -1246,32 +1419,45 @@ function create_child_node(
       }
     }
     if ("files" in oldFormatNode) {
-      for (var [key, value] of Object.entries(oldFormatNode["files"])) {
-        if (key !== undefined || value !== undefined) {
-          if (
-            [
-              ".png",
-              ".PNG",
-              ".xls",
-              ".xlsx",
-              ".pdf",
-              ".txt",
-              ".jpeg",
-              ".JPEG",
-              ".csv",
-              ".CSV",
-              ".DOC",
-              ".DOCX",
-              ".doc",
-              ".docx",
-            ].includes(path.parse(key).ext)
-          ) {
-            nodeType = "file " + path.parse(key).ext.slice(1);
-          } else {
-            nodeType = "file other";
-          }
-          if ("action" in oldFormatNode["files"][key]) {
-            if (!oldFormatNode["files"][key]["action"].includes("deleted")) {
+      if (oldFormatNode["files"] != undefined)
+      {
+        for (var [key, value] of Object.entries(oldFormatNode["files"])) {
+          if (key !== undefined || value !== undefined) {
+            if (
+              [
+                ".png",
+                ".PNG",
+                ".xls",
+                ".xlsx",
+                ".pdf",
+                ".txt",
+                ".jpeg",
+                ".JPEG",
+                ".csv",
+                ".CSV",
+                ".DOC",
+                ".DOCX",
+                ".doc",
+                ".docx",
+              ].includes(path.parse(key).ext)
+            ) {
+              nodeType = "file " + path.parse(key).ext.slice(1);
+            } else {
+              nodeType = "file other";
+            }
+            if ("action" in oldFormatNode["files"][key]) {
+              if (!oldFormatNode["files"][key]["action"].includes("deleted")) {
+                var new_node = {
+                  text: key,
+                  state: { disabled: true },
+                  type: nodeType,
+                };
+                newFormatNode["children"].push(new_node);
+                newFormatNode["children"].sort((a, b) =>
+                  a.text > b.text ? 1 : -1
+                );
+              }
+            } else {
               var new_node = {
                 text: key,
                 state: { disabled: true },
@@ -1282,16 +1468,6 @@ function create_child_node(
                 a.text > b.text ? 1 : -1
               );
             }
-          } else {
-            var new_node = {
-              text: key,
-              state: { disabled: true },
-              type: nodeType,
-            };
-            newFormatNode["children"].push(new_node);
-            newFormatNode["children"].sort((a, b) =>
-              a.text > b.text ? 1 : -1
-            );
           }
         }
       }
@@ -1312,7 +1488,11 @@ function recursiveExpandNodes(object) {
 var selectedPath;
 var selectedNode;
 var jsTreeData = create_child_node(
-  datasetStructureJSONObj,
+  {
+    folders: {},
+    files: {},
+    type: "",
+  },
   "My_dataset_folder",
   "folder",
   "",
@@ -1383,6 +1563,12 @@ $(document).ready(function () {
       "file JPEG": {
         icon: "./assets/img/jpeg-file.png",
       },
+      "file jpg": {
+        icon: "./assets/img/jpeg-file.png",
+      },
+      "file JPG": {
+        icon: "./assets/img/jpeg-file.png",
+      },
       "file other": {
         icon: "./assets/img/other-file.png",
       },
@@ -1444,17 +1630,25 @@ async function moveItems(ev, category) {
   // first, convert datasetStructureJSONObj to jsTree's json structure
   // show swal2 with jstree in here
   const { value: folderDestination } = await Swal.fire({
+    backdrop: "rgba(0,0,0, 0.4)",
+    cancelButtonText: "Cancel",
+    confirmButtonText: "Confirm",
+    focusCancel: true,
+    focusConfirm: false,
+    heightAuto: false,
+    html: jstreeInstance,
+    reverseButtons: reverseSwalButtons,
+    showCancelButton: true,
+    showCloseButton: true,
     title:
       "<h3 style='margin-bottom:20px !important'>Please choose a folder destination:</h3>",
-    html: jstreeInstance,
-    showCloseButton: true,
-    showCancelButton: true,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    focusConfirm: false,
-    confirmButtonText: "Confirm",
-    cancelButtonText: "Cancel",
     customClass: { content: "swal-left-align" },
+    showClass: {
+      popup: "animate__animated animate__fadeInDown animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__fadeOutUp animate_fastest",
+    },
     preConfirm: () => {
       Swal.resetValidationMessage();
       if (!selectedPath) {
@@ -1477,25 +1671,31 @@ async function moveItems(ev, category) {
   });
   if (folderDestination) {
     Swal.fire({
-      title:
-        "Are you sure you want to move selected item(s) to: " +
-        selectedPath +
-        "?",
-      showCancelButton: true,
-      heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Yes",
+      focusCancel: true,
+      heightAuto: false,
+      icon: "warning",
+      reverseButtons: reverseSwalButtons,
+      showCancelButton: true,
+      title: `Are you sure you want to move selected item(s) to: ${selectedPath}?`,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         // loading effect
         Swal.fire({
-          title: "Moving items...",
+          allowEscapeKey: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          showConfirmButton: false,
           timer: 1500,
           timerProgressBar: true,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          allowEscapeKey: false,
-          showConfirmButton: false,
+          title: "Moving items...",
         });
         // action to move and delete here
         // multiple files/folders

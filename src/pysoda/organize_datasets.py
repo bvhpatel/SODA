@@ -69,6 +69,10 @@ forbidden_characters_bf = '\/:*?"<>'
 ## these subsequent CheckLeafValue and traverseForLeafNodes functions check for the validity of file paths,
 ## and folder and file size
 
+### Internal functions
+def TZLOCAL():
+    return datetime.now(timezone.utc).astimezone().tzinfo
+
 def checkLeafValue(leafName, leafNodeValue):
 
     error, c = '', 0
@@ -583,6 +587,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                 col_count += 1
                 folder_name = item.name
                 if my_level == 0 and folder_name not in high_level_sparc_folders and requested_sparc_only:  # only import SPARC folders
+                    col_count -= 1
                     continue
                 if col_count == 1:
                     level = my_level + 1
@@ -630,7 +635,8 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                             manifest_error_message.append(package_details["parent"]["content"]["name"])
                             pass
                     else:
-                        timestamp = package_details["content"]["updatedAt"]
+                        timestamp = (package_details["content"]["createdAt"]
+                                     .replace('.', ',').replace('+00:00', 'Z'))
                         dataset_folder["files"][file_name] = {
                             "type": "bf","action": ["existing"], "path": item.id, "timestamp": timestamp}
 

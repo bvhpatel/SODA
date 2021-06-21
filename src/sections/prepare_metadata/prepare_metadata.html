@@ -1072,7 +1072,7 @@
                   </div>
                   <svg
                     class="svg-change-current-account bi bi-pencil-fill"
-                    onclick="showAddAirtableAccountBootbox()"
+                    onclick="showAddAirtableAccountSweetalert()"
                     xmlns="http://www.w3.org/2000/svg"
                     width="18"
                     height="18"
@@ -1108,7 +1108,8 @@
                         class="card-right"
                         id="current-users-awards"
                         style="white-space: pre-line; width: 70%"
-                      >None
+                      >
+                        None
                       </h5>
                     </div>
                     <svg
@@ -1179,7 +1180,7 @@
               </button>
               <button
                 id="submission-connect-Airtable"
-                onclick="showAddAirtableAccountBootbox()"
+                onclick="showAddAirtableAccountSweetalert()"
                 class="btn_animated"
                 style="margin: 10px auto; width: 140px; border: none !important"
               >
@@ -1392,7 +1393,7 @@
                   class="ui active green inline loader"
                   style="display: none; margin: 10px auto; width: 100%"
                 ></div>
-                </div>
+
                 <p
                   id="para-milestone-document-info"
                   style="
@@ -1949,13 +1950,34 @@
       >
         <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
       </button>
-      <button onclick="resetSubmission()" class="start-over">
+      <button
+        onclick="resetSubmission()"
+        class="start-over"
+        style="
+          margin: 0;
+          position: absolute;
+          left: 48%;
+          transform: translateX(-55%);
+        "
+      >
         <i
           class="fas fa-sync-alt"
           style="margin-right: 10px; font-size: inherit"
         ></i>
         Start over
       </button>
+      <button
+        type="button"
+        class="transition-btn prev"
+        data-section="create_dataset_description"
+        style="width: auto"
+      >
+        Prepare dataset description file<i
+          class="fas fa-arrow-right"
+          style="margin-left: 10px"
+        ></i>
+      </button>
+      <!-- </div> -->
     </div>
   </section>
 
@@ -2091,7 +2113,7 @@
                     </div>
                     <svg
                       class="svg-change-current-account bi bi-pencil-fill"
-                      onclick="showAddAirtableAccountBootbox()"
+                      onclick="showAddAirtableAccountSweetalert()"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
@@ -2127,7 +2149,8 @@
                           class="card-right"
                           id="current-users-awards-dd"
                           style="white-space: pre-line; width: 70%"
-                        >None
+                        >
+                          None
                         </h5>
                       </div>
                       <svg
@@ -2214,7 +2237,7 @@
                   No, skip
                 </button>
                 <button
-                  onclick="showAddAirtableAccountBootbox()"
+                  onclick="showAddAirtableAccountSweetalert()"
                   class="btn_animated"
                   style="
                     margin: 10px auto;
@@ -3316,12 +3339,32 @@
       >
         <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
       </button>
-      <button onclick="resetDD()" class="start-over">
+      <button
+        onclick="resetDD()"
+        class="start-over"
+        style="
+          margin: 0;
+          position: absolute;
+          left: 48%;
+          transform: translateX(-55%);
+        "
+      >
         <i
           class="fas fa-sync-alt"
           style="margin-right: 10px; font-size: inherit"
         ></i>
         Start over
+      </button>
+      <button
+        type="button"
+        class="transition-btn prev"
+        id="shortcut-navigate-to-organize"
+        style="width: auto"
+      >
+        Organize dataset files<i
+          class="fas fa-arrow-right"
+          style="margin-left: 10px"
+        ></i>
       </button>
     </div>
   </section>
@@ -3629,7 +3672,7 @@
               </div>
               <table
                 class="ui celled table"
-                style="text-align: center;display:none;max-width:750px;with: 90%;margin: 10px auto"
+                style="text-align: center;display:none;max-width:750px;width: 90%;margin: 10px auto"
                 id="table-subjects"
               >
                 <style>
@@ -4732,7 +4775,7 @@
               </div>
               <table
                 class="ui celled table"
-                style="text-align: center;display:none;max-width:750px;with: 90%;margin: 10px auto"
+                style="text-align: center;display:none;max-width:750px;width: 90%;margin: 10px auto"
                 id="table-samples"
               >
                 <style>

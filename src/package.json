@@ -1,7 +1,7 @@
 {
   "name": "SODA",
   "productName": "SODA",
-  "version": "4.2.0",
+  "version": "4.4.0",
   "description": "Keep Calm and Curate",
   "main": "main.js",
   "scripts": {
@@ -70,6 +70,7 @@
     "@toast-ui/editor": "^2.5.2",
     "@yaireo/tagify": "^3.25.0",
     "airtable": "^0.11.0",
+    "animate.css": "^4.1.1",
     "axios": "^0.21.1",
     "bootbox": "^5.5.2",
     "bootstrap-icons": "^1.5.0",
@@ -91,6 +92,7 @@
     "jquery": "^3.6.0",
     "jstree": "^3.3.11",
     "node-localstorage": "^2.1.6",
+    "notyf": "^3.9.0",
     "pdfkit": "^0.11.0",
     "prop-types": "^15.7.2",
     "remove-markdown": "^0.3.0",
