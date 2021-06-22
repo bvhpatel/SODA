@@ -48,6 +48,7 @@ var datasetStructureJSONObj = {
 // Connect to Python back-end
 //////////////////////////////////
 let client = new zerorpc.Client({ timeout: 300000, heartbeatInterval: 60000 });
+// let client = new zerorpc.Client({ timeout: 300000 });
 client.connect("tcp://127.0.0.1:4242");
 client.invoke("echo", "server ready", (error, res) => {
   if (error || res !== "server ready") {
@@ -234,8 +235,7 @@ const run_pre_flight_checks = async (check_update = true) => {
     if (!connection_response) {
       Swal.fire({
         icon: "error",
-        text:
-          "It appears that your computer is not connected to the internet. You may continue, but you will not be able to use features of SODA related to Pennsieve and especially none of the features located under the 'Manage Datasets' section.",
+        text: "It appears that your computer is not connected to the internet. You may continue, but you will not be able to use features of SODA related to Pennsieve and especially none of the features located under the 'Manage Datasets' section.",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         confirmButtonText: "I understand",
@@ -253,10 +253,8 @@ const run_pre_flight_checks = async (check_update = true) => {
       if (account_present) {
         // Check for an installed Pennsieve agent
         await wait(500);
-        [
-          agent_installed_response,
-          agent_version_response,
-        ] = await check_agent_installed();
+        [agent_installed_response, agent_version_response] =
+          await check_agent_installed();
         // If no agent is installed, download the latest agent from Github and link to their docs for installation instrucations if needed.
         if (!agent_installed_response) {
           Swal.fire({
@@ -271,10 +269,8 @@ const run_pre_flight_checks = async (check_update = true) => {
             cancelButtonText: "Skip for now",
           }).then(async (result) => {
             if (result.isConfirmed) {
-              [
-                browser_download_url,
-                latest_agent_version,
-              ] = await get_latest_agent_version();
+              [browser_download_url, latest_agent_version] =
+                await get_latest_agent_version();
               shell.openExternal(browser_download_url);
               shell.openExternal(
                 "https://docs.pennsieve.io/docs/the-pennsieve-agent"
@@ -285,15 +281,12 @@ const run_pre_flight_checks = async (check_update = true) => {
         } else {
           await wait(500);
           // Check the installed agent version. We aren't enforcing the min limit yet but is the python version starts enforcing it, we might have to.
-          [
-            browser_download_url,
-            latest_agent_version,
-          ] = await check_agent_installed_version(agent_version_response);
+          [browser_download_url, latest_agent_version] =
+            await check_agent_installed_version(agent_version_response);
           if (browser_download_url != "") {
             Swal.fire({
               icon: "warning",
-              text:
-                "It appears that you are not running the latest version of the Pensieve Agent. We recommend that you update your software and restart SODA for the best experience.",
+              text: "It appears that you are not running the latest version of the Pensieve Agent. We recommend that you update your software and restart SODA for the best experience.",
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
               showCancelButton: true,
@@ -309,10 +302,8 @@ const run_pre_flight_checks = async (check_update = true) => {
             }).then(async (result) => {
               if (result.isConfirmed) {
                 // If there is a newer agent version, download the latest agent from Github and link to their docs for installation instrucations if needed.
-                [
-                  browser_download_url,
-                  latest_agent_version,
-                ] = await get_latest_agent_version();
+                [browser_download_url, latest_agent_version] =
+                  await get_latest_agent_version();
                 shell.openExternal(browser_download_url);
                 shell.openExternal(
                   "https://docs.pennsieve.io/docs/the-pennsieve-agent"
@@ -350,8 +341,7 @@ const run_pre_flight_checks = async (check_update = true) => {
         // If there is no API key pair, show the warning and let them add a key. Messages are dissmisable.
         Swal.fire({
           icon: "warning",
-          text:
-            "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connect to Pennsieve. Would you like to do it now?",
+          text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connect to Pennsieve. Would you like to do it now?",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           confirmButtonText: "Yes",
@@ -504,10 +494,8 @@ const check_agent_installed_version = async (agent_version) => {
   await wait(800);
   let latest_agent_version = "";
   let browser_download_url = "";
-  [
-    browser_download_url,
-    latest_agent_version,
-  ] = await get_latest_agent_version();
+  [browser_download_url, latest_agent_version] =
+    await get_latest_agent_version();
   if (latest_agent_version != agent_version) {
     notyf.dismiss(notification);
     notyf.open({
@@ -1322,8 +1310,9 @@ function importMilestoneDocument() {
     document.getElementById("para-milestone-document-info-long").style.display =
       "none";
     document.getElementById("para-milestone-document-info").innerHTML = "";
-    var filepath = document.getElementById("input-milestone-select")
-      .placeholder;
+    var filepath = document.getElementById(
+      "input-milestone-select"
+    ).placeholder;
     if (filepath === "Browse here") {
       document.getElementById("para-milestone-document-info").innerHTML =
         "<span style='color: red ;'>" +
@@ -1404,123 +1393,145 @@ ipcRenderer.on("selected-milestonedoc", (event, filepath) => {
 });
 
 // generate subjects file
-ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename) => {
-  // $("#generate-subjects-spinner").css("display", "block");
-  // $("#button-generate-subjects").prop("disabled", true)
-  Swal.fire({
-    title: "Generating the subjects.xlsx file",
-    html:
-      "Please wait...",
-    timer: 30000,
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: true,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  }).then((result) => {
-  });
-  if (dirpath.length > 0) {
-    var destinationPath = path.join(dirpath[0], filename);
-    if (fs.existsSync(destinationPath)) {
-      var emessage = "File '" + filename + "' already exists in " + dirpath[0];
-      Swal.fire(
-        'Metadata file already exists',
-        `${emessage}`,
-        'error'
-      )
-      // $("#generate-subjects-spinner").css("display", "none");
-      // $("#button-generate-subjects").prop("disabled", false)
-    } else {
-        client.invoke("api_save_subjects_file", destinationPath, subjectsTableData, (error, res) => {
-          if (error) {
-            var emessage = userError(error);
-            log.error(error);
-            console.error(error);
-            // $("#generate-subjects-spinner").css("display", "none");
-            // $("#button-generate-subjects").prop("disabled", false)
-            Swal.fire("Failed to generate the subjects.xlsx file.", `${emessage}`, "error");
-            ipcRenderer.send(
-              "track-event",
-              "Error",
-              "Prepare Metadata - Create subjects.xlsx",
-              subjectsTableData
-            );
-          } else {
-            ipcRenderer.send(
-              "track-event",
-              "Success",
-              "Prepare Metadata - Create subjects.xlsx",
-              subjectsTableData
-            );
-            // $("#generate-subjects-spinner").css("display", "none");
-            // $("#button-generate-subjects").prop("disabled", false)
-            Swal.fire("Successfully created!", "The subjects.xlsx file has been successfully generated at the specified location.", "success")
+ipcRenderer.on(
+  "selected-generate-metadata-subjects",
+  (event, dirpath, filename) => {
+    // $("#generate-subjects-spinner").css("display", "block");
+    // $("#button-generate-subjects").prop("disabled", true)
+    Swal.fire({
+      title: "Generating the subjects.xlsx file",
+      html: "Please wait...",
+      timer: 30000,
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: true,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    }).then((result) => {});
+    if (dirpath.length > 0) {
+      var destinationPath = path.join(dirpath[0], filename);
+      if (fs.existsSync(destinationPath)) {
+        var emessage =
+          "File '" + filename + "' already exists in " + dirpath[0];
+        Swal.fire("Metadata file already exists", `${emessage}`, "error");
+        // $("#generate-subjects-spinner").css("display", "none");
+        // $("#button-generate-subjects").prop("disabled", false)
+      } else {
+        client.invoke(
+          "api_save_subjects_file",
+          destinationPath,
+          subjectsTableData,
+          (error, res) => {
+            if (error) {
+              var emessage = userError(error);
+              log.error(error);
+              console.error(error);
+              // $("#generate-subjects-spinner").css("display", "none");
+              // $("#button-generate-subjects").prop("disabled", false)
+              Swal.fire(
+                "Failed to generate the subjects.xlsx file.",
+                `${emessage}`,
+                "error"
+              );
+              ipcRenderer.send(
+                "track-event",
+                "Error",
+                "Prepare Metadata - Create subjects.xlsx",
+                subjectsTableData
+              );
+            } else {
+              ipcRenderer.send(
+                "track-event",
+                "Success",
+                "Prepare Metadata - Create subjects.xlsx",
+                subjectsTableData
+              );
+              // $("#generate-subjects-spinner").css("display", "none");
+              // $("#button-generate-subjects").prop("disabled", false)
+              Swal.fire(
+                "Successfully created!",
+                "The subjects.xlsx file has been successfully generated at the specified location.",
+                "success"
+              );
+            }
           }
-        })
-     }
-  }
-})
-
-// generate samples file
-ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) => {
-  Swal.fire({
-    title: "Generating the samples.xlsx file",
-    html:
-      "Please wait...",
-    timer: 30000,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    timerProgressBar: true,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  }).then((result) => {
-  });
-  if (dirpath.length > 0) {
-    var destinationPath = path.join(dirpath[0], filename);
-    if (fs.existsSync(destinationPath)) {
-      var emessage = "File '" + filename + "' already exists in " + dirpath[0];
-      Swal.fire(
-        'Metadata file already exists',
-        `${emessage}`,
-        'error'
-      )
-    } else {
-       client.invoke("api_save_samples_file", destinationPath, samplesTableData, (error, res) => {
-          if (error) {
-            var emessage = userError(error);
-            log.error(error);
-            console.error(error);
-            ipcRenderer.send(
-              "track-event",
-              "Error",
-              "Prepare Metadata - Create samples.xlsx",
-              samplesTableData
-            );
-            Swal.fire("Failed to generate the samples.xlsx file.", `${emessage}`, "error");
-          } else {
-            ipcRenderer.send(
-              "track-event",
-              "Success",
-              "Prepare Metadata - Create samples.xlsx",
-              samplesTableData
-            );
-            Swal.fire("Successfully created!", "The samples.xlsx file has been successfully generated at the specified location.", "success")
-          }
-        })
+        );
+      }
     }
   }
-})
+);
+
+// generate samples file
+ipcRenderer.on(
+  "selected-generate-metadata-samples",
+  (event, dirpath, filename) => {
+    Swal.fire({
+      title: "Generating the samples.xlsx file",
+      html: "Please wait...",
+      timer: 30000,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      timerProgressBar: true,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    }).then((result) => {});
+    if (dirpath.length > 0) {
+      var destinationPath = path.join(dirpath[0], filename);
+      if (fs.existsSync(destinationPath)) {
+        var emessage =
+          "File '" + filename + "' already exists in " + dirpath[0];
+        Swal.fire("Metadata file already exists", `${emessage}`, "error");
+      } else {
+        client.invoke(
+          "api_save_samples_file",
+          destinationPath,
+          samplesTableData,
+          (error, res) => {
+            if (error) {
+              var emessage = userError(error);
+              log.error(error);
+              console.error(error);
+              ipcRenderer.send(
+                "track-event",
+                "Error",
+                "Prepare Metadata - Create samples.xlsx",
+                samplesTableData
+              );
+              Swal.fire(
+                "Failed to generate the samples.xlsx file.",
+                `${emessage}`,
+                "error"
+              );
+            } else {
+              ipcRenderer.send(
+                "track-event",
+                "Success",
+                "Prepare Metadata - Create samples.xlsx",
+                samplesTableData
+              );
+              Swal.fire(
+                "Successfully created!",
+                "The samples.xlsx file has been successfully generated at the specified location.",
+                "success"
+              );
+            }
+          }
+        );
+      }
+    }
+  }
+);
 
 // import Primary folder
 ipcRenderer.on("selected-local-primary-folder", (event, primaryFolderPath) => {
   if (primaryFolderPath.length > 0) {
-    importPrimaryFolderSubjects(primaryFolderPath[0])
+    importPrimaryFolderSubjects(primaryFolderPath[0]);
     // $("#primary-folder-destination-input").prop("placeholder", primaryFolderPath[0])
     // $("#div-confirm-primary-folder-import").show()
     // $($("#div-confirm-primary-folder-import").find("button")[0]).show();
@@ -1529,17 +1540,20 @@ ipcRenderer.on("selected-local-primary-folder", (event, primaryFolderPath) => {
     // $("#div-confirm-primary-folder-import").find("button").hide()
   }
 });
-ipcRenderer.on("selected-local-primary-folder-samples", (event, primaryFolderPath) => {
-  if (primaryFolderPath.length > 0) {
-    importPrimaryFolderSamples(primaryFolderPath[0])
-    // $("#primary-folder-destination-input-samples").prop("placeholder", primaryFolderPath[0])
-    // $("#div-confirm-primary-folder-import-samples").show()
-    // $($("#div-confirm-primary-folder-import-samples").find("button")[0]).show();
-  } else {
-    // $("#primary-folder-destination-input-samples").prop("placeholder", "Browse here")
-    // $("#div-confirm-primary-folder-import-samples").find("button").hide()
+ipcRenderer.on(
+  "selected-local-primary-folder-samples",
+  (event, primaryFolderPath) => {
+    if (primaryFolderPath.length > 0) {
+      importPrimaryFolderSamples(primaryFolderPath[0]);
+      // $("#primary-folder-destination-input-samples").prop("placeholder", primaryFolderPath[0])
+      // $("#div-confirm-primary-folder-import-samples").show()
+      // $($("#div-confirm-primary-folder-import-samples").find("button")[0]).show();
+    } else {
+      // $("#primary-folder-destination-input-samples").prop("placeholder", "Browse here")
+      // $("#div-confirm-primary-folder-import-samples").find("button").hide()
+    }
   }
-});
+);
 
 function transformImportedExcelFile(result) {
   for (var column of result.slice(1)) {
@@ -1548,26 +1562,31 @@ function transformImportedExcelFile(result) {
       column[ind] = "";
     }
   }
-  return result
+  return result;
 }
 
 function getAllIndexes(arr, val) {
-    var indexes = [], i = -1;
-    while ((i = arr.indexOf(val, i+1)) != -1){
-        indexes.push(i);
-    }
-    return indexes;
+  var indexes = [],
+    i = -1;
+  while ((i = arr.indexOf(val, i + 1)) != -1) {
+    indexes.push(i);
+  }
+  return indexes;
 }
 
 // import existing subjects.xlsx info (calling python to load info to a dataframe)
 function loadSubjectsFileToDataframe(filePath) {
   var fieldSubjectEntries = [];
-  for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
-    fieldSubjectEntries.push(field.name.toLowerCase())
+  for (var field of $("#form-add-a-subject")
+    .children()
+    .find(".subjects-form-entry")) {
+    fieldSubjectEntries.push(field.name.toLowerCase());
   }
   client.invoke(
     "api_convert_subjects_samples_file_to_df",
-    "subjects", filePath, fieldSubjectEntries,
+    "subjects",
+    filePath,
+    fieldSubjectEntries,
     (error, res) => {
       if (error) {
         log.error(error);
@@ -1576,7 +1595,7 @@ function loadSubjectsFileToDataframe(filePath) {
         // res is a dataframe, now we load it into our subjectsTableData in order to populate the UI
         if (res.length > 1) {
           subjectsTableData = transformImportedExcelFile(res);
-          loadDataFrametoUI()
+          loadDataFrametoUI();
           ipcRenderer.send(
             "track-event",
             "Success",
@@ -1590,7 +1609,11 @@ function loadSubjectsFileToDataframe(filePath) {
             "Prepare Metadata - Create subjects.xlsx - Load existing subjects.xlsx file",
             error
           );
-          Swal.fire("Couldn't load existing subjects.xlsx file", "Please make sure there are at least a header row in the subjects file.", "error")
+          Swal.fire(
+            "Couldn't load existing subjects.xlsx file",
+            "Please make sure there are at least a header row in the subjects file.",
+            "error"
+          );
         }
       }
     }
@@ -1600,12 +1623,16 @@ function loadSubjectsFileToDataframe(filePath) {
 // import existing subjects.xlsx info (calling python to load info to a dataframe)
 function loadSamplesFileToDataframe(filePath) {
   var fieldSampleEntries = [];
-  for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
-    fieldSampleEntries.push(field.name.toLowerCase())
+  for (var field of $("#form-add-a-sample")
+    .children()
+    .find(".samples-form-entry")) {
+    fieldSampleEntries.push(field.name.toLowerCase());
   }
   client.invoke(
     "api_convert_subjects_samples_file_to_df",
-    "samples", filePath, fieldSampleEntries,
+    "samples",
+    filePath,
+    fieldSampleEntries,
     (error, res) => {
       if (error) {
         log.error(error);
@@ -1620,7 +1647,7 @@ function loadSamplesFileToDataframe(filePath) {
             "Prepare Metadata - Create samples.xlsx - Load existing samples.xlsx file",
             samplesTableData
           );
-          loadDataFrametoUISamples()
+          loadDataFrametoUISamples();
         } else {
           ipcRenderer.send(
             "track-event",
@@ -1628,7 +1655,11 @@ function loadSamplesFileToDataframe(filePath) {
             "Prepare Metadata - Create samples.xlsx - Load existing samples.xlsx file",
             samplesTableData
           );
-          Swal.fire("Couldn't load existing samples.xlsx file", "Please make sure there are at least a header row in the samples file.", "error")
+          Swal.fire(
+            "Couldn't load existing samples.xlsx file",
+            "Please make sure there are at least a header row in the samples file.",
+            "error"
+          );
         }
       }
     }
@@ -1665,85 +1696,116 @@ createMetadataDir();
 
 function createSpecimenTypeAutocomplete(id) {
   var autoCompleteJS3 = new autoComplete({
-    selector: "#"+id,
+    selector: "#" + id,
     data: {
-      src: ["whole organism", "whole organ", "fluid specimen", "tissue", "nerve", "slice", "section", "cryosection", "cell", "nucleus", "nucleic acid", "slide", "whole mount"]
+      src: [
+        "whole organism",
+        "whole organ",
+        "fluid specimen",
+        "tissue",
+        "nerve",
+        "slice",
+        "section",
+        "cryosection",
+        "cell",
+        "nucleus",
+        "nucleic acid",
+        "slide",
+        "whole mount",
+      ],
     },
     onSelection: (feedback) => {
       var selection = feedback.selection.value;
-      document.querySelector("#"+id).value = selection;
+      document.querySelector("#" + id).value = selection;
     },
     trigger: {
       event: ["input", "focus"],
       // condition: () => true,
     },
     resultItem: {
-      destination: "#"+id,
+      destination: "#" + id,
       highlight: {
-        render: true
-      }
+        render: true,
+      },
     },
     resultsList: {
       maxResults: 5,
-    }
+    },
   });
 }
 
 function createSpeciesAutocomplete(id) {
   var autoCompleteJS2 = new autoComplete({
-    selector: "#"+id,
+    selector: "#" + id,
     data: {
-      src: [{"Canis lupus familiaris": "dogs, beagle dogs",
-    "Mustela putorius furo": "ferrets, black ferrets",
-    "Mus sp.": "mice",
-    "Mus musculus": "mouse, house mouse",
-    "Rattus norvegicus": "Norway rats",
-    "Rattus": "rats",
-    "Sus scrofa": "pigs, swine, wild boar",
-    "Sus scrofa domesticus": "domestic pigs",
-    "Homo sapiens": "humans",
-    "Felis catus": "domestic cat"}
-    ],
-      key: ["Canis lupus familiaris",  "Mustela putorius furo", "Mus sp.","Mus musculus", "Sus scrofa", "Sus scrofa domesticus","Homo sapiens", "Rattus", "Felis catus", "Rattus norvegicus"]
+      src: [
+        {
+          "Canis lupus familiaris": "dogs, beagle dogs",
+          "Mustela putorius furo": "ferrets, black ferrets",
+          "Mus sp.": "mice",
+          "Mus musculus": "mouse, house mouse",
+          "Rattus norvegicus": "Norway rats",
+          Rattus: "rats",
+          "Sus scrofa": "pigs, swine, wild boar",
+          "Sus scrofa domesticus": "domestic pigs",
+          "Homo sapiens": "humans",
+          "Felis catus": "domestic cat",
+        },
+      ],
+      key: [
+        "Canis lupus familiaris",
+        "Mustela putorius furo",
+        "Mus sp.",
+        "Mus musculus",
+        "Sus scrofa",
+        "Sus scrofa domesticus",
+        "Homo sapiens",
+        "Rattus",
+        "Felis catus",
+        "Rattus norvegicus",
+      ],
     },
     onSelection: (feedback) => {
       var selection = feedback.selection.key;
-      document.querySelector("#"+id).value = selection;
+      document.querySelector("#" + id).value = selection;
     },
     trigger: {
       event: ["input", "focus"],
       // condition: () => true,
     },
     resultItem: {
-      destination: "#"+id,
+      destination: "#" + id,
       highlight: {
-        render: true
+        render: true,
       },
       content: (data, element) => {
-         // Modify Results Item Style
-         element.style = "display: flex; justify-content: space-between;";
-         // Modify Results Item Content
-         element.innerHTML = `<span style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+        // Modify Results Item Style
+        element.style = "display: flex; justify-content: space-between;";
+        // Modify Results Item Content
+        element.innerHTML = `<span style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
            ${data.match}</span>
            <span style="display: flex; align-items: center; font-size: 13px; font-weight: 100; text-transform: uppercase; color: rgba(0,0,0,.2);">
          ${data.key}</span>`;
-       }
+      },
     },
     resultsList: {
       maxResults: 5,
       noResults: (list, query) => {
         // Create "No Results" message element
-          const message = document.createElement("div");
-          // Add class to the created element
-          message.setAttribute("class", "no_results_species");
-          // Add an onclick event
-          message.setAttribute("onclick", "loadTaxonomySpecies('"+query+"', '"+id+"')");
-          // Add message text content
-          message.innerHTML = `<span>Find the scientific name for "${query}"</span>`;
-          // Append message element to the results list
-          list.appendChild(message);
+        const message = document.createElement("div");
+        // Add class to the created element
+        message.setAttribute("class", "no_results_species");
+        // Add an onclick event
+        message.setAttribute(
+          "onclick",
+          "loadTaxonomySpecies('" + query + "', '" + id + "')"
+        );
+        // Add message text content
+        message.innerHTML = `<span>Find the scientific name for "${query}"</span>`;
+        // Append message element to the results list
+        list.appendChild(message);
       },
-    }
+    },
   });
 }
 
@@ -1761,44 +1823,57 @@ function createSpeciesAutocomplete(id) {
 
 function createStrain(id) {
   var autoCompleteJS4 = new autoComplete({
-    selector: "#"+id,
+    selector: "#" + id,
     data: {
-      src: ['Wistar', 'Th.Cre+CHR2', 'Th.Cre- CHR2', 'Yucatan', 'Th.Cre+ CHR2', 'Th. Cre+ CHR2', 'Th.Cre-CHR2', 'C57/B6J', 'C57 BL/6J', 'mixed background', 'CHR2 TH Cre-', 'TH.Cre- CHR2', "Sprague-Dawley"]
+      src: [
+        "Wistar",
+        "Th.Cre+CHR2",
+        "Th.Cre- CHR2",
+        "Yucatan",
+        "Th.Cre+ CHR2",
+        "Th. Cre+ CHR2",
+        "Th.Cre-CHR2",
+        "C57/B6J",
+        "C57 BL/6J",
+        "mixed background",
+        "CHR2 TH Cre-",
+        "TH.Cre- CHR2",
+        "Sprague-Dawley",
+      ],
     },
     onSelection: (feedback) => {
       var selection = feedback.selection.value;
-      document.querySelector("#"+id).value = selection;
+      document.querySelector("#" + id).value = selection;
     },
     trigger: {
       event: ["input", "focus"],
     },
     resultItem: {
-      destination: "#"+id,
+      destination: "#" + id,
       highlight: {
-        render: true
-      }
+        render: true,
+      },
     },
     resultsList: {
       maxResults: 5,
-    }
+    },
   });
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
   createSpeciesAutocomplete("bootbox-subject-species");
   createSpeciesAutocomplete("bootbox-sample-species");
-  createStrain("bootbox-sample-strain")
-  createStrain("bootbox-subject-strain")
+  createStrain("bootbox-sample-strain");
+  createStrain("bootbox-subject-strain");
   // createAgeCategoryAutocomplete("bootbox-subject-age-category");
   // createAgeCategoryAutocomplete("bootbox-sample-age-category");
   createSpecimenTypeAutocomplete("bootbox-sample-specimen-type");
-})
+});
 
 async function loadTaxonomySpecies(commonName, destinationInput) {
   Swal.fire({
     title: "Finding the scientific name for " + commonName + "...",
-    html:
-      "Please wait...",
+    html: "Please wait...",
     timer: 1500,
     heightAuto: false,
     allowOutsideClick: false,
@@ -1807,8 +1882,7 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {
-  });
+  }).then((result) => {});
   await client.invoke(
     "api_load_taxonomy_species",
     [commonName],
@@ -1818,9 +1892,13 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
         console.error(error);
       } else {
         if (Object.keys(res).length === 0) {
-          Swal.fire("Cannot find a scientific name for '"+commonName+"'", "Make sure you enter a correct species name.", "error")
+          Swal.fire(
+            "Cannot find a scientific name for '" + commonName + "'",
+            "Make sure you enter a correct species name.",
+            "error"
+          );
         } else {
-          $("#"+destinationInput).val(res[commonName]["ScientificName"])
+          $("#" + destinationInput).val(res[commonName]["ScientificName"]);
         }
       }
     }
@@ -3790,8 +3868,7 @@ ipcRenderer.on("selected-submit-dataset", (event, filepath) => {
       } else {
         Swal.fire({
           icon: "warning",
-          text:
-            "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
+          text: "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           showCancelButton: true,
@@ -4089,8 +4166,7 @@ ipcRenderer.on("selected-banner-image", async (event, path) => {
       $("body").addClass("waiting");
       Swal.fire({
         title: "Image conversion in progress!",
-        html:
-          "Pennsieve does not support .tiff banner images. Please wait while SODA converts your image to the appropriate format required.",
+        html: "Pennsieve does not support .tiff banner images. Please wait while SODA converts your image to the appropriate format required.",
         timer: 4000,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
@@ -4382,8 +4458,7 @@ bfAddPermissionPIBtn.addEventListener("click", () => {
   datasetPermissionStatusPI.innerHTML = "";
   Swal.fire({
     icon: "warning",
-    text:
-      "This will give owner access to another user (and set you as 'manager'), are you sure you want to continue?",
+    text: "This will give owner access to another user (and set you as 'manager'), are you sure you want to continue?",
     heightAuto: false,
     showCancelButton: true,
     cancelButtonText: "No",
@@ -4622,8 +4697,7 @@ function submitReviewDatasetCheck(res) {
   } else if (publishingStatus === "PUBLISH_SUCCEEDED") {
     Swal.fire({
       icon: "warning",
-      text:
-        "This dataset has already been published. This action will submit the dataset again for review to the Publishers. While under review, the dataset will become locked until it has either been approved or rejected for publication. If accepted a new version of your dataset will be published. Would you like to continue?",
+      text: "This dataset has already been published. This action will submit the dataset again for review to the Publishers. While under review, the dataset will become locked until it has either been approved or rejected for publication. If accepted a new version of your dataset will be published. Would you like to continue?",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showCancelButton: true,
@@ -4648,8 +4722,7 @@ function submitReviewDatasetCheck(res) {
     // ipcRenderer.send("warning-publish-dataset");
     Swal.fire({
       icon: "warning",
-      text:
-        "Your dataset will be submitted for review to the Publishers within your organization. While under review, the dataset will become locked until it has either been approved or rejected for publication. Would you like to continue?",
+      text: "Your dataset will be submitted for review to the Publishers within your organization. While under review, the dataset will become locked until it has either been approved or rejected for publication. Would you like to continue?",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showCancelButton: true,
@@ -4748,8 +4821,7 @@ function withdrawDatasetCheck(res) {
   } else {
     Swal.fire({
       icon: "warning",
-      text:
-        "Your dataset will be removed from review. You will have to submit it again before publishing it. Would you like to continue?",
+      text: "Your dataset will be removed from review. You will have to submit it again before publishing it. Would you like to continue?",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showCancelButton: true,
@@ -5508,12 +5580,10 @@ var highLevelFolders = [
   "protocol",
 ];
 var highLevelFolderToolTip = {
-  code:
-    "<b>code</b>: This folder contains all the source code used in the study (e.g., Python, MATLAB, etc.)",
+  code: "<b>code</b>: This folder contains all the source code used in the study (e.g., Python, MATLAB, etc.)",
   derivative:
     "<b>derivative</b>: This folder contains data files derived from raw data (e.g., processed image stacks that are annotated via the MBF tools, segmentation files, smoothed overlays of current and voltage that demonstrate a particular effect, etc.)",
-  docs:
-    "<b>docs</b>: This folder contains all other supporting files that don't belong to any of the other folders (e.g., a representative image for the dataset, figures, etc.)",
+  docs: "<b>docs</b>: This folder contains all other supporting files that don't belong to any of the other folders (e.g., a representative image for the dataset, figures, etc.)",
   source:
     "<b>source</b>: This folder contains very raw data i.e. raw or untouched files from an experiment. For example, this folder may include the “truly” raw k-space data for an MR image that has not yet been reconstructed (the reconstructed DICOM or NIFTI files, for example, would be found within the primary folder). Another example is the unreconstructed images for a microscopy dataset.",
   primary:
@@ -5655,8 +5725,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
   } else {
     Swal.fire({
       icon: "error",
-      text:
-        "New folders cannot be added at this level. If you want to add high-level SPARC folder(s), please go back to the previous step to do so.",
+      text: "New folders cannot be added at this level. If you want to add high-level SPARC folder(s), please go back to the previous step to do so.",
       confirmButtonText: "OK",
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
@@ -6409,8 +6478,7 @@ function addFoldersfunction(folderArray, currentLocation) {
   if (slashCount === 1) {
     Swal.fire({
       icon: "error",
-      text:
-        "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
+      text: "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
     });
@@ -6521,8 +6589,7 @@ async function drop(ev) {
       if (slashCount === 1) {
         Swal.fire({
           icon: "error",
-          html:
-            "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
+          html: "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
         });
@@ -6570,8 +6637,7 @@ async function drop(ev) {
       if (slashCount === 1) {
         Swal.fire({
           icon: "error",
-          text:
-            "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
+          text: "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
         });
@@ -7333,8 +7399,7 @@ function addDetailsForFile(ev) {
     Swal.fire({
       icon: "warning",
       title: "Adding additional metadata for files",
-      text:
-        "Metadata will be modified for all files in the folder. Would you like to continue?",
+      text: "Metadata will be modified for all files in the folder. Would you like to continue?",
       showCancelButton: true,
       focusCancel: true,
       heightAuto: false,
@@ -7522,8 +7587,7 @@ ipcRenderer.on(
           } else {
             Swal.fire({
               icon: "warning",
-              text:
-                "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
+              text: "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
               showCancelButton: true,
@@ -7746,16 +7810,14 @@ document
           error_folders = res[1];
 
           if (error_files.length > 0) {
-            var error_message_files = backend_to_frontend_warning_message(
-              error_files
-            );
+            var error_message_files =
+              backend_to_frontend_warning_message(error_files);
             message += error_message_files;
           }
 
           if (error_folders.length > 0) {
-            var error_message_folders = backend_to_frontend_warning_message(
-              error_folders
-            );
+            var error_message_folders =
+              backend_to_frontend_warning_message(error_folders);
             message += error_message_folders;
           }
 
@@ -7996,6 +8058,10 @@ function initiate_generate() {
         );
       }
 
+      if (dataset_destination == "Pennsieve"){
+        show_curation_shortcut();
+      }
+
       ipcRenderer.send(
         "track-event",
         "Success",
@@ -8109,6 +8175,7 @@ function initiate_generate() {
             document.getElementById(
               "para-new-curate-progress-bar-status"
             ).innerHTML = main_curate_status + smileyCan;
+
           } else {
             var value =
               (main_generated_dataset_size / main_total_generate_dataset_size) *
@@ -8181,17 +8248,6 @@ function initiate_generate() {
         // forceActionSidebar("show");
         clearInterval(timerProgress);
         // electron.powerSaveBlocker.stop(prevent_sleep_id)
-
-        if ("bf-dataset-selected" in sodaJSONObj) {
-          show_curation_shortcut();
-        } else if ("generate-dataset" in sodaJSONObj) {
-          if ("destination" in sodaJSONObj["generate-dataset"]) {
-            let destination = sodaJSONObj["generate-dataset"]["destination"];
-            if (destination == "bf") {
-              show_curation_shortcut();
-            }
-          }
-        }
       }
     }
   }
@@ -8206,8 +8262,7 @@ const show_curation_shortcut = () => {
     icon: "success",
     reverseButtons: reverseSwalButtons,
     showCancelButton: true,
-    text:
-      "Now that your dataset is uploaded, do you want to share it with the Curation Team?",
+    text: "Now that your dataset is uploaded, do you want to share it with the Curation Team?",
     showClass: {
       popup: "animate__animated animate__zoomIn animate__faster",
     },
@@ -8301,9 +8356,10 @@ function importPennsieveMetadataFiles(
       sodaJSONObj["metadata-files"][deleted_file_name]["type"] === "bf"
     ) {
       // update Json object with the restored object
-      let index = sodaJSONObj["metadata-files"][deleted_file_name][
-        "action"
-      ].indexOf("deleted");
+      let index =
+        sodaJSONObj["metadata-files"][deleted_file_name]["action"].indexOf(
+          "deleted"
+        );
       sodaJSONObj["metadata-files"][deleted_file_name]["action"].splice(
         index,
         1
@@ -8892,8 +8948,7 @@ function addAirtableAccountInsideSweetalert() {
     Swal.fire({
       icon: "warning",
       title: "Connect to Airtable",
-      text:
-        "This will erase your previous manual input under the submission and/or dataset description file(s). Would you like to continue??",
+      text: "This will erase your previous manual input under the submission and/or dataset description file(s). Would you like to continue??",
       heightAuto: false,
       showCancelButton: true,
       focusCancel: true,
@@ -8974,8 +9029,7 @@ function addAirtableAccountInsideSweetalert() {
             //   );
             Swal.fire({
               icon: "error",
-              text:
-                "Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!",
+              text: "Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!",
               heightAuto: false,
               backdrop: "rgba(0,0,0,0.4)",
               // showClass: {
@@ -9006,8 +9060,7 @@ function addAirtableAccountInsideSweetalert() {
             //   );
             Swal.fire({
               icon: "error",
-              text:
-                "Failed to connect to Airtable. Please check your API Key and try again!",
+              text: "Failed to connect to Airtable. Please check your API Key and try again!",
               heightAuto: false,
               backdrop: "rgba(0,0,0,0.4)",
               // showClass: {
@@ -9039,8 +9092,7 @@ function addAirtableAccountInsideSweetalert() {
             //   );
             Swal.fire({
               icon: "error",
-              text:
-                "Failed to connect to Airtable. Please check your API Key and try again!",
+              text: "Failed to connect to Airtable. Please check your API Key and try again!",
               heightAuto: false,
               backdrop: "rgba(0,0,0,0.4)",
               // showClass: {
