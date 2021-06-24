@@ -47,8 +47,8 @@ var datasetStructureJSONObj = {
 //////////////////////////////////
 // Connect to Python back-end
 //////////////////////////////////
-let client = new zerorpc.Client({ timeout: 300000, heartbeatInterval: 60000 });
-// let client = new zerorpc.Client({ timeout: 300000 });
+// let client = new zerorpc.Client({ timeout: 300000, heartbeatInterval: 60000 });
+let client = new zerorpc.Client({ timeout: 300000 });
 client.connect("tcp://127.0.0.1:4242");
 client.invoke("echo", "server ready", (error, res) => {
   if (error || res !== "server ready") {
@@ -7693,21 +7693,27 @@ document
 
 // function to hide the sidebar and disable the sidebar expand button
 function forceActionSidebar(action) {
-  if (action === "hide") {
-    if (!$("#main-nav").hasClass("active")) {
-      $("#sidebarCollapse").click();
-    }
-    $("#sidebarCollapse").prop("disabled", true);
+  if (action === "show") {
+    $("#sidebarCollapse").removeClass("active");
+    $("#main-nav").removeClass("active");
+    // if (!$("#main-nav").hasClass("active")) {
+    //   $("#sidebarCollapse").click();
+    // }
+    // $("#sidebarCollapse").prop("disabled", true);
   } else {
-    $("#sidebarCollapse").toggleClass("active");
-    $("#main-nav").toggleClass("active");
-    $("#sidebarCollapse").prop("disabled", false);
+    $("#sidebarCollapse").addClass("active");
+    $("#main-nav").addClass("active");
+    // $("#sidebarCollapse").prop("disabled", false);
   }
 }
 
 /// MAIN CURATE NEW ///
 
 const progressBarNewCurate = document.getElementById("progress-bar-new-curate");
+const divGenerateProgressBar = document.getElementById(
+  "div-new-curate-meter-progress"
+);
+const generateProgressBar = document.getElementById("progress-bar-new-curate");
 
 document
   .getElementById("button-generate")
@@ -7720,7 +7726,7 @@ document
     document.getElementById("div-generate-comeback").style.display = "none";
     document.getElementById("generate-dataset-progress-tab").style.display =
       "flex";
-    forceActionSidebar("hide");
+    // forceActionSidebar("hide");
 
     // updateJSON structure after Generate dataset tab
     updateJSONStructureGenerate();
@@ -7747,6 +7753,8 @@ document
         }
       }
     }
+
+    generateProgressBar.value = 0;
 
     document.getElementById("para-new-curate-progress-bar-status").innerHTML =
       "Please wait while we verify a few things...";
@@ -7894,11 +7902,6 @@ const delete_imported_manifest = () => {
   }
 };
 
-const divGenerateProgressBar = document.getElementById(
-  "div-new-curate-meter-progress"
-);
-const generateProgressBar = document.getElementById("progress-bar-new-curate");
-
 let file_counter = 0;
 let folder_counter = 0;
 
@@ -8042,6 +8045,7 @@ function initiate_generate() {
             }
           }
         }
+
         ipcRenderer.send(
           "track-event",
           "Success",
@@ -8058,7 +8062,7 @@ function initiate_generate() {
         );
       }
 
-      if (dataset_destination == "Pennsieve"){
+      if (dataset_destination == "Pennsieve") {
         show_curation_shortcut();
       }
 

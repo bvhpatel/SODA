@@ -490,7 +490,8 @@ const nextPrev = (n) => {
         target: { dataset: { section: "main_tabs" }, classList: ["someclass"] },
       },
     });
-    $("#sidebarCollapse").click();
+    // $("#sidebarCollapse").click();
+    forceActionSidebar("show");
     document.body.dispatchEvent(event);
     if ($("#nextBtn").prop("disabled") === true) {
       nextBtnDisabledVariable = true;
@@ -2687,6 +2688,8 @@ const exitCurate = async (resetProgressTabs, start_over = false) => {
       globalGettingStarted1stQuestionBool = false;
       if (start_over) {
         $("#organize_dataset_btn").click();
+      } else {
+        forceActionSidebar("show");
       }
     } else {
       globalGettingStarted1stQuestionBool = false;
