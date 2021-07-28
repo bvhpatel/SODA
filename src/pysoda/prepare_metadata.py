@@ -277,8 +277,8 @@ def save_ds_description_file(bfaccountname, filepath, dataset_str, misc_str, opt
 
     wb.save(destination)
 
-subjectsTemplateHeaderList = ["subject_id", "pool_id", "experimental group", "age", "sex", "species", "strain", "rrid for strain", "age category", "age range (min)", "age range (max)", "handedness", "genotype", "reference atlas", "protocol title", "protocol.io location", "experimental log file name"]
-samplesTemplateHeaderList = ["subject_id", "sample_id", "wasderivedfromsample", "pool_id", "experimental group", "specimen type", "specimen anatomical location", "species", "sex", "age", "age category", "age range (min)", "age range (max)", "handedness", "strain", "rrid for strain",  "genotype", "reference atlas", "protocol title", "protocol.io location", "experimental log file name"]
+subjectsTemplateHeaderList = ["subject id", "pool id", "subject experimental group", "age", "sex", "species", "strain", "rrid for strain", "age category", "age range (min)", "age range (max)", "handedness", "genotype", "reference atlas", "protocol title", "protocol url or doi", "experimental log file path"]
+samplesTemplateHeaderList = ["sample id", "subject id", "was derived from", "pool id", "sample experimental group", "sample type", "sample anatomical location", "species", "sex", "age", "age category", "age range (min)", "age range (max)", "handedness", "strain", "rrid for strain",  "genotype", "reference atlas", "protocol title", "protocol url or doi", "experimental log file path"]
 
 def save_subjects_file(filepath, datastructure):
 
@@ -302,9 +302,9 @@ def save_subjects_file(filepath, datastructure):
         refinedDatastructure = transposeMatrix(np.concatenate((sortMatrix, refinedOptionalFields)))
     else:
         refinedDatastructure = transposeMatrix(sortMatrix)
-
-    # 1. delete rows using delete_rows(index, amount=2) -- description and example rows
-    ws1.delete_rows(2, 2)
+    #
+    # # 1. delete rows using delete_rows(index, amount=2) -- description and example rows
+    # ws1.delete_rows(2, 2)
     # delete all optional columns first (from the template)
     ws1.delete_cols(9, 10)
 
@@ -359,8 +359,8 @@ def save_samples_file(filepath, datastructure):
     else:
         refinedDatastructure = transposeMatrix(sortMatrix)
 
-    # 1. delete rows using delete_rows(index, amount=2) -- description and example rows
-    ws1.delete_rows(2, 2)
+    # # 1. delete rows using delete_rows(index, amount=2) -- description and example rows
+    # ws1.delete_rows(2, 2)
     # delete all optional columns first (from the template)
     ws1.delete_cols(8, 15)
 

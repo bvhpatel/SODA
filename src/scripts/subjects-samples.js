@@ -282,11 +282,11 @@ function addNewIDToTableStrict(newID, secondaryID, type) {
   var message = "";
   if (type === "subjects") {
     var keyword = "subject";
-    var int = 1;
+    var int = 2;
     var table = document.getElementById("table-subjects");
   } else if (type === "samples") {
     var keyword = "sample";
-    var int = 2;
+    var int = 1;
     var table = document.getElementById("table-samples");
   }
   var duplicate = false;
@@ -336,7 +336,7 @@ function addSampleIDtoDataBase(samID, subID) {
   var error = "";
   var rowcount = table.rows.length;
   for (var i = 1; i < rowcount; i++) {
-    if (samID === table.rows[i].cells[2].innerText) {
+    if (samID === table.rows[i].cells[1].innerText) {
       duplicate = true;
       break;
     }
@@ -702,8 +702,8 @@ function populateFormsSamples(subjectID, sampleID, type) {
     if (samplesTableData.length > 1) {
       for (var i = 1; i < samplesTableData.length; i++) {
         if (
-          samplesTableData[i][1] === sampleID &&
-          samplesTableData[i][0] === subjectID
+          samplesTableData[i][0] === subjectID &&
+          samplesTableData[i][1] === sampleID
         ) {
           infoJson = samplesTableData[i];
           break;
@@ -864,7 +864,7 @@ function editSample(ev, sampleID) {
   var newID = $("#bootbox-sample-id").val();
   if (newID === sampleID) {
     for (var i = 1; i < samplesTableData.length; i++) {
-      if (samplesTableData[i][1] === sampleID) {
+      if (samplesTableData[i][0] === sampleID) {
         samplesTableData[i] = samplesFileData;
         break;
       }
@@ -876,7 +876,7 @@ function editSample(ev, sampleID) {
     var error = "";
     var rowcount = table.rows.length;
     for (var i = 1; i < rowcount; i++) {
-      if (newID === table.rows[i].cells[2].innerText) {
+      if (newID === table.rows[i].cells[1].innerText) {
         duplicate = true;
         break;
       }
@@ -887,12 +887,12 @@ function editSample(ev, sampleID) {
       Swal.fire("Duplicate sample_id", error, "error");
     } else {
       for (var i = 1; i < samplesTableData.length; i++) {
-        if (samplesTableData[i][1] === sampleID) {
+        if (samplesTableData[i][0] === sampleID) {
           samplesTableData[i] = samplesFileData;
           break;
         }
       }
-      $(currentRow)[0].cells[2].innerText = newID;
+      $(currentRow)[0].cells[1].innerText = newID;
       hideSamplesForm();
     }
   }
@@ -946,9 +946,9 @@ function delete_current_sample_id(ev) {
       document.getElementById(currentRowid).outerHTML = "";
       updateIndexForTable(document.getElementById("table-samples"));
       // 2. Delete from JSON
-      var sampleId = $(currentRow)[0].cells[2].innerText;
+      var sampleId = $(currentRow)[0].cells[1].innerText;
       for (var i = 1; i < samplesTableData.length; i++) {
-        if (samplesTableData[i][1] === sampleId) {
+        if (samplesTableData[i][0] === sampleId) {
           samplesTableData.splice(i, 1);
           break;
         }
