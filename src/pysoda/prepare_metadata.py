@@ -277,8 +277,8 @@ def save_ds_description_file(bfaccountname, filepath, dataset_str, misc_str, opt
 
     wb.save(destination)
 
-subjectsTemplateHeaderList = ["subject id", "pool id", "subject experimental group", "age", "sex", "species", "strain", "rrid for strain", "age category", "age range (min)", "age range (max)", "handedness", "genotype", "reference atlas", "protocol title", "protocol url or doi", "experimental log file path"]
-samplesTemplateHeaderList = ["sample id", "subject id", "was derived from", "pool id", "sample experimental group", "sample type", "sample anatomical location", "species", "sex", "age", "age category", "age range (min)", "age range (max)", "handedness", "strain", "rrid for strain",  "genotype", "reference atlas", "protocol title", "protocol url or doi", "experimental log file path"]
+subjectsTemplateHeaderList = ["subject id", "pool id", "subject experimental group", "age", "sex", "species", "strain", "rrid for strain", "age category", "also in dataset", "member of", "laboratory internal id", "date of birth", "age range (min)", "age range (max)", "body mass", "genotype", "phenotype", "handedness", "reference atlas", "experimental log file path", "experiment date", "disease or disorder", "intervention", "disease model", "protocol title", "protocol url or doi"]
+samplesTemplateHeaderList = ["sample id", "subject id", "was derived from", "pool id", "sample experimental group", "sample type", "sample anatomical location", "also in dataset", "member of", "laboratory internal id", "date of derivation", "experimental log file path", "reference atlas", "pathology", "laterality", "cell type", "plane of section", "protocol title", "protocol url or doi"]
 
 def save_subjects_file(filepath, datastructure):
 
@@ -291,8 +291,8 @@ def save_subjects_file(filepath, datastructure):
 
     transposeDatastructure = transposeMatrix(datastructure)
 
-    mandatoryFields = transposeDatastructure[:8]
-    optionalFields = transposeDatastructure[8:]
+    mandatoryFields = transposeDatastructure[:11]
+    optionalFields = transposeDatastructure[11:]
     refinedOptionalFields = processMetadataCustomFields(optionalFields)
 
     templateHeaderList = subjectsTemplateHeaderList
@@ -306,7 +306,7 @@ def save_subjects_file(filepath, datastructure):
     # # 1. delete rows using delete_rows(index, amount=2) -- description and example rows
     # ws1.delete_rows(2, 2)
     # delete all optional columns first (from the template)
-    ws1.delete_cols(9, 10)
+    ws1.delete_cols(12, 15)
 
     # 2. see if the length of datastructure[0] == length of datastructure. If yes, go ahead. If no, add new columns from headers[n-1] onward.
     headers_no = len(refinedDatastructure[0])
@@ -315,7 +315,7 @@ def save_subjects_file(filepath, datastructure):
                        fill_type='solid')
 
     gevent.sleep(0)
-    for column, header in zip(excel_columns(start_index=8), refinedDatastructure[0][8:headers_no]):
+    for column, header in zip(excel_columns(start_index=11), refinedDatastructure[0][11:headers_no]):
         cell = column + str(1)
         ws1[cell] = header
         ws1[cell].fill = orangeFill
@@ -347,8 +347,8 @@ def save_samples_file(filepath, datastructure):
 
     transposeDatastructure = transposeMatrix(datastructure)
 
-    mandatoryFields = transposeDatastructure[:7]
-    optionalFields = transposeDatastructure[7:]
+    mandatoryFields = transposeDatastructure[:9]
+    optionalFields = transposeDatastructure[9:]
     refinedOptionalFields = processMetadataCustomFields(optionalFields)
 
     templateHeaderList = samplesTemplateHeaderList
@@ -362,7 +362,7 @@ def save_samples_file(filepath, datastructure):
     # # 1. delete rows using delete_rows(index, amount=2) -- description and example rows
     # ws1.delete_rows(2, 2)
     # delete all optional columns first (from the template)
-    ws1.delete_cols(8, 15)
+    ws1.delete_cols(10, 9)
 
     # 2. see if the length of datastructure[0] == length of datastructure. If yes, go ahead. If no, add new columns from headers[n-1] onward.
     headers_no = len(refinedDatastructure[0])
@@ -370,7 +370,7 @@ def save_samples_file(filepath, datastructure):
                        end_color='FFD965',
                        fill_type='solid')
     gevent.sleep(0)
-    for column, header in zip(excel_columns(start_index=7), refinedDatastructure[0][7:headers_no]):
+    for column, header in zip(excel_columns(start_index=9), refinedDatastructure[0][9:headers_no]):
         cell = column + str(1)
         ws1[cell] = header
         ws1[cell].fill = orangeFill

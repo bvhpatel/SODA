@@ -8,8 +8,34 @@ var headersArrSubjects = [];
 var headersArrSamples = [];
 
 function showForm(type, editBoolean) {
-  if (type !== "edit") {
-    clearAllSubjectFormFields(subjectsFormDiv);
+  if (subjectsTableData.length > 1) {
+    var subjectsDropdownOptions = [];
+    for (var i = 1; i < subjectsTableData.length; i++) {
+      subjectsDropdownOptions.push(subjectsTableData[i][0]);
+    }
+    if (!editBoolean) {
+      // prompt users if they want to import entries from previous sub_ids
+      Swal.fire({
+        title: "Would you like to re-use information from a previous subject?",
+        showCancelButton: true,
+        cancelButtonText: `No, start fresh!`,
+        cancelButtonColor: "#f44336",
+        confirmButtonColor: "#3085d6",
+        confirmButtonText: "Yes!",
+      }).then((boolean) => {
+        if (boolean.isConfirmed) {
+          promptImportPrevInfoSubject(
+            subjectsDropdownOptions
+          );
+        } else {
+          clearAllSubjectFormFields(subjectsFormDiv);
+        }
+      });
+    }
+  } else {
+    if (type !== "edit") {
+      clearAllSubjectFormFields(subjectsFormDiv);
+    }
   }
   subjectsFormDiv.style.display = "flex";
   $("#create_subjects-tab").removeClass("show");
@@ -60,15 +86,18 @@ function showFormSamples(type, editBoolean) {
   $("#sidebarCollapse").prop("disabled", "true");
 }
 
-var selectHTML =
+var selectHTMLSamples =
   "<div><select id='previous-subject' class='swal2-input' onchange='displayPreviousSample()'></select><select style='display:none' id='previous-sample' class='swal2-input' onchange='confirmSample()'></select></div>";
 var prevSubID = "";
 var prevSamID = "";
+var prevSubIDSingle = "";
+var selectHTMLSubjects =
+  "<div><select id='previous-subject-single' class='swal2-input'></select></div>";
 
 function promptImportPrevInfoSamples(arr1, arr2) {
   Swal.fire({
     title: "Choose a previous sample:",
-    html: selectHTML,
+    html: selectHTMLSamples,
     showCancelButton: true,
     cancelButtonText: "Cancel",
     confirmButtonText: "Confirm",
@@ -99,6 +128,40 @@ function promptImportPrevInfoSamples(arr1, arr2) {
       }
     } else {
       hideSamplesForm();
+    }
+  });
+}
+
+function promptImportPrevInfoSubject(arr1) {
+  Swal.fire({
+    title: "Choose a previous subject:",
+    html: selectHTMLSubjects,
+    showCancelButton: true,
+    cancelButtonText: "Cancel",
+    confirmButtonText: "Confirm",
+    // customClass: {
+    //   confirmButton: "confirm-disabled",
+    // },
+    onOpen: function () {
+      // $(".swal2-confirm").attr("id", "btn-confirm-previous-import-subject");
+      removeOptions(document.getElementById("previous-subject-single"));
+      $("#previous-subject-single").append(
+        `<option value="Select">Select a subject</option>`
+      );
+      for (var ele of arr1) {
+        $("#previous-subject-single").append(`<option value="${ele}">${ele}</option>`);
+      }
+    },
+  }).then((result) => {
+    if (result.isConfirmed) {
+      if (
+        $("#previous-subject-single").val() !== "Select"
+      ) {
+        prevSubID = $("#previous-subject-single").val()
+        populateForms(prevSubID, "import");
+      }
+    } else {
+      hideSubjectsForm();
     }
   });
 }
@@ -217,7 +280,7 @@ function addNewIDToTable(newID, secondaryID, type) {
     var table = document.getElementById("table-subjects");
   } else if (type === "samples") {
     var keyword = "sample";
-    var int = 2;
+    var int = 1;
     var table = document.getElementById("table-samples");
   }
   var duplicate = false;
@@ -264,9 +327,9 @@ function addNewIDToTable(newID, secondaryID, type) {
       "'><td class='contributor-table-row'>" +
       indexNumber +
       "</td><td>" +
-      secondaryID +
-      "</td><td>" +
       newID +
+      "</td><td>" +
+      secondaryID +
       "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_" +
       keyword +
       "_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='copy_current_" +
@@ -282,7 +345,7 @@ function addNewIDToTableStrict(newID, secondaryID, type) {
   var message = "";
   if (type === "subjects") {
     var keyword = "subject";
-    var int = 2;
+    var int = 1;
     var table = document.getElementById("table-subjects");
   } else if (type === "samples") {
     var keyword = "sample";
@@ -546,8 +609,8 @@ function edit_current_subject_id(ev) {
 }
 function edit_current_sample_id(ev) {
   var currentRow = $(ev).parents()[2];
-  var subjectID = $(currentRow)[0].cells[1].innerText;
-  var sampleID = $(currentRow)[0].cells[2].innerText;
+  var subjectID = $(currentRow)[0].cells[2].innerText;
+  var sampleID = $(currentRow)[0].cells[1].innerText;
   loadSampleInformation(ev, subjectID, sampleID);
 }
 
@@ -679,7 +742,7 @@ function populateForms(subjectID, type) {
             }
           } else {
             if (type === "import") {
-              if (field.name === "subject_id") {
+              if (field.name === "subject id") {
                 field.value = "";
               } else {
                 field.value = infoJson[i];
@@ -737,9 +800,9 @@ function populateFormsSamples(subjectID, sampleID, type) {
             }
           } else {
             if (type === "import") {
-              if (field.name === "subject_id") {
+              if (field.name === "subject id") {
                 field.value = "";
-              } else if (field.name === "sample_id") {
+              } else if (field.name === "sample id") {
                 field.value = "";
               } else {
                 field.value = infoJson[i];
@@ -864,7 +927,7 @@ function editSample(ev, sampleID) {
   var newID = $("#bootbox-sample-id").val();
   if (newID === sampleID) {
     for (var i = 1; i < samplesTableData.length; i++) {
-      if (samplesTableData[i][0] === sampleID) {
+      if (samplesTableData[i][1] === sampleID) {
         samplesTableData[i] = samplesFileData;
         break;
       }
@@ -887,7 +950,7 @@ function editSample(ev, sampleID) {
       Swal.fire("Duplicate sample_id", error, "error");
     } else {
       for (var i = 1; i < samplesTableData.length; i++) {
-        if (samplesTableData[i][0] === sampleID) {
+        if (samplesTableData[i][1] === sampleID) {
           samplesTableData[i] = samplesFileData;
           break;
         }
@@ -948,7 +1011,7 @@ function delete_current_sample_id(ev) {
       // 2. Delete from JSON
       var sampleId = $(currentRow)[0].cells[1].innerText;
       for (var i = 1; i < samplesTableData.length; i++) {
-        if (samplesTableData[i][0] === sampleId) {
+        if (samplesTableData[i][1] === sampleId) {
           samplesTableData.splice(i, 1);
           break;
         }
@@ -1212,7 +1275,7 @@ function importPrimaryFolderSubjects(folderPath) {
         var stats = fs.statSync(path.join(folderPath, folder));
         if (stats.isDirectory()) {
           subjectsFileData[0] = folder;
-          for (var i = 1; i < 18; i++) {
+          for (var i = 1; i < 26; i++) {
             subjectsFileData.push("");
           }
           subjectsTableData[j] = subjectsFileData;
@@ -1301,7 +1364,7 @@ function importPrimaryFolderSamples(folderPath) {
               samplesFileData[1] = subfolder;
             }
           }
-          for (var i = 2; i < 22; i++) {
+          for (var i = 2; i < 18; i++) {
             samplesFileData.push("");
           }
           samplesTableData[j] = samplesFileData;

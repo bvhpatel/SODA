@@ -1884,8 +1884,8 @@ function createStrain(id, type) {
 
 $(document).ready(function () {
   createSpeciesAutocomplete("bootbox-subject-species");
-  createSpeciesAutocomplete("bootbox-sample-species");
-  createStrain("bootbox-sample-strain", "samples");
+  // createSpeciesAutocomplete("bootbox-sample-species");
+  // createStrain("bootbox-sample-strain", "samples");
   createStrain("bootbox-subject-strain", "subjects");
 });
 

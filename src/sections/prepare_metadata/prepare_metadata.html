@@ -5243,7 +5243,7 @@
                 </div>
               </div>
 
-              <div class="div-dd-info subjects" style="margin-bottom: 20px">
+              <div class="div-dd-info subjects">
                 <div class="demo-controls-head" style="text-align: center">
                   <div style="width: 100%">
                     <font color="black">
@@ -5283,6 +5283,68 @@
                   <i
                     class="fas fa-info-circle popover-tooltip subjects-form"
                     data-content="Age of the subject  (e.g., hours, days, weeks, years old) or if unknown, leave it empty. <br><i>Example: 4 weeks<i>"
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                  ></i>
+                </div>
+              </div>
+
+              <div class="div-dd-info subjects">
+                <div class="demo-controls-head">
+                  <div style="width: 100%">
+                    <font color="black"> Member of: </font>
+                  </div>
+                </div>
+                <div class="demo-controls-body">
+                  <div class="ui input modified">
+                    <input
+                      type="text"
+                      id="bootbox-subject-member-of"
+                      name="member of"
+                      class="subjects-form-entry"
+                      placeholder="Type here"
+                    />
+                  </div>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <i
+                    class="fas fa-info-circle popover-tooltip subjects-form"
+                    data-content="Type to get suggestions from the most commonly used organism strain of the subject. <br>
+                      <i>Example: Sprague-Dawley </i> <br><br>
+                        To search for a standard strain name, please visit: <a target='_blank' href='https://scicrunch.org/resources/Organisms/search'>Scicrunch.org</a>"
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                  ></i>
+                </div>
+              </div>
+
+              <div class="div-dd-info subjects"  style="margin-bottom: 20px">
+                <div class="demo-controls-head">
+                  <div style="width: 100%">
+                    <font color="black"> Also in dataset: </font>
+                  </div>
+                </div>
+                <div class="demo-controls-body">
+                  <div class="ui input modified">
+                    <input
+                      type="text"
+                      id="bootbox-subject-also-in-dataset"
+                      name="also in dataset"
+                      class="subjects-form-entry"
+                      placeholder="Type here"
+                    />
+                  </div>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <i
+                    class="fas fa-info-circle popover-tooltip subjects-form"
+                    data-content="Type to get suggestions from the most commonly used organism strain of the subject. <br>
+                      <i>Example: Sprague-Dawley </i> <br><br>
+                        To search for a standard strain name, please visit: <a target='_blank' href='https://scicrunch.org/resources/Organisms/search'>Scicrunch.org</a>"
                     rel="popover"
                     data-placement="right"
                     data-html="true"
@@ -5421,7 +5483,7 @@
                     ></i>
                   </div>
                 </div>
-                <div class="div-dd-info subjects" style="margin-bottom: 20px">
+                <div class="div-dd-info subjects">
                   <div class="demo-controls-head">
                     <div style="width: 100%">
                       <font color="black"> Age range: </font>
@@ -5459,6 +5521,37 @@
                     ></i>
                   </div>
                 </div>
+
+                <div class="div-dd-info subjects" style="margin-bottom: 20px">
+                  <div class="demo-controls-head">
+                    <div style="width: 100%">
+                      <font color="black"> Date of birth: </font>
+                    </div>
+                  </div>
+                  <div class="demo-controls-body">
+                    <div class="ui input modified" style="margin-right: 5px">
+                      <input
+                        class="subjects-form-entry"
+                        id="bootbox-subject-dob"
+                        type="date"
+                        name="date of birth"
+                      />
+                    </div>
+                  </div>
+                  <div class="tooltipnew demo-controls-end">
+                    <i
+                      class="fas fa-info-circle popover-tooltip subjects-form"
+                      data-content="Type to get suggestions from the most commonly used organism strain of the subject. <br>
+                        <i>Example: Sprague-Dawley </i> <br><br>
+                          To search for a standard strain name, please visit: <a target='_blank' href='https://scicrunch.org/resources/Organisms/search'>Scicrunch.org</a>"
+                      rel="popover"
+                      data-placement="right"
+                      data-html="true"
+                      data-trigger="hover"
+                    ></i>
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
@@ -5611,6 +5704,35 @@
               <div class="div-dd-info subjects">
                 <div class="demo-controls-head">
                   <div style="width: 100%">
+                    <font color="black"> Body mass: </font>
+                  </div>
+                </div>
+                <div class="demo-controls-body">
+                  <div class="ui input modified" style="margin-right: 5px">
+                    <input
+                      class="subjects-form-entry"
+                      id="bootbox-subject-body-mass"
+                      name="body mass"
+                    />
+                  </div>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <i
+                    class="fas fa-info-circle popover-tooltip subjects-form"
+                    data-content="Type to get suggestions from the most commonly used organism strain of the subject. <br>
+                      <i>Example: Sprague-Dawley </i> <br><br>
+                        To search for a standard strain name, please visit: <a target='_blank' href='https://scicrunch.org/resources/Organisms/search'>Scicrunch.org</a>"
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                  ></i>
+                </div>
+              </div>
+
+              <div class="div-dd-info subjects">
+                <div class="demo-controls-head">
+                  <div style="width: 100%">
                     <font color="black"> Genotype: </font>
                   </div>
                 </div>
@@ -5630,6 +5752,122 @@
                     class="fas fa-info-circle popover-tooltip subjects-form"
                     data-content="Genetic makeup of genetically modified alleles in transgenic animals belonging to the same subject group. Ignore if strain is provided.<br>
                     <i>Example: MGI:3851780 <i>"
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                  ></i>
+                </div>
+              </div>
+
+              <div class="div-dd-info subjects">
+                <div class="demo-controls-head">
+                  <div style="width: 100%">
+                    <font color="black"> Phenotype: </font>
+                  </div>
+                </div>
+                <div class="demo-controls-body">
+                  <div class="ui input modified" style="margin-right: 5px">
+                    <input
+                      class="subjects-form-entry"
+                      id="bootbox-subject-phenotype"
+                      name="phenotype"
+                    />
+                  </div>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <i
+                    class="fas fa-info-circle popover-tooltip subjects-form"
+                    data-content="Type to get suggestions from the most commonly used organism strain of the subject. <br>
+                      <i>Example: Sprague-Dawley </i> <br><br>
+                        To search for a standard strain name, please visit: <a target='_blank' href='https://scicrunch.org/resources/Organisms/search'>Scicrunch.org</a>"
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                  ></i>
+                </div>
+              </div>
+
+              <div class="div-dd-info subjects">
+                <div class="demo-controls-head">
+                  <div style="width: 100%">
+                    <font color="black"> Disease or disorder: </font>
+                  </div>
+                </div>
+                <div class="demo-controls-body">
+                  <div class="ui input modified" style="margin-right: 5px">
+                    <input
+                      class="subjects-form-entry"
+                      id="bootbox-subject-disease"
+                      name="disease or disorder"
+                    />
+                  </div>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <i
+                    class="fas fa-info-circle popover-tooltip subjects-form"
+                    data-content="Type to get suggestions from the most commonly used organism strain of the subject. <br>
+                      <i>Example: Sprague-Dawley </i> <br><br>
+                        To search for a standard strain name, please visit: <a target='_blank' href='https://scicrunch.org/resources/Organisms/search'>Scicrunch.org</a>"
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                  ></i>
+                </div>
+              </div>
+
+              <div class="div-dd-info subjects">
+                <div class="demo-controls-head">
+                  <div style="width: 100%">
+                    <font color="black"> Disease model: </font>
+                  </div>
+                </div>
+                <div class="demo-controls-body">
+                  <div class="ui input modified" style="margin-right: 5px">
+                  <input
+                    class="subjects-form-entry"
+                    id="bootbox-subject-disease-model"
+                    name="disease model"
+                  />
+                </div>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <i
+                    class="fas fa-info-circle popover-tooltip subjects-form"
+                    data-content="Type to get suggestions from the most commonly used organism strain of the subject. <br>
+                      <i>Example: Sprague-Dawley </i> <br><br>
+                        To search for a standard strain name, please visit: <a target='_blank' href='https://scicrunch.org/resources/Organisms/search'>Scicrunch.org</a>"
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                  ></i>
+                </div>
+              </div>
+
+              <div class="div-dd-info subjects">
+                <div class="demo-controls-head">
+                  <div style="width: 100%">
+                    <font color="black"> Intervention: </font>
+                  </div>
+                </div>
+                <div class="demo-controls-body">
+                  <div class="ui input modified" style="margin-right: 5px">
+                  <input
+                    class="subjects-form-entry"
+                    id="bootbox-subject-intervention"
+                    name="intervention"
+                  />
+                </div>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <i
+                    class="fas fa-info-circle popover-tooltip subjects-form"
+                    data-content="Type to get suggestions from the most commonly used organism strain of the subject. <br>
+                      <i>Example: Sprague-Dawley </i> <br><br>
+                        To search for a standard strain name, please visit: <a target='_blank' href='https://scicrunch.org/resources/Organisms/search'>Scicrunch.org</a>"
                     rel="popover"
                     data-placement="right"
                     data-html="true"
@@ -5667,7 +5905,7 @@
                   ></i>
                 </div>
               </div>
-              <div class="div-dd-info subjects" style="margin-bottom: 10px">
+              <div class="div-dd-info subjects">
                 <div class="demo-controls-head">
                   <div style="width: 100%">
                     <font color="black"> Experimental log file path: </font>
@@ -5695,6 +5933,68 @@
                   ></i>
                 </div>
               </div>
+
+
+              <div class="div-dd-info subjects">
+                <div class="demo-controls-head">
+                  <div style="width: 100%">
+                    <font color="black"> Experimental date: </font>
+                  </div>
+                </div>
+                <div class="demo-controls-body">
+                  <div class="ui input modified">
+                    <input
+                      id="bootbox-subject-experimental-date"
+                      name="experiment date"
+                      type="date"
+                      class="subjects-form-entry"
+                      placeholder="Type here..."
+                    />
+                  </div>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <i
+                    class="fas fa-info-circle popover-tooltip subjects-form"
+                    data-content="A file containing experimental records for each subject."
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                  ></i>
+                </div>
+              </div>
+
+              <div class="div-dd-info subjects" style="margin-bottom: 10px">
+                <div class="demo-controls-head">
+                  <div style="width: 100%">
+                    <font color="black"> Laboratory internal id: </font>
+                  </div>
+                </div>
+                <div class="demo-controls-body">
+                  <div class="ui input modified">
+                    <input
+                      type="text"
+                      id="bootbox-subject-lab-internal-id"
+                      name="laboratory internal id"
+                      class="subjects-form-entry"
+                      placeholder="Type here"
+                    />
+                  </div>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <i
+                    class="fas fa-info-circle popover-tooltip subjects-form"
+                    data-content="Type to get suggestions from the most commonly used organism strain of the subject. <br>
+                      <i>Example: Sprague-Dawley </i> <br><br>
+                        To search for a standard strain name, please visit: <a target='_blank' href='https://scicrunch.org/resources/Organisms/search'>Scicrunch.org</a>"
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                  ></i>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
@@ -6673,7 +6973,7 @@
                 </div>
               </div>
 
-              <div class="div-dd-info subjects">
+              <!-- <div class="div-dd-info subjects">
                 <div class="demo-controls-head">
                   <div style="width: 100%">
                     <font color="black"> Species: </font>
@@ -6784,15 +7084,82 @@
                     data-trigger="hover"
                   ></i>
                 </div>
+              </div> -->
+
+              <div class="div-dd-info subjects">
+                <div class="demo-controls-head">
+                  <div style="width: 100%">
+                    <font color="black"> Member of: </font>
+                  </div>
+                </div>
+                <div class="demo-controls-body">
+                  <div class="ui input modified">
+                    <input
+                      type="text"
+                      id="bootbox-sample-member-of"
+                      name="member of"
+                      class="samples-form-entry"
+                      placeholder="Type here"
+                    />
+                  </div>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <i
+                    class="fas fa-info-circle popover-tooltip subjects-form"
+                    data-content="Type to get suggestions from the most commonly used organism strain of the subject. <br>
+                      <i>Example: Sprague-Dawley </i> <br><br>
+                        To search for a standard strain name, please visit: <a target='_blank' href='https://scicrunch.org/resources/Organisms/search'>Scicrunch.org</a>"
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                  ></i>
+                </div>
               </div>
 
-              <div class="sub accordion" style="width: 100%">
+              <div class="div-dd-info subjects"  style="margin-bottom: 20px">
+                <div class="demo-controls-head">
+                  <div style="width: 100%">
+                    <font color="black"> Also in dataset: </font>
+                  </div>
+                </div>
+                <div class="demo-controls-body">
+                  <div class="ui input modified">
+                    <input
+                      type="text"
+                      id="bootbox-sample-also-in-dataset"
+                      name="also in dataset"
+                      class="samples-form-entry"
+                      placeholder="Type here"
+                    />
+                  </div>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <i
+                    class="fas fa-info-circle popover-tooltip subjects-form"
+                    data-content="Type to get suggestions from the most commonly used organism strain of the subject. <br>
+                      <i>Example: Sprague-Dawley </i> <br><br>
+                        To search for a standard strain name, please visit: <a target='_blank' href='https://scicrunch.org/resources/Organisms/search'>Scicrunch.org</a>"
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                  ></i>
+                </div>
+              </div>
+
+
+            </div>
+          </div>
+        </div>
+
+              <!-- <div class="sub accordion" style="width: 100%">
                 <div class="title" id="title-optional-age">
                   <i class="icon dropdown"></i>
                   Optional Details
                 </div>
-                <div class="content">
-                  <div class="div-dd-info subjects" style="text-align: center">
+                <div class="content"> -->
+                  <!-- <div class="div-dd-info subjects" style="text-align: center">
                     <div class="demo-controls-head">
                       <div style="width: 100%">
                         <font color="black"> Age category: </font>
@@ -6873,7 +7240,7 @@
                           <option value="zygote stage">zygote stage</option>
                         </select>
                         <!-- <input type="text" id="bootbox-sample-age-category" name="Age category" class="samples-form-entry" placeholder="Search here..."> -->
-                      </div>
+                      <!-- </div>
                     </div>
                     <div class="tooltipnew demo-controls-end">
                       <i
@@ -6891,8 +7258,8 @@
                         data-trigger="hover"
                       ></i>
                     </div>
-                  </div>
-                  <div class="div-dd-info subjects" style="margin-bottom: 20px">
+                  </div> -->
+                  <!-- <div class="div-dd-info subjects" style="margin-bottom: 20px">
                     <div class="demo-controls-head">
                       <div style="width: 100%">
                         <font color="black"> Age range: </font>
@@ -6931,9 +7298,9 @@
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> -->
 
-              <div class="div-dd-info subjects" style="display: none">
+              <!-- <div class="div-dd-info subjects" style="display: none">
                 <div class="demo-controls-head">
                   <div style="width: 100%">
                     <font color="black"> RRID for strain: </font>
@@ -6957,10 +7324,10 @@
                     strain For this field.
                   </span>
                 </div>
-              </div>
-            </div>
+              </div> -->
+            <!-- </div>
           </div>
-        </div>
+        </div> -->
 
         <div class="title" style="background: #ffd965">
           <i class="dropdown icon"></i>
@@ -7066,7 +7433,7 @@
             style="width: 90%; margin: 0 auto; font-size: 13px"
           >
             <div>
-              <div class="div-dd-info subjects">
+              <!-- <div class="div-dd-info subjects">
                 <div class="demo-controls-head">
                   <div style="width: 100%">
                     <font color="black"> Sex: </font>
@@ -7158,7 +7525,181 @@
                     data-trigger="hover"
                   ></i>
                 </div>
+              </div> -->
+              <div class="div-dd-info subjects" style="margin-bottom: 20px">
+                <div class="demo-controls-head">
+                  <div style="width: 100%">
+                    <font color="black"> Laboratory internal id: </font>
+                  </div>
+                </div>
+                <div class="demo-controls-body">
+                  <div class="ui input modified">
+                    <input
+                      type="text"
+                      id="bootbox-sample-laboratory-internal-id"
+                      name="laboratory internal id"
+                      class="samples-form-entry"
+                      placeholder="Type here..."
+                    />
+                  </div>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <i
+                    class="fas fa-info-circle popover-tooltip subjects-form"
+                    data-content="A file containing experimental records for each sample."
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                  ></i>
+                </div>
               </div>
+
+              <div class="div-dd-info subjects" style="margin-bottom: 20px">
+                <div class="demo-controls-head">
+                  <div style="width: 100%">
+                    <font color="black"> Date of derivation: </font>
+                  </div>
+                </div>
+                <div class="demo-controls-body">
+                  <div class="ui input modified">
+                    <input
+                      type="date"
+                      id="bootbox-sample-date-of-derivation"
+                      name="date of derivation"
+                      class="samples-form-entry"
+                      placeholder="Type here..."
+                    />
+                  </div>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <i
+                    class="fas fa-info-circle popover-tooltip subjects-form"
+                    data-content="A file containing experimental records for each sample."
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                  ></i>
+                </div>
+              </div>
+
+              <div class="div-dd-info subjects" style="margin-bottom: 20px">
+                <div class="demo-controls-head">
+                  <div style="width: 100%">
+                    <font color="black"> Pathology: </font>
+                  </div>
+                </div>
+                <div class="demo-controls-body">
+                  <div class="ui input modified">
+                    <input
+                      type="text"
+                      id="bootbox-sample-pathology"
+                      name="pathology"
+                      class="samples-form-entry"
+                      placeholder="Type here..."
+                    />
+                  </div>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <i
+                    class="fas fa-info-circle popover-tooltip subjects-form"
+                    data-content="A file containing experimental records for each sample."
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                  ></i>
+                </div>
+              </div>
+
+              <div class="div-dd-info subjects" style="margin-bottom: 20px">
+                <div class="demo-controls-head">
+                  <div style="width: 100%">
+                    <font color="black"> Laterality: </font>
+                  </div>
+                </div>
+                <div class="demo-controls-body">
+                  <div class="ui input modified">
+                    <input
+                      type="text"
+                      id="bootbox-sample-laterality"
+                      name="laterality"
+                      class="samples-form-entry"
+                      placeholder="Type here..."
+                    />
+                  </div>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <i
+                    class="fas fa-info-circle popover-tooltip subjects-form"
+                    data-content="A file containing experimental records for each sample."
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                  ></i>
+                </div>
+              </div>
+
+              <div class="div-dd-info subjects" style="margin-bottom: 20px">
+                <div class="demo-controls-head">
+                  <div style="width: 100%">
+                    <font color="black"> Cell type: </font>
+                  </div>
+                </div>
+                <div class="demo-controls-body">
+                  <div class="ui input modified">
+                    <input
+                      type="text"
+                      id="bootbox-sample-cell-type"
+                      name="cell type"
+                      class="samples-form-entry"
+                      placeholder="Type here..."
+                    />
+                  </div>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <i
+                    class="fas fa-info-circle popover-tooltip subjects-form"
+                    data-content="A file containing experimental records for each sample."
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                  ></i>
+                </div>
+              </div>
+
+              <div class="div-dd-info subjects" style="margin-bottom: 20px">
+                <div class="demo-controls-head">
+                  <div style="width: 100%">
+                    <font color="black"> Plane of section: </font>
+                  </div>
+                </div>
+                <div class="demo-controls-body">
+                  <div class="ui input modified">
+                    <input
+                      type="text"
+                      id="bootbox-sample-plane-of-section"
+                      name="plane of section"
+                      class="samples-form-entry"
+                      placeholder="Type here..."
+                    />
+                  </div>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <i
+                    class="fas fa-info-circle popover-tooltip subjects-form"
+                    data-content="A file containing experimental records for each sample."
+                    rel="popover"
+                    data-placement="right"
+                    data-html="true"
+                    data-trigger="hover"
+                  ></i>
+                </div>
+              </div>
+
               <div class="div-dd-info subjects">
                 <div class="demo-controls-head">
                   <div style="width: 100%">
