@@ -150,128 +150,101 @@ def rename_headers(workbook, max_len, start_index):
 
     else:
 
-        delete_range = len(columns_list) - max_len - 1
+        delete_range = len(columns_list) - max_len
         workbook.delete_cols(4+max_len, delete_range)
-
 
 ### Prepare dataset-description file
 
-def populate_dataset_info(workbook, val_array):
-    ## name, description, samples, subjects
-    workbook["D2"] = val_array[0]
-    workbook["D3"] = val_array[1]
-    workbook["D17"] = val_array[3]
-    workbook["D16"] = val_array[4]
+def populate_dataset_info(workbook, val_obj):
+    ## name, description, type, samples, subjects
+    workbook["D5"] = val_obj["name"]
+    workbook["D6"] = val_obj["description"]
+    workbook["D3"] = val_obj["type"]
+    workbook["D29"] = val_obj["number of subjects"]
+    workbook["D30"] = val_obj["number of samples"]
 
     ## keywords
-    for i, column in zip(range(len(val_array[2])), excel_columns(start_index=3)):
-        workbook[column + "4"] = val_array[2][i]
+    for i, column in zip(range(len(val_obj["keywords"])), excel_columns(start_index=3)):
+        workbook[column + "7"] = val_obj["keywords"][i]
 
-    return val_array[2]
+    return val_obj["keywords"]
+
+def populate_study_info(workbook, val_obj):
+    workbook["D11"] = val_obj["study purpose"]
+    workbook["D12"] = val_obj["study data collection"]
+    workbook["D13"] = val_obj["study primary conclusion"]
+    workbook["D14"] = val_obj["study organ system"]
+    workbook["D15"] = val_obj["study approach"]
+    workbook["D16"] = val_obj["study technique"]
+    workbook["D17"] = val_obj["study collection title"]
 
 def populate_contributor_info(workbook, val_array):
     ## award info
     for i, column in zip(range(len(val_array["funding"])), excel_columns(start_index=3)):
-        workbook[column + "11"] = val_array["funding"][i]
+        workbook[column + "8"] = val_array["funding"][i]
 
     ### Acknowledgments
-    workbook["D10"] = val_array["acknowledgment"]
+    workbook["D9"] = val_array["acknowledgment"]
 
     ### Contributors
     for contributor, column in zip(val_array['contributors'], excel_columns(start_index=3)):
-        workbook[column + "5"] = contributor["conName"]
-        workbook[column + "6"] = contributor["conID"]
-        workbook[column + "7"] = contributor["conAffliation"]
-        workbook[column + "9"] = contributor["conContact"]
-        workbook[column + "8"] = contributor["conRole"]
+        workbook[column + "19"] = contributor["conName"]
+        workbook[column + "20"] = contributor["conID"]
+        workbook[column + "21"] = contributor["conAffliation"]
+        # workbook[column + "9"] = contributor["conContact"]
+        workbook[column + "22"] = contributor["conRole"]
 
     return [val_array["funding"], val_array['contributors']]
 
-def populate_links_info(workbook, val_array):
-    ## originating DOI, Protocol DOI
-    total_link_array = val_array["Originating Article DOI"] + val_array["Protocol URL or DOI*"] + val_array["Additional Link"]
-    for i, column in zip(range(len(total_link_array)), excel_columns(start_index=3)):
-        if total_link_array[i]["link type"] == "Originating Article DOI":
-            workbook[column + "12"] = total_link_array[i]["link"]
-            workbook[column + "13"] = ""
-            workbook[column + "14"] = ""
-            workbook[column + "15"] = total_link_array[i]["description"]
-        if total_link_array[i]["link type"] == "Protocol URL or DOI*":
-            workbook[column + "12"] = ""
-            workbook[column + "13"] = total_link_array[i]["link"]
-            workbook[column + "14"] = ""
-            workbook[column + "15"] = total_link_array[i]["description"]
-        if total_link_array[i]["link type"] == "Additional Link":
-            workbook[column + "12"] = ""
-            workbook[column + "13"] = ""
-            workbook[column + "14"] = total_link_array[i]["link"]
-            workbook[column + "15"] = total_link_array[i]["description"]
+def populate_related_info(workbook, val_array):
+    ## related links including protocols
 
-    return total_link_array
+    for i, column in zip(range(len(val_array)), excel_columns(start_index=3)):
+        workbook[column + "24"] = val_array[i]["description"]
+        workbook[column + "25"] = val_array[i]["relation"]
+        workbook[column + "26"] = val_array[i]["link"]
+        workbook[column + "27"] = val_array[i]["type"]
 
-def populate_completeness_info(workbook, val_array, bfaccountname):
-    ## completeness, parent dataset ID, title Respectively
-    workbook["D18"] = val_array["completeness"]
-    workbook["D20"] = val_array["completeDSTitle"]
-
-    ## parent Datasets
-    if val_array["parentDS"]:
-
-        parentds_id_array = []
-        try:
-            bf = Pennsieve(bfaccountname)
-
-            for dataset in val_array["parentDS"]:
-
-                myds = bf.get_dataset(dataset)
-                dataset_id = myds.id
-                parentds_id_array.append(dataset_id)
-
-                workbook["D19"] = ", ".join(parentds_id_array)
-
-        except Exception as err:
-            # NOTE: Pennsieve package 3.2.0 misspells 'invalid'
-            if 'Invalid profile name' in str(err) or "Invaid profile name" in str(err):
-                raise Exception("Please connect SODA with Pennsieve to use this feature!")
-            raise
-    else:
-        workbook["D19"] = ""
+    return len(val_array)
 
 
-### generate the file
-def save_ds_description_file(bfaccountname, filepath, dataset_str, misc_str, optional_str, con_str):
+### generate the dataset_description file
+import demjson
+
+def save_ds_description_file(bfaccountname, filepath, dataset_str, study_str, con_str, related_info_str):
     source = join(TEMPLATE_PATH, "dataset_description.xlsx")
     destination = filepath
     shutil.copyfile(source, destination)
 
     # json array to python list
-    val_arr_ds = json.loads(dataset_str)
+    val_obj_ds = demjson.decode(dataset_str)
+    val_obj_study = demjson.decode(study_str)
     val_arr_con = json.loads(con_str)
-    val_arr_misc = json.loads(misc_str)
-    val_arr_optional = json.loads(optional_str)
+    val_arr_related_info = json.loads(related_info_str)
 
     # write to excel file
     wb = load_workbook(destination)
     ws1 = wb['Sheet1']
 
-    keyword_array = populate_dataset_info(ws1, val_arr_ds)
-    (funding_array, contributor_role_array) = populate_contributor_info(ws1, val_arr_con)
-    total_link_array = populate_links_info(ws1, val_arr_misc)
-    populate_completeness_info(ws1, val_arr_optional, bfaccountname)
+    keyword_array = populate_dataset_info(ws1, val_obj_ds)
 
-    # keywords
+    populate_study_info(ws1, val_obj_study)
+
+    (funding_array, contributor_role_array) = populate_contributor_info(ws1, val_arr_con)
+
+    related_info_len = populate_related_info(ws1, val_arr_related_info)
+
+    # keywords length
     keyword_len = len(keyword_array)
 
-    # contributors
+    # contributors length
     no_contributors = len(contributor_role_array)
 
     # funding = SPARC award + other funding sources
     funding_len = len(funding_array)
 
-    # total links added
-    link_len = len(total_link_array)
-
-    max_len = max(keyword_len, funding_len, link_len, no_contributors)
+    # obtain length for formatting compliance purpose
+    max_len = max(keyword_len, funding_len, no_contributors, related_info_len)
 
     rename_headers(ws1, max_len, 3)
 

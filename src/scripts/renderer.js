@@ -707,7 +707,7 @@ const currentConTable = document.getElementById("table-current-contributors");
 const generateDSBtn = document.getElementById("button-generate-ds-description");
 const addAdditionalLinkBtn = document.getElementById("button-ds-add-link");
 const datasetDescriptionFileDataset = document.getElementById("ds-name");
-const parentDSDropdown = document.getElementById("input-parent-ds");
+// const parentDSDropdown = document.getElementById("input-parent-ds");
 
 /////// New Organize Datasets /////////////////////
 const organizeDSglobalPath = document.getElementById("input-global-path");
@@ -980,28 +980,28 @@ var otherFundingInput = document.getElementById("ds-other-funding"),
     duplicates: false,
   });
 
-var parentDSTagify = new Tagify(parentDSDropdown, {
-  enforceWhitelist: true,
-  whitelist: [],
-  duplicates: false,
-  dropdown: {
-    maxItems: Infinity,
-    enabled: 0,
-    closeOnSelect: true,
-  },
-});
+// var parentDSTagify = new Tagify(parentDSDropdown, {
+//   enforceWhitelist: true,
+//   whitelist: [],
+//   duplicates: false,
+//   dropdown: {
+//     maxItems: Infinity,
+//     enabled: 0,
+//     closeOnSelect: true,
+//   },
+// });
 
-var completenessInput = document.getElementById("ds-completeness"),
-  completenessTagify = new Tagify(completenessInput, {
-    whitelist: ["hasChildren", "hasNext"],
-    enforceWhitelist: true,
-    duplicates: false,
-    maxTags: 2,
-    dropdown: {
-      enabled: 0,
-      closeOnSelect: true,
-    },
-  });
+// var completenessInput = document.getElementById("ds-completeness"),
+//   completenessTagify = new Tagify(completenessInput, {
+//     whitelist: ["hasChildren", "hasNext"],
+//     enforceWhitelist: true,
+//     duplicates: false,
+//     maxTags: 2,
+//     dropdown: {
+//       enabled: 0,
+//       closeOnSelect: true,
+//     },
+//   });
 
 ///////////////////// Airtable Authentication /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -2775,7 +2775,7 @@ function detectEmptyRequiredFields(funding) {
     conEmptyField.push("SPARC Award");
   }
   if (!contactPersonExists) {
-    conEmptyField.push("One contact person");
+    conEmptyField.push("One Corresponding Author");
   }
   if (contributorNumber <= 1) {
     conEmptyField.push("At least one contributor");
@@ -2893,35 +2893,30 @@ ipcRenderer.on(
           },
         }).then((result) => {});
 
-        var datasetInfoValueArray = grabDSInfoEntries();
+        var datasetInfoValueObj = grabDSInfoEntries();
 
         //// process obtained values to pass to an array ///
         ///////////////////////////////////////////////////
         var keywordVal = [];
-        for (var i = 0; i < datasetInfoValueArray["keywords"].length; i++) {
-          keywordVal.push(datasetInfoValueArray["keywords"][i].value);
+        for (var i = 0; i < datasetInfoValueObj["keywords"].length; i++) {
+          keywordVal.push(datasetInfoValueObj["keywords"][i].value);
         }
         /// replace keywordArray with keywordVal array
-        datasetInfoValueArray["keywords"] = keywordVal;
+        datasetInfoValueObj["keywords"] = keywordVal;
 
-        //// push to all ds info values to dsSectionArray
-        var dsSectionArray = [];
-        for (let elementDS in datasetInfoValueArray) {
-          dsSectionArray.push(datasetInfoValueArray[elementDS]);
-        }
+        var studyInfoValueObject = grabStudyInfoEntries()
+
         //// grab entries from contributor info section and pass values to conSectionArray
         var contributorObj = grabConInfoEntries();
-        /// grab entries from other misc info section
-        var miscObj = combineLinksSections();
 
-        /// grab entries from other optional info section
-        var completenessSectionObj = grabCompletenessInfo();
+        // grab related information (protocols and additional links)
+        var relatedInfoArr = combineLinksSections();
 
         ///////////// stringify JSON objects //////////////////////
-        json_str_ds = JSON.stringify(dsSectionArray);
-        json_str_misc = JSON.stringify(miscObj);
-        json_str_completeness = JSON.stringify(completenessSectionObj);
+        json_str_ds = JSON.stringify(datasetInfoValueObj);
+        json_str_study = JSON.stringify(studyInfoValueObject);
         json_str_con = JSON.stringify(contributorObj);
+        json_str_related_info = JSON.stringify(relatedInfoArr);
 
         /// get current, selected Pennsieve account
         var bfaccountname = $("#current-bf-account").text();
@@ -2933,19 +2928,22 @@ ipcRenderer.on(
             bfaccountname,
             destinationPath,
             json_str_ds,
-            json_str_misc,
-            json_str_completeness,
+            json_str_study,
             json_str_con,
+            json_str_related_info,
             (error, res) => {
               if (error) {
                 var emessage = userError(error);
                 log.error(error);
                 console.error(error);
-                Swal.fire(
-                  "Failed to generate the dataset_description file",
-                  emessage,
-                  "warning"
-                );
+                Swal.fire({
+                  title:
+                    "Failed to generate the dataset_description file",
+                  text: emessage,
+                  icon: "warning",
+                  heightAuto: false,
+                  backdrop: "rgba(0,0,0, 0.4)",
+                });
                 ipcRenderer.send(
                   "track-event",
                   "Error",
@@ -5366,7 +5364,7 @@ function refreshDatasetList() {
   });
 
   populateDatasetDropdowns(filteredDatasets);
-  parentDSTagify.settings.whitelist = getParentDatasets();
+  // parentDSTagify.settings.whitelist = getParentDatasets();
   return filteredDatasets.length;
 }
 

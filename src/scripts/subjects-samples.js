@@ -157,8 +157,8 @@ function promptImportPrevInfoSubject(arr1) {
       if (
         $("#previous-subject-single").val() !== "Select"
       ) {
-        prevSubID = $("#previous-subject-single").val()
-        populateForms(prevSubID, "import");
+        prevSubIDSingle = $("#previous-subject-single").val()
+        populateForms(prevSubIDSingle, "import");
       }
     } else {
       hideSubjectsForm();
@@ -617,69 +617,104 @@ function edit_current_sample_id(ev) {
 async function edit_current_protocol_id(ev) {
   var currentRow = $(ev).parents()[2];
   var link = $(currentRow)[0].cells[1].innerText;
-  var desc = $(currentRow)[0].cells[2].innerText;
+  var type = $(currentRow)[0].cells[2].innerText;
+  var relation = $(currentRow)[0].cells[3].innerText;
+  var desc = $(currentRow)[0].cells[4].innerText;
+
   const { value: values } = await Swal.fire({
     title: "Edit protocol",
     html:
-      '<input id="DD-protocol-link" value="' +
-      link +
-      '" class="swal2-input" placeholder="Enter protocol link">' +
-      '<textarea id="DD-protocol-link-description" class="swal2-textarea" placeholder="Enter link description">' +
-      desc +
-      "</textarea>",
+    '<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one "Protocol URLs or DOIs" link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL" value="'+link+'"/>' +
+    '<label>Protocol Type: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one "Protocol URLs or DOIs" link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-select" class="swal2-input"><option value="Select">Select a type</option><option value="URL">URL</option><option value="DOI">DOI</option></select>' +
+    '<label>Relation to the dataset: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one "Protocol URLs or DOIs" link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-relation" class="swal2-input"><option value="Select">Select a relation</option><option value="IsProtocolFor">IsProtocolFor</option><option value="HasProtocol">HasProtocol</option><option value="IsSoftwareFor">IsSoftwareFor</option><option value="HasSoftware">HasSoftware</option></select>' +
+    '<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Optionally provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description">'+ desc +'</textarea>',
     focusConfirm: false,
     showCancelButton: true,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
+    onOpen: () => {
+      $("#DD-protocol-link-select").val(type);
+      $("#DD-protocol-link-relation").val(relation);
+    },
     preConfirm: () => {
+      if ($("#DD-protocol-link").val() === "") {
+        Swal.showValidationMessage(`Please enter a link!`);
+      }
+      if ($("#DD-protocol-link-select").val() === "Select") {
+        Swal.showValidationMessage(`Please choose a link type!`);
+      }
+      if ($("#DD-protocol-link-relation").val() === "Select") {
+        Swal.showValidationMessage(`Please choose a link relation!`);
+      }
+      if ($("#DD-protocol-description").val() === "") {
+        Swal.showValidationMessage(`Please enter a short description!`);
+      }
       return [
-        document.getElementById("DD-protocol-link").value,
-        document.getElementById("DD-protocol-link-description").value,
+        $("#DD-protocol-link").val(),
+        $("#DD-protocol-link-select").val(),
+        $("#DD-protocol-link-relation").val(),
+        $("#DD-protocol-description").val()
       ];
     },
   });
   if (values) {
     $(currentRow)[0].cells[1].innerHTML =
       "<a href='" + values[0] + "' target='_blank'>" + values[0] + "</a>";
-    $(currentRow)[0].cells[2].innerText = values[1];
+    $(currentRow)[0].cells[2].innerHTML = values[1];
+    $(currentRow)[0].cells[3].innerHTML = values[2];
+    $(currentRow)[0].cells[4].innerText = values[3];
   }
 }
 
 async function edit_current_additional_link_id(ev) {
   var currentRow = $(ev).parents()[2];
-  var linkType = $(currentRow)[0].cells[1].innerText;
-  var link = $(currentRow)[0].cells[2].innerText;
-  var desc = $(currentRow)[0].cells[3].innerText;
+  var link = $(currentRow)[0].cells[1].innerText;
+  var linkType = $(currentRow)[0].cells[2].innerText;
+  var linkRelation = $(currentRow)[0].cells[3].innerText;
+  var desc = $(currentRow)[0].cells[4].innerText;
   const { value: values } = await Swal.fire({
-    title: "Edit protocol",
+    title: "Edit link",
     html:
-      '<select id="DD-additional-link-type" class="swal2-select"><option value="Select">Select a type</option><option value="Originating Article DOI">Originating Article DOI</option><option value="Additional Link">Additional Link</option></select>' +
-      '<input id="DD-additional-link" value="' +
-      link +
-      '" class="swal2-input" placeholder="Enter protocol link">' +
-      '<textarea id="DD-additional-link-description" class="swal2-textarea" placeholder="Enter link description">' +
-      desc +
-      "</textarea>",
+    '<label>URL or DOI: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one "Protocol URLs or DOIs" link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-other-link" class="swal2-input" placeholder="Enter a URL" value="'+link+'"/>' +
+    '<label>Link Type: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one "Protocol URLs or DOIs" link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-other-link-type" class="swal2-input"><option value="Select">Select a type</option><option value="URL">URL</option><option value="DOI">DOI</option></select>' +
+    '<label>Relation to the dataset: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one "Protocol URLs or DOIs" link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-other-link-relation" class="swal2-input"><option value="Select">Select a relation</option><option value="IsCitedBy">IsCitedBy</option><option value="Cites">Cites</option><option value="IsSupplementTo">IsSupplementTo</option><option value="IsSupplementedBy">IsSupplementedBy</option><option value="IsContinuedByContinues">IsContinuedByContinues</option><option value="IsDescribedBy">IsDescribedBy</option><option value="Describes">Describes</option><option value="HasMetadata">HasMetadata</option><option value="IsMetadataFor">IsMetadataFor</option><option value="HasVersion">HasVersion</option><option value="IsVersionOf">IsVersionOf</option><option value="IsNewVersionOf">IsNewVersionOf</option><option value="IsPreviousVersionOf">IsPreviousVersionOf</option><option value="IsPreviousVersionOf">IsPreviousVersionOf</option><option value="HasPart">HasPart</option><option value="IsPublishedIn">IsPublishedIn</option><option value="IsReferencedBy">IsReferencedBy</option><option value="References">References</option><option value="IsDocumentedBy">IsDocumentedBy</option><option value="Documents">Documents</option><option value="IsCompiledBy">IsCompiledBy</option><option value="Compiles">Compiles</option><option value="IsVariantFormOf">IsVariantFormOf</option><option value="IsOriginalFormOf">IsOriginalFormOf</option><option value="IsIdenticalTo">IsIdenticalTo</option><option value="IsReviewedBy">IsReviewedBy</option><option value="Reviews">Reviews</option><option value="IsDerivedFrom">IsDerivedFrom</option><option value="IsSourceOf">IsSourceOf</option><option value="IsRequiredBy">IsRequiredBy</option><option value="Requires">Requires</option><option value="IsObsoletedBy">IsObsoletedBy</option><option value="Obsoletes">Obsoletes</option></select>' +
+    '<label>Link description: <i class="fas fa-info-circle swal-popover" data-content="Optionally provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-other-description" class="swal2-textarea" placeholder="Enter a description">'+desc+'</textarea>',
     focusConfirm: false,
     showCancelButton: true,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     didOpen: () => {
-      $("#DD-additional-link-type").val(linkType);
+      $("#DD-other-link-type").val(linkType);
+      $("#DD-other-link-relation").val(linkRelation);
     },
     preConfirm: () => {
+      if ($("#DD-other-link-type").val() === "Select") {
+        Swal.showValidationMessage(`Please select a type of links!`);
+      }
+      if ($("#DD-other-link").val() === "") {
+        Swal.showValidationMessage(`Please enter a link.`);
+      }
+      if ($("#DD-other-link-relation").val() === "Select") {
+        Swal.showValidationMessage(`Please enter a link relation.`);
+      }
+      if ($("#DD-other-description").val() === "") {
+        Swal.showValidationMessage(`Please enter a short description.`);
+      }
       return [
-        $("#DD-additional-link-type").val(),
-        $("#DD-additional-link").val(),
-        $("#DD-additional-link-description").val(),
+        $("#DD-other-link").val(),
+        $("#DD-other-link-type").val(),
+        $("#DD-other-link-relation").val(),
+        $("#DD-other-description").val()
       ];
     },
   });
   if (values) {
-    $(currentRow)[0].cells[1].innerText = values[0];
-    $(currentRow)[0].cells[2].innerHTML =
-      "<a href='" + values[1] + "' target='_blank'>" + values[1] + "</a>";
+    // $(currentRow)[0].cells[1].innerText = values[0];
+    $(currentRow)[0].cells[1].innerHTML =
+      "<a href='" + values[0] + "' target='_blank'>" + values[0] + "</a>";
+    $(currentRow)[0].cells[2].innerText = values[1];
     $(currentRow)[0].cells[3].innerText = values[2];
+    $(currentRow)[0].cells[4].innerText = values[3];
   }
 }
 
@@ -1057,7 +1092,7 @@ function delete_current_additional_link_id(ev) {
       var currentRow = $(ev).parents()[2];
       var currentRowid = $(currentRow).prop("id");
       document.getElementById(currentRowid).outerHTML = "";
-      updateIndexForTable(document.getElementById("additional-link-table-dd"));
+      updateIndexForTable(document.getElementById("other-link-table-dd"));
     }
   });
 }
@@ -1171,8 +1206,10 @@ function updateIndexForTable(table) {
         "none";
     } else if (table === document.getElementById("protocol-link-table-dd")) {
       document.getElementById("protocol-link-table-dd").style.display = "none";
-    } else if (table === document.getElementById("additional-link-table-dd")) {
-      document.getElementById("additional-link-table-dd").style.display =
+      document.getElementById("div-protocol-link-table-dd").style.display = "none";
+    } else if (table === document.getElementById("other-link-table-dd")) {
+      document.getElementById("other-link-table-dd").style.display = "none";
+      document.getElementById("div-other-link-table-dd").style.display =
         "none";
     }
   }
@@ -1994,18 +2031,34 @@ function protocolAccountQuestion(type, changeAccountBoolean) {
             allowEscapeKey: false,
             allowOutsideClick: false,
             html:
-              '<input id="DD-protocol-link" class="swal2-input" placeholder="Enter protocol link">' +
-              '<textarea id="DD-protocol-link-description" class="swal2-textarea" placeholder="Enter link description"></textarea>',
+            '<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one "Protocol URLs or DOIs" link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL">' +
+            '<label>Protocol Type: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one "Protocol URLs or DOIs" link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-select" class="swal2-input"><option value="Select">Select a type</option><option value="URL">URL</option><option value="DOI">DOI</option></select>' +
+            '<label>Relation to the dataset: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one "Protocol URLs or DOIs" link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-relation" class="swal2-input"><option value="Select">Select a relation</option><option value="IsProtocolFor">IsProtocolFor</option><option value="HasProtocol">HasProtocol</option><option value="IsSoftwareFor">IsSoftwareFor</option><option value="HasSoftware">HasSoftware</option></select>' +
+            '<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Optionally provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description"></textarea>',
             focusConfirm: false,
             preConfirm: () => {
-              return [
-                document.getElementById("DD-protocol-link").value,
-                document.getElementById("DD-protocol-link-description").value,
+                if ($("#DD-protocol-link").val() === "") {
+                  Swal.showValidationMessage(`Please enter a link!`);
+                }
+                if ($("#DD-protocol-link-select").val() === "Select") {
+                  Swal.showValidationMessage(`Please choose a link type!`);
+                }
+                if ($("#DD-protocol-link-relation").val() === "Select") {
+                  Swal.showValidationMessage(`Please choose a link relation!`);
+                }
+                if ($("#DD-protocol-description").val() === "") {
+                  Swal.showValidationMessage(`Please enter a short description!`);
+                }
+                return [
+                  $("#DD-protocol-link").val(),
+                  $("#DD-protocol-link-select").val(),
+                  $("#DD-protocol-link-relation").val(),
+                  $("#DD-protocol-description").val()
               ];
             },
           });
           if (formValues) {
-            addProtocolLinktoTableDD(formValues[0], formValues[1]);
+            addProtocolLinktoTableDD(formValues[0], formValues[1], formValues[2], formValues[3]);
           }
         }
       }
@@ -2173,7 +2226,7 @@ async function showProtocolCredentials(email, filetype) {
       $("#bootbox-sample-protocol-location").val(protocol);
     } else {
       const { value: formValue } = await Swal.fire({
-        title: "Enter a description for the link (optional): ",
+        title: "Enter a description for the link: ",
         html: '<textarea id="DD-protocol-link-description" class="swal2-textarea" placeholder="Enter link description"></textarea>',
         focusConfirm: false,
         heightAuto: false,
@@ -2215,9 +2268,11 @@ async function addAdditionalLink() {
   const { value: values } = await Swal.fire({
     title: "Add additional link",
     html:
-      '<label>Link type: <i class="fas fa-info-circle swal-popover" data-content="Select the nature of the link: <br /> - Originating Article DOIs: DOIs of published articles that were generated from this dataset. <br /> - Additional links: URLs of additional resources used by this dataset (e.g., a link to a code repository)."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-additional-link-type" class="swal2-select"><option value="Select">Select a type</option><option value="Originating Article DOI">Originating Article DOI</option><option value="Additional Link">Additional Link</option></select>' +
-      '<label>Link: <i class="fas fa-info-circle swal-popover" data-content="Enter the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-additional-link" class="swal2-input" placeholder="Enter a link">' +
-      '<label>Link description: <i class="fas fa-info-circle swal-popover" data-content="Optionally provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-additional-link-description" class="swal2-textarea" placeholder="Enter link description"></textarea>',
+      '<label>URL or DOI: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one "Protocol URLs or DOIs" link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-other-link" class="swal2-input" placeholder="Enter a URL">' +
+      '<label>Link Type: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one "Protocol URLs or DOIs" link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-other-link-type" class="swal2-input"><option value="Select">Select a type</option><option value="URL">URL</option><option value="DOI">DOI</option></select>' +
+      '<label>Relation to the dataset: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one "Protocol URLs or DOIs" link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-other-link-relation" class="swal2-input"><option value="Select">Select a relation</option><option value="IsCitedBy">IsCitedBy</option><option value="Cites">Cites</option><option value="IsSupplementTo">IsSupplementTo</option><option value="IsSupplementedBy">IsSupplementedBy</option><option value="IsContinuedByContinues">IsContinuedByContinues</option><option value="IsDescribedBy">IsDescribedBy</option><option value="Describes">Describes</option><option value="HasMetadata">HasMetadata</option><option value="IsMetadataFor">IsMetadataFor</option><option value="HasVersion">HasVersion</option><option value="IsVersionOf">IsVersionOf</option><option value="IsNewVersionOf">IsNewVersionOf</option><option value="IsPreviousVersionOf">IsPreviousVersionOf</option><option value="IsPreviousVersionOf">IsPreviousVersionOf</option><option value="HasPart">HasPart</option><option value="IsPublishedIn">IsPublishedIn</option><option value="IsReferencedBy">IsReferencedBy</option><option value="References">References</option><option value="IsDocumentedBy">IsDocumentedBy</option><option value="Documents">Documents</option><option value="IsCompiledBy">IsCompiledBy</option><option value="Compiles">Compiles</option><option value="IsVariantFormOf">IsVariantFormOf</option><option value="IsOriginalFormOf">IsOriginalFormOf</option><option value="IsIdenticalTo">IsIdenticalTo</option><option value="IsReviewedBy">IsReviewedBy</option><option value="Reviews">Reviews</option><option value="IsDerivedFrom">IsDerivedFrom</option><option value="IsSourceOf">IsSourceOf</option><option value="IsRequiredBy">IsRequiredBy</option><option value="Requires">Requires</option><option value="IsObsoletedBy">IsObsoletedBy</option><option value="Obsoletes">Obsoletes</option></select>' +
+      '<label>Link description: <i class="fas fa-info-circle swal-popover" data-content="Optionally provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-other-description" class="swal2-textarea" placeholder="Enter a description"></textarea>',
+
     focusConfirm: false,
     confirmButtonText: "Add",
     cancelButtonText: "Cancel",
@@ -2229,21 +2284,28 @@ async function addAdditionalLink() {
       $(".swal-popover").popover();
     },
     preConfirm: () => {
-      if ($("#DD-additional-link-type").val() === "Select") {
+      if ($("#DD-other-link-type").val() === "Select") {
         Swal.showValidationMessage(`Please select a type of links!`);
       }
-      if ($("#DD-additional-link").val() === "") {
-        Swal.showValidationMessage(`Please enter a link!`);
+      if ($("#DD-other-link").val() === "") {
+        Swal.showValidationMessage(`Please enter a link.`);
+      }
+      if ($("#DD-other-link-relation").val() === "Select") {
+        Swal.showValidationMessage(`Please enter a link relation.`);
+      }
+      if ($("#DD-other-description").val() === "") {
+        Swal.showValidationMessage(`Please enter a short description.`);
       }
       return [
-        $("#DD-additional-link-type").val(),
-        $("#DD-additional-link").val(),
-        $("#DD-additional-link-description").val(),
+        $("#DD-other-link").val(),
+        $("#DD-other-link-type").val(),
+        $("#DD-other-link-relation").val(),
+        $("#DD-other-description").val()
       ];
     },
   });
   if (values) {
-    addAdditionalLinktoTableDD(values[0], values[1], values[2]);
+    addAdditionalLinktoTableDD(values[0], values[1], values[2], values[3]);
   }
 }
 
@@ -2307,6 +2369,8 @@ async function addProtocol() {
     title: "Add a protocol",
     html:
       '<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one "Protocol URLs or DOIs" link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL">' +
+      '<label>Protocol Type: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one "Protocol URLs or DOIs" link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-select" class="swal2-input"><option value="Select">Select a type</option><option value="URL">URL</option><option value="DOI">DOI</option></select>' +
+      '<label>Relation to the dataset: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one "Protocol URLs or DOIs" link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-relation" class="swal2-input"><option value="Select">Select a relation</option><option value="IsProtocolFor">IsProtocolFor</option><option value="HasProtocol">HasProtocol</option><option value="IsSoftwareFor">IsSoftwareFor</option><option value="HasSoftware">HasSoftware</option></select>' +
       '<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Optionally provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description"></textarea>',
     focusConfirm: false,
     confirmButtonText: "Add",
@@ -2322,14 +2386,25 @@ async function addProtocol() {
       if ($("#DD-protocol-link").val() === "") {
         Swal.showValidationMessage(`Please enter a link!`);
       }
+      if ($("#DD-protocol-link-select").val() === "Select") {
+        Swal.showValidationMessage(`Please choose a link type!`);
+      }
+      if ($("#DD-protocol-link-relation").val() === "Select") {
+        Swal.showValidationMessage(`Please choose a link relation!`);
+      }
+      if ($("#DD-protocol-description").val() === "") {
+        Swal.showValidationMessage(`Please enter a short description!`);
+      }
       return [
         $("#DD-protocol-link").val(),
-        $("#DD-protocol-description").val(),
+        $("#DD-protocol-link-select").val(),
+        $("#DD-protocol-link-relation").val(),
+        $("#DD-protocol-description").val()
       ];
     },
   });
   if (values) {
-    addProtocolLinktoTableDD(values[0], values[1]);
+    addProtocolLinktoTableDD(values[0], values[1], values[2], values[3]);
   }
 }
 
@@ -2343,9 +2418,10 @@ function addExistingProtocol() {
   }
 }
 
-function addProtocolLinktoTableDD(protocolLink, protocolDesc) {
+function addProtocolLinktoTableDD(protocolLink, protocolType, protocolRelation, protocolDesc) {
   var protocolTable = document.getElementById("protocol-link-table-dd");
   protocolTable.style.display = "block";
+  document.getElementById("div-protocol-link-table-dd").style.display = "block";
   var rowcount = protocolTable.rows.length;
   /// append row to table from the bottom
   var rowIndex = rowcount;
@@ -2363,13 +2439,18 @@ function addProtocolLinktoTableDD(protocolLink, protocolDesc) {
     "' target='_blank'>" +
     protocolLink +
     "</a></td><td class='contributor-table-row' style='display:none'>" +
+    protocolType +
+    "</td><td class='contributor-table-row'>" +
+    protocolRelation +
+    "</td><td class='contributor-table-row' style='display:none'>" +
     protocolDesc +
     "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_protocol_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_protocol_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
 }
 
-function addAdditionalLinktoTableDD(linkType, link, description) {
-  var linkTable = document.getElementById("additional-link-table-dd");
+function addAdditionalLinktoTableDD(link, linkType, linkRelation, description) {
+  var linkTable = document.getElementById("other-link-table-dd");
   linkTable.style.display = "block";
+  document.getElementById("div-other-link-table-dd").style.display = "block"
   var rowcount = linkTable.rows.length;
   /// append row to table from the bottom
   var rowIndex = rowcount;
@@ -2381,19 +2462,21 @@ function addAdditionalLinktoTableDD(linkType, link, description) {
   );
   var indexNumber = rowIndex;
   var row = (linkTable.insertRow(rowIndex).outerHTML =
-    "<tr id='row-current-additional-link" +
-    newRowIndex +
-    "' class='row-protocol'><td class='contributor-table-row'>" +
-    indexNumber +
-    "</td><td>" +
-    linkType +
-    "</td><td><a href='" +
-    link +
-    "' target='_blank'>" +
-    link +
-    "</a></td><td class='contributor-table-row' style='display:none'>" +
-    description +
-    "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_additional_link_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_additional_link_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+  "<tr id='row-current-other" +
+  newRowIndex +
+  "' class='row-protocol'><td class='contributor-table-row'>" +
+  indexNumber +
+  "</td><td><a href='" +
+  link +
+  "' target='_blank'>" +
+  link +
+  "</a></td><td class='contributor-table-row' style='display:none'>" +
+  linkType +
+  "</td><td class='contributor-table-row'>" +
+  linkRelation +
+  "</td><td class='contributor-table-row' style='display:none'>" +
+  description +
+  "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_additional_link_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_additional_link_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
 }
 
 async function helpSPARCAward(filetype) {
@@ -2561,10 +2644,10 @@ function addContributortoTableDD(name, contactStatus) {
 }
 
 var contributorElement =
-  '<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><select id="dd-contributor-last-name" class="form-container-input-bf" onchange="onchangeLastNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div><div class="div-child"><label>First name </label><select id="dd-contributor-first-name" disabled class="form-container-input-bf" onchange="onchangeFirstNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div></div><div><label>ORCID ID <i class="fas fa-info-circle swal-popover" data-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle swal-popover" data-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle swal-popover" data-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div><div style="margin-top:15px;display:flex;flex-direction:column"><label>Contact Person <i class="fas fa-info-circle swal-popover" data-content="Check if the contributor is a contact person for the dataset. At least one and only one of the contributors should be the contact person." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><label class="switch" style="margin-top: 15px"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"></input><span class="slider round"></span></label></div></div>';
+  '<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><select id="dd-contributor-last-name" class="form-container-input-bf" onchange="onchangeLastNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div><div class="div-child"><label>First name </label><select id="dd-contributor-first-name" disabled class="form-container-input-bf" onchange="onchangeFirstNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div></div><div><label>ORCiD <i class="fas fa-info-circle swal-popover" data-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle swal-popover" data-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle swal-popover" data-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div><div style="margin-top:15px;display:flex;flex-direction:column"><label>Corresponding Author <i class="fas fa-info-circle swal-popover" data-content="Check if the contributor is a corresponding author for the dataset. At least one and only one of the contributors should be the corresponding author." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><label class="switch" style="margin-top: 15px"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"></input><span class="slider round"></span></label></div></div>';
 
 var contributorElementRaw =
-  '<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><input id="dd-contributor-last-name" class="form-container-input-bf" style="line-height: 2"></input></div><div class="div-child"><label>First name</label><input id="dd-contributor-first-name" class="form-container-input-bf" style="line-height: 2"></input></div></div><div><label>ORCID ID <i class="fas fa-info-circle swal-popover" data-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle swal-popover" data-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle swal-popover" data-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div><div style="margin-top:15px;display:flex;flex-direction:column"><label>Contact Person <i class="fas fa-info-circle swal-popover" data-content="Check if the contributor is a contact person for the dataset. At least one and only one of the contributors should be the contact person." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><label class="switch" style="margin-top: 15px"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"></input><span class="slider round"></span></label></div></div>';
+  '<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><input id="dd-contributor-last-name" class="form-container-input-bf" style="line-height: 2"></input></div><div class="div-child"><label>First name</label><input id="dd-contributor-first-name" class="form-container-input-bf" style="line-height: 2"></input></div></div><div><label>ORCiD <i class="fas fa-info-circle swal-popover" data-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle swal-popover" data-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle swal-popover" data-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div><div style="margin-top:15px;display:flex;flex-direction:column"><label>Corresponding Author <i class="fas fa-info-circle swal-popover" data-content="Check if the contributor is a corresponding author for the dataset. At least one and only one of the contributors should be the corresponding author." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><label class="switch" style="margin-top: 15px"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"></input><span class="slider round"></span></label></div></div>';
 
 var contributorObject = [];
 
@@ -2692,15 +2775,15 @@ function showContributorSweetalert(key) {
             var contactPersonExists = checkContactPersonStatus("add", null);
             if (contactPersonExists) {
               Swal.showValidationMessage(
-                "One contact person is already added. Only one contact person is allowed for a dataset."
+                "One corresponding author is already added. Only one corresponding author is allowed for a dataset."
               );
             } else {
               var myCurrentCon = {
                 conName: lastName + ", " + firstName,
                 conID: $("#input-con-ID").val().trim(),
                 conAffliation: affiliationVals,
-                conRole: roleVals,
-                conContact: "Yes",
+                conRole: roleVals + ", CorrespondingAuthor",
+                // conContact: "Yes",
               };
               contributorObject.push(myCurrentCon);
               return [myCurrentCon.conName, myCurrentCon.conContact];
@@ -2711,7 +2794,7 @@ function showContributorSweetalert(key) {
               conID: $("#input-con-ID").val().trim(),
               conAffliation: affiliationVals,
               conRole: roleVals,
-              conContact: "No",
+              // conContact: "No",
             };
             contributorObject.push(myCurrentCon);
             return [myCurrentCon.conName, myCurrentCon.conContact];
@@ -2766,7 +2849,7 @@ function edit_current_con_id(ev) {
   var currentRow = $(ev).parents()[2];
   var name = $(currentRow)[0].cells[1].innerText;
   Swal.fire({
-    title: "Edit contributor",
+    text: "Edit contributor",
     html: element,
     showCancelButton: true,
     focusCancel: true,
@@ -2883,7 +2966,7 @@ function edit_current_con_id(ev) {
           var contactPersonExists = checkContactPersonStatus("edit", ev);
           if (contactPersonExists) {
             Swal.showValidationMessage(
-              "One contact person is already added. Only one contact person is allowed for a dataset."
+              "One corresponding author is already added above. Only corresponding author person is allowed for a dataset."
             );
           } else {
             var myCurrentCon = {
@@ -2893,8 +2976,8 @@ function edit_current_con_id(ev) {
                 $("#dd-contributor-first-name").val().trim(),
               conID: $("#input-con-ID").val().trim(),
               conAffliation: affiliationVals,
-              conRole: roleVals,
-              conContact: "Yes",
+              conRole: roleVals + ", CorrespondingAuthor",
+              // conContact: "Yes",
             };
             for (var contributor of contributorObject) {
               if (contributor.conName === name) {
@@ -2914,7 +2997,7 @@ function edit_current_con_id(ev) {
             conID: $("#input-con-ID").val().trim(),
             conAffliation: affiliationVals,
             conRole: roleVals,
-            conContact: "No",
+            // conContact: "No",
           };
           for (var contributor of contributorObject) {
             if (contributor.conName === name) {
@@ -3014,10 +3097,12 @@ function checkDuplicateContributorName(first, last) {
 
 ///// Functions to grab each piece of info to generate the dd file
 
-// dataset info
+// dataset and participant info
 function grabDSInfoEntries() {
+
   var name = document.getElementById("ds-name").value;
   var description = document.getElementById("ds-description").value;
+  var type = $("#ds-type").val();
   var keywordArray = keywordTagify.value;
   var samplesNo = document.getElementById("ds-samples-no").value;
   var subjectsNo = document.getElementById("ds-subjects-no").value;
@@ -3025,9 +3110,32 @@ function grabDSInfoEntries() {
   return {
     name: name,
     description: description,
+    type: type,
     keywords: keywordArray,
     "number of samples": samplesNo,
     "number of subjects": subjectsNo,
+  };
+}
+
+
+// study info
+function grabStudyInfoEntries() {
+  var studyOrganSystem = document.getElementById("ds-study-organ-system").value;
+  var studyApproach = document.getElementById("ds-study-approach").value;
+  var studyTechnique = document.getElementById("ds-study-technique").value;
+  var studyPurpose = document.getElementById("ds-study-purpose").value;
+  var studyDataCollection = document.getElementById("ds-study-data-collection").value;
+  var studyPrimaryConclusion = document.getElementById("ds-study-primary-conclusion").value;
+  var studyCollectionTitle = document.getElementById("ds-study-collection-title").value;
+
+  return {
+    "study organ system": studyOrganSystem,
+    "study approach": studyApproach,
+    "study technique": studyTechnique,
+    "study purpose": studyPurpose,
+    "study data collection": studyDataCollection,
+    "study primary conclusion": studyPrimaryConclusion,
+    "study collection title": studyCollectionTitle
   };
 }
 
@@ -3057,31 +3165,19 @@ function grabConInfoEntries() {
 }
 
 function grabAdditionalLinkSection() {
-  var table = document.getElementById("additional-link-table-dd");
+  var table = document.getElementById("other-link-table-dd");
   var rowcountLink = table.rows.length;
   var additionalLinkInfo = [];
   for (i = 1; i < rowcountLink; i++) {
-    var link = {
-      "link type": table.rows[i].cells[1].innerText,
-      link: table.rows[i].cells[2].innerText,
-      description: table.rows[i].cells[3].innerText,
+    var additionalLink = {
+      link: table.rows[i].cells[1].innerText,
+      type: table.rows[i].cells[2].innerText,
+      relation: table.rows[i].cells[3].innerText,
+      description: table.rows[i].cells[4].innerText,
     };
-    additionalLinkInfo.push(link);
+    additionalLinkInfo.push(additionalLink);
   }
-  var allLinks = {};
-  //// categorize links based on types
-  var originatingDOIArray = [];
-  var additionalLinkArray = [];
-  for (var i = 0; i < additionalLinkInfo.length; i++) {
-    if (additionalLinkInfo[i]["link type"] === "Originating Article DOI") {
-      originatingDOIArray.push(additionalLinkInfo[i]);
-    } else if (additionalLinkInfo[i]["link type"] === "Additional Link") {
-      additionalLinkArray.push(additionalLinkInfo[i]);
-    }
-  }
-  allLinks["Additional links"] = additionalLinkArray;
-  allLinks["Originating Article DOI"] = originatingDOIArray;
-  return allLinks;
+  return additionalLinkInfo;
 }
 
 function grabProtocolSection() {
@@ -3089,12 +3185,13 @@ function grabProtocolSection() {
   var rowcountLink = table.rows.length;
   var protocolLinkInfo = [];
   for (i = 1; i < rowcountLink; i++) {
-    var protocolLink = {
-      "link type": "Protocol URL or DOI*",
+    var protocol = {
       link: table.rows[i].cells[1].innerText,
-      description: table.rows[i].cells[2].innerText,
+      type: table.rows[i].cells[2].innerText,
+      relation: table.rows[i].cells[3].innerText,
+      description: table.rows[i].cells[4].innerText,
     };
-    protocolLinkInfo.push(protocolLink);
+    protocolLinkInfo.push(protocol);
   }
   return protocolLinkInfo;
 }
@@ -3102,35 +3199,32 @@ function grabProtocolSection() {
 function combineLinksSections() {
   var protocolLinks = grabProtocolSection();
   var otherLinks = grabAdditionalLinkSection();
-  var miscObj = {};
-  miscObj["Originating Article DOI"] = otherLinks["Originating Article DOI"];
-  miscObj["Protocol URL or DOI*"] = protocolLinks;
-  miscObj["Additional Link"] = otherLinks["Additional links"];
-  return miscObj;
+  protocolLinks.push.apply(protocolLinks, otherLinks)
+  return protocolLinks
 }
 
 // completeness info
-function grabCompletenessInfo() {
-  var completeness = completenessTagify.value;
-  var parentDS = parentDSTagify.value;
-  var completeDSTitle = document.getElementById("input-completeds-title").value;
-  var optionalSectionObj = {};
-  var completenessValueArray = [];
-  for (var i = 0; i < completeness.length; i++) {
-    completenessValueArray.push(completeness[i].value);
-  }
-  optionalSectionObj["completeness"] = completenessValueArray.join(", ");
+// function grabCompletenessInfo() {
+  // var completeness = completenessTagify.value;
+  // // var parentDS = parentDSTagify.value;
+  // // var completeDSTitle = document.getElementById("input-completeds-title").value;
+  // var optionalSectionObj = {};
+  // var completenessValueArray = [];
+  // for (var i = 0; i < completeness.length; i++) {
+  //   completenessValueArray.push(completeness[i].value);
+  // }
+  // optionalSectionObj["completeness"] = completenessValueArray.join(", ");
 
-  var parentDSValueArray = [];
-  for (var i = 0; i < parentDS.length; i++) {
-    parentDSValueArray.push(parentDS[i].value);
-  }
-  optionalSectionObj["parentDS"] = parentDSValueArray;
+  // var parentDSValueArray = [];
+  // for (var i = 0; i < parentDS.length; i++) {
+  //   parentDSValueArray.push(parentDS[i].value);
+  // }
+  // optionalSectionObj["parentDS"] = parentDSValueArray;
 
-  if (completeDSTitle.length === 0) {
-    optionalSectionObj["completeDSTitle"] = "";
-  } else {
-    optionalSectionObj["completeDSTitle"] = completeDSTitle;
-  }
-  return optionalSectionObj;
-}
+  // if (completeDSTitle.length === 0) {
+  //   optionalSectionObj["completeDSTitle"] = "";
+  // } else {
+  //   optionalSectionObj["completeDSTitle"] = completeDSTitle;
+  // }
+  // return optionalSectionObj;
+// }

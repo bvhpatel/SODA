@@ -1013,7 +1013,7 @@ function addNewRow(table) {
       );
       if (contactPersonBoolean) {
         $("#para-save-contributor-status").text(
-          "One contact person is already added above. Only one contact person is allowed for a dataset."
+          "One corresponding author is already added above. Only one corresponding author is allowed for a dataset."
         );
         return;
       }
@@ -1558,6 +1558,7 @@ function resetDD() {
 
       $("#div-contributor-table-dd").css("display", "none");
       document.getElementById("protocol-link-table-dd").style.display = "none";
+      document.getElementById("div-protocol-link-table-dd").style.display = "none";
       document.getElementById("additional-link-table-dd").style.display =
         "none";
     }
