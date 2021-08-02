@@ -153,6 +153,40 @@ def rename_headers(workbook, max_len, start_index):
         delete_range = len(columns_list) - max_len
         workbook.delete_cols(4+max_len, delete_range)
 
+def grayout_subheaders(workbook, max_len, start_index):
+    """
+    Gray out sub-header rows for values exceeding 3 (SDS2.0).
+    """
+    headers_list = ["4", "10", "18", "23", "28"]
+    columns_list = excel_columns(start_index=start_index)
+
+    for i, column in zip(range(2, max_len+1), columns_list[1:]):
+
+        for no in headers_list:
+            cell = workbook[column + no]
+            fillColor('B2B2B2', cell)
+
+def grayout_single_value_rows(workbook, max_len, start_index):
+    """
+    Gray out rows where only single values are allowed. Row number: 2, 3, 5, 6, 9, 11, 12, 13, 17, 29, 30
+    """
+
+    columns_list = excel_columns(start_index=start_index)
+    row_list = ["2", "3", "5", "6", "9", "11", "12", "13", "17", "29", "30"]
+    for i, column in zip(range(2, max_len+1), columns_list[1:]):
+
+        for no in row_list:
+            cell = workbook[column + no]
+            fillColor("CCCCCC", cell)
+
+
+def fillColor(color, cell):
+     colorFill = PatternFill(start_color=color,
+                        end_color=color,
+                        fill_type='solid')
+
+     cell.fill = colorFill
+
 ### Prepare dataset-description file
 
 def populate_dataset_info(workbook, val_obj):
@@ -247,6 +281,8 @@ def save_ds_description_file(bfaccountname, filepath, dataset_str, study_str, co
     max_len = max(keyword_len, funding_len, no_contributors, related_info_len)
 
     rename_headers(ws1, max_len, 3)
+    grayout_subheaders(ws1, max_len, 3)
+    grayout_single_value_rows(ws1, max_len, 3)
 
     wb.save(destination)
 

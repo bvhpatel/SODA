@@ -2226,18 +2226,46 @@ async function showProtocolCredentials(email, filetype) {
       $("#bootbox-sample-protocol-location").val(protocol);
     } else {
       const { value: formValue } = await Swal.fire({
-        title: "Enter a description for the link: ",
-        html: '<textarea id="DD-protocol-link-description" class="swal2-textarea" placeholder="Enter link description"></textarea>',
+        html:
+        '<label>Protocol Type: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one "Protocol URLs or DOIs" link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-select" class="swal2-input"><option value="Select">Select a type</option><option value="URL">URL</option><option value="DOI">DOI</option></select>' +
+        '<label>Relation to the dataset: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one "Protocol URLs or DOIs" link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-relation" class="swal2-input"><option value="Select">Select a relation</option><option value="IsProtocolFor">IsProtocolFor</option><option value="HasProtocol">HasProtocol</option><option value="IsSoftwareFor">IsSoftwareFor</option><option value="HasSoftware">HasSoftware</option></select>' +
+        '<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Optionally provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description"></textarea>',
+        title: "Fill in the below fields to add the protocol: ",
         focusConfirm: false,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
-        cancelButtonText: "Add",
+        cancelButtonText: "Cancel",
+        customClass: "swal-content-additional-link",
+        showCancelButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        didOpen: () => {
+          $(".swal-popover").popover();
+        },
         preConfirm: () => {
-          return document.getElementById("DD-protocol-link-description").value;
+          if ($("#DD-protocol-link-select").val() === "Select") {
+            Swal.showValidationMessage(`Please choose a link type!`);
+          }
+          if ($("#DD-protocol-link-relation").val() === "Select") {
+            Swal.showValidationMessage(`Please choose a link relation!`);
+          }
+          if ($("#DD-protocol-description").val() === "") {
+            Swal.showValidationMessage(`Please enter a short description!`);
+          }
+          var duplicate = checkLinkDuplicate(protocol, document.getElementById("protocol-link-table-dd"))
+          if (duplicate) {
+            Swal.showValidationMessage("Duplicate protocol. The protocol you entered is already added.")
+          }
+          return [
+            protocol,
+            $("#DD-protocol-link-select").val(),
+            $("#DD-protocol-link-relation").val(),
+            $("#DD-protocol-description").val()
+          ];
         },
       });
       if (formValue) {
-        addProtocolLinktoTableDD(protocol, formValue);
+        addProtocolLinktoTableDD(formValue[0], formValue[1], formValue[2], formValue[3]);
       }
     }
   }
@@ -2284,10 +2312,11 @@ async function addAdditionalLink() {
       $(".swal-popover").popover();
     },
     preConfirm: () => {
+      var link = $("#DD-other-link").val();
       if ($("#DD-other-link-type").val() === "Select") {
         Swal.showValidationMessage(`Please select a type of links!`);
       }
-      if ($("#DD-other-link").val() === "") {
+      if (link === "") {
         Swal.showValidationMessage(`Please enter a link.`);
       }
       if ($("#DD-other-link-relation").val() === "Select") {
@@ -2295,6 +2324,10 @@ async function addAdditionalLink() {
       }
       if ($("#DD-other-description").val() === "") {
         Swal.showValidationMessage(`Please enter a short description.`);
+      }
+      var duplicate = checkLinkDuplicate(link, document.getElementById("other-link-table-dd"))
+      if (duplicate) {
+        Swal.showValidationMessage("Duplicate URL/DOI. The URL/DOI you entered is already added.")
       }
       return [
         $("#DD-other-link").val(),
@@ -2307,6 +2340,19 @@ async function addAdditionalLink() {
   if (values) {
     addAdditionalLinktoTableDD(values[0], values[1], values[2], values[3]);
   }
+}
+
+function checkLinkDuplicate(link, table) {
+  var duplicate = false;
+  var rowcount = table.rows.length;
+  for (var i = 1; i < rowcount; i++) {
+    var currentLink = table.rows[i].cells[1].innerText;
+    if (currentLink === link) {
+      duplicate = true;
+      break;
+    }
+  }
+  return duplicate;
 }
 
 function showAgeSection(ev, div, type) {
@@ -2394,6 +2440,10 @@ async function addProtocol() {
       }
       if ($("#DD-protocol-description").val() === "") {
         Swal.showValidationMessage(`Please enter a short description!`);
+      }
+      var duplicate = checkLinkDuplicate($("#DD-protocol-link").val(), document.getElementById("protocol-link-table-dd"))
+      if (duplicate) {
+        Swal.showValidationMessage("Duplicate protocol. The protocol you entered is already added.")
       }
       return [
         $("#DD-protocol-link").val(),
@@ -3202,29 +3252,3 @@ function combineLinksSections() {
   protocolLinks.push.apply(protocolLinks, otherLinks)
   return protocolLinks
 }
-
-// completeness info
-// function grabCompletenessInfo() {
-  // var completeness = completenessTagify.value;
-  // // var parentDS = parentDSTagify.value;
-  // // var completeDSTitle = document.getElementById("input-completeds-title").value;
-  // var optionalSectionObj = {};
-  // var completenessValueArray = [];
-  // for (var i = 0; i < completeness.length; i++) {
-  //   completenessValueArray.push(completeness[i].value);
-  // }
-  // optionalSectionObj["completeness"] = completenessValueArray.join(", ");
-
-  // var parentDSValueArray = [];
-  // for (var i = 0; i < parentDS.length; i++) {
-  //   parentDSValueArray.push(parentDS[i].value);
-  // }
-  // optionalSectionObj["parentDS"] = parentDSValueArray;
-
-  // if (completeDSTitle.length === 0) {
-  //   optionalSectionObj["completeDSTitle"] = "";
-  // } else {
-  //   optionalSectionObj["completeDSTitle"] = completeDSTitle;
-  // }
-  // return optionalSectionObj;
-// }

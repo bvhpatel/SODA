@@ -1393,6 +1393,10 @@ body.swal2-shown > [aria-hidden="true"] {
   /* margin-top: 30px !important; */
 }
 
+.swal2-validation-message {
+  margin: 10px
+}
+
 .dropdown-menu.show {
   z-index: 1 !important;
   width: 70% !important;
