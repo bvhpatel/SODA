@@ -695,6 +695,7 @@ $("#btn-cancel-DDD-import").click(function () {
 });
 
 $("#reupload-DDD").click(function () {
+  $("#para-milestone-document-info-reupload").text("")
   // 1. current individual question hide & reupload individual question added (maybe onclick on transitionFreeFormMode)
   $("#Question-prepare-submission-4").removeClass("show prev");
   $("#Question-prepare-submission-4").nextAll().removeClass("show prev");

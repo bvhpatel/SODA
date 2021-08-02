@@ -1315,7 +1315,8 @@ function importMilestoneDocument() {
         }
       });
     }
-  } else if (event.currentTarget.id == "button-import-milestone-reupload") {
+  } else {
+    $("#upload-DDD-spinner").hide();
   }
 }
 
@@ -1347,8 +1348,10 @@ ipcRenderer.on("selected-milestonedoc", (event, filepath) => {
     "Browse here"
   ) {
     $("#button-import-milestone").show();
+    $("#div-cancel-DDD-import").show();
   } else {
     $("#button-import-milestone").hide();
+    // $("#div-cancel-DDD-import").show();
   }
 });
 
@@ -2071,6 +2074,7 @@ function loadAwardData() {
 
 function changeAwardInput() {
   var ddBolean;
+  $("#para-milestone-document-info-reupload").text("")
   document.getElementById("selected-milestone-date").value = "";
   document.getElementById("input-milestone-date").value = "";
   actionEnterNewDate("none");

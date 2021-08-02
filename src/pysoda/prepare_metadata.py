@@ -225,7 +225,6 @@ def populate_contributor_info(workbook, val_array):
         workbook[column + "19"] = contributor["conName"]
         workbook[column + "20"] = contributor["conID"]
         workbook[column + "21"] = contributor["conAffliation"]
-        # workbook[column + "9"] = contributor["conContact"]
         workbook[column + "22"] = contributor["conRole"]
 
     return [val_array["funding"], val_array['contributors']]
