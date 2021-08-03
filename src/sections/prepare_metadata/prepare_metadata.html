@@ -2506,6 +2506,7 @@
                       <div class="demo-controls-body" style="width: 90%">
                         <div class="ui input modified">
                           <input
+                            class="form-container-input-bf"
                             type="text"
                             id="ds-study-organ-system"
                             name="study organ system"
@@ -2545,6 +2546,7 @@
                         <div class="ui input modified">
                           <input
                             type="text"
+                            class="form-container-input-bf"
                             id="ds-study-approach"
                             name="study approach"
                             placeholder="Type here..."
@@ -2584,6 +2586,7 @@
                           <input
                             type="text"
                             id="ds-study-technique"
+                            class="form-container-input-bf"
                             name="study technique"
                             placeholder="Type here..."
                             style="font-size: 14px"
@@ -5518,9 +5521,7 @@
                 <div class="tooltipnew demo-controls-end">
                   <i
                     class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content="Include a specimen in a population. <br>
-                      <i>Example:  </i> <br><br>
-                        "
+                    data-content="Provide a population that the specimen of your subject belongs to."
                     rel="popover"
                     data-placement="right"
                     data-html="true"
@@ -6060,9 +6061,7 @@
                 <div class="tooltipnew demo-controls-end">
                   <i
                     class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content="Type to get suggestions from the most commonly used organism strain of the subject. <br>
-                      <i>Example: Sprague-Dawley </i> <br><br>
-                        To search for a standard strain name, please visit: <a target='_blank' href='https://scicrunch.org/resources/Organisms/search'>Scicrunch.org</a>"
+                    data-content="Provide the intervention applied to your subject (if any)."
                     rel="popover"
                     data-placement="right"
                     data-html="true"
@@ -7186,8 +7185,7 @@
                 <div class="tooltipnew demo-controls-end">
                   <i
                     class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content="Include a specimen in a population. <br>
-                      <i>Example:  </i> <br><br>"
+                    data-content="Provide a population that the specimen or sample belongs to."
                     rel="popover"
                     data-placement="right"
                     data-html="true"
@@ -7383,7 +7381,7 @@
                 <div class="tooltipnew demo-controls-end">
                   <i
                     class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content=""
+                    data-content="Provide the date at which the subject was collected."
                     rel="popover"
                     data-placement="right"
                     data-html="true"
@@ -7412,7 +7410,7 @@
                 <div class="tooltipnew demo-controls-end">
                   <i
                     class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content=""
+                    data-content="Provide the pathological condition of the diseased subject if applicable."
                     rel="popover"
                     data-placement="right"
                     data-html="true"
@@ -7429,13 +7427,16 @@
                 </div>
                 <div class="demo-controls-body">
                   <div class="ui input modified">
-                    <input
+                    <select
                       type="text"
                       id="bootbox-sample-laterality"
                       name="laterality"
-                      class="samples-form-entry"
-                      placeholder="Type here..."
-                    />
+                      class="ui selection dropdown samples-form-entry"
+                    >
+                      <option value="Select">Select here</option>
+                      <option value="right">Right</option>
+                      <option value="left">Left</option>
+                    </select>
                   </div>
                 </div>
                 <div class="tooltipnew demo-controls-end">
@@ -7470,7 +7471,7 @@
                 <div class="tooltipnew demo-controls-end">
                   <i
                     class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content=""
+                    data-content="Provide the cell type of your subject."
                     rel="popover"
                     data-placement="right"
                     data-html="true"
@@ -7499,7 +7500,7 @@
                 <div class="tooltipnew demo-controls-end">
                   <i
                     class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content=""
+                    data-content="Provide the plane of section of your subject."
                     rel="popover"
                     data-placement="right"
                     data-html="true"

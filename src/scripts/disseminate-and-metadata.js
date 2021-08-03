@@ -1538,16 +1538,13 @@ function resetDD() {
       for (var field of textAreaFields) {
         $(field).val("");
       }
-      // for (var field of selectFields) {
-      //   $(field).prop("selectedIndex", 0);
-      // }
 
       keywordTagify.removeAllTags();
       otherFundingTagify.removeAllTags();
-      parentDSTagify.removeAllTags();
-      completenessTagify.removeAllTags();
+      studyTechniquesTagify.removeAllTags();
+      studyOrganSystemsTagify.removeAllTags();
 
-      $("#input-metadata-ver").val("1.2.3");
+      // $("#input-metadata-ver").val("2.0.0");
 
       // 3. deleting table rows
       globalContributorNameObject = {};
@@ -1555,12 +1552,13 @@ function resetDD() {
       contributorObject = [];
       $("#contributor-table-dd tr:gt(0)").remove();
       $("#protocol-link-table-dd tr:gt(0)").remove();
-      $("#additional-link-table-dd tr:gt(0)").remove();
+      $("#other-link-table-dd tr:gt(0)").remove();
 
       $("#div-contributor-table-dd").css("display", "none");
       document.getElementById("protocol-link-table-dd").style.display = "none";
       document.getElementById("div-protocol-link-table-dd").style.display = "none";
-      document.getElementById("additional-link-table-dd").style.display =
+      document.getElementById("div-other-link-table-dd").style.display = "none";
+      document.getElementById("other-link-table-dd").style.display =
         "none";
     }
   });

@@ -22,6 +22,7 @@ function showForm(type, editBoolean) {
         cancelButtonColor: "#f44336",
         confirmButtonColor: "#3085d6",
         confirmButtonText: "Yes!",
+        reverseButtons: reverseSwalButtons,
       }).then((boolean) => {
         if (boolean.isConfirmed) {
           promptImportPrevInfoSubject(
@@ -61,6 +62,7 @@ function showFormSamples(type, editBoolean) {
         cancelButtonText: `No, start fresh!`,
         cancelButtonColor: "#f44336",
         confirmButtonColor: "#3085d6",
+        reverseButtons: reverseSwalButtons,
         confirmButtonText: "Yes!",
       }).then((boolean) => {
         if (boolean.isConfirmed) {
@@ -101,6 +103,7 @@ function promptImportPrevInfoSamples(arr1, arr2) {
     showCancelButton: true,
     cancelButtonText: "Cancel",
     confirmButtonText: "Confirm",
+    reverseButtons: reverseSwalButtons,
     customClass: {
       confirmButton: "confirm-disabled",
     },
@@ -139,6 +142,7 @@ function promptImportPrevInfoSubject(arr1) {
     showCancelButton: true,
     cancelButtonText: "Cancel",
     confirmButtonText: "Confirm",
+    reverseButtons: reverseSwalButtons,
     // customClass: {
     //   confirmButton: "confirm-disabled",
     // },
@@ -224,6 +228,7 @@ function warningBeforeHideForm(type) {
     showConfirmButton: true,
     confirmButtonText: "Yes, cancel",
     cancelButtonText: "No, stay here",
+    reverseButtons: reverseSwalButtons,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
   }).then((result) => {
@@ -632,6 +637,7 @@ async function edit_current_protocol_id(ev) {
     showCancelButton: true,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
+    reverseButtons: reverseSwalButtons,
     onOpen: () => {
       $("#DD-protocol-link-select").val(type);
       $("#DD-protocol-link-relation").val(relation);
@@ -681,6 +687,7 @@ async function edit_current_additional_link_id(ev) {
     '<label>Link description: <i class="fas fa-info-circle swal-popover" data-content="Provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-other-description" class="swal2-textarea" placeholder="Enter a description">'+desc+'</textarea>',
     focusConfirm: false,
     showCancelButton: true,
+    reverseButtons: reverseSwalButtons,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     didOpen: () => {
@@ -1006,6 +1013,7 @@ function delete_current_subject_id(ev) {
     cancelButtonText: `No!`,
     cancelButtonColor: "#f44336",
     confirmButtonColor: "#3085d6",
+    reverseButtons: reverseSwalButtons,
     confirmButtonText: "Yes",
   }).then((boolean) => {
     if (boolean.isConfirmed) {
@@ -1035,6 +1043,7 @@ function delete_current_sample_id(ev) {
     cancelButtonText: `No!`,
     cancelButtonColor: "#f44336",
     confirmButtonColor: "#3085d6",
+    reverseButtons: reverseSwalButtons,
     confirmButtonText: "Yes",
   }).then((boolean) => {
     if (boolean.isConfirmed) {
@@ -1064,6 +1073,7 @@ function delete_current_protocol_id(ev) {
     cancelButtonText: `No!`,
     cancelButtonColor: "#f44336",
     confirmButtonColor: "#3085d6",
+    reverseButtons: reverseSwalButtons,
     confirmButtonText: "Yes",
   }).then((boolean) => {
     if (boolean.isConfirmed) {
@@ -1086,6 +1096,7 @@ function delete_current_additional_link_id(ev) {
     cancelButtonColor: "#f44336",
     confirmButtonColor: "#3085d6",
     confirmButtonText: "Yes",
+    reverseButtons: reverseSwalButtons,
   }).then((boolean) => {
     if (boolean.isConfirmed) {
       // 1. Delete from table
@@ -1103,6 +1114,7 @@ async function copy_current_subject_id(ev) {
     text: "Enter an ID for the new subject: ",
     input: "text",
     showCancelButton: true,
+    reverseButtons: reverseSwalButtons,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     inputValidator: (value) => {
@@ -1332,6 +1344,7 @@ function importPrimaryFolderSubjects(folderPath) {
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showCancelButton: true,
+        reverseButtons: reverseSwalButtons,
         showConfirmButton: true,
         confirmButtonText: "Yes, correct",
         cancelButtonText: "No",
@@ -1425,6 +1438,7 @@ function importPrimaryFolderSamples(folderPath) {
           samIDArray.join(", "),
         icon: "warning",
         showCancelButton: true,
+        reverseButtons: reverseSwalButtons,
         showConfirmButton: true,
         confirmButtonText: "Yes, correct",
         cancelButtonText: "No",
@@ -1532,6 +1546,7 @@ function resetSubjects() {
     text: "Are you sure you want to start over and reset your progress?",
     icon: "warning",
     showCancelButton: true,
+    reverseButtons: reverseSwalButtons,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     confirmButtonText: "I want to start over",
@@ -1581,6 +1596,7 @@ function resetSamples() {
     text: "Are you sure you want to start over and reset your progress?",
     icon: "warning",
     showCancelButton: true,
+    reverseButtons: reverseSwalButtons,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     confirmButtonText: "I want to start over",
@@ -1635,6 +1651,7 @@ async function addCustomField(type) {
       title: "Enter a custom field:",
       input: "text",
       showCancelButton: true,
+      reverseButtons: reverseSwalButtons,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       inputValidator: (value) => {
@@ -1658,6 +1675,7 @@ async function addCustomField(type) {
       title: "Enter a custom field:",
       input: "text",
       showCancelButton: true,
+      reverseButtons: reverseSwalButtons,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       inputValidator: (value) => {
@@ -1722,6 +1740,7 @@ function deleteCustomField(ev, customField, category) {
     text: "Are you sure you want to delete this custom field?",
     icon: "warning",
     showCancelButton: true,
+    reverseButtons: reverseSwalButtons,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     confirmButtonText: "Yes",
@@ -2007,6 +2026,7 @@ function protocolAccountQuestion(type, changeAccountBoolean) {
     cancelButtonText: "No, I don't",
     allowEscapeKey: false,
     allowOutsideClick: false,
+    reverseButtons: reverseSwalButtons,
   }).then(async (result) => {
     if (result.isConfirmed) {
       setTimeout(function () {
@@ -2085,6 +2105,7 @@ async function connectProtocol(type) {
     allowEscapeKey: false,
     allowOutsideClick: false,
     backdrop: "rgba(0,0,0, 0.4)",
+    reverseButtons: reverseSwalButtons,
     preConfirm: () => {
       var res = document.getElementById("protocol-password").value;
       if (res) {
@@ -2205,6 +2226,7 @@ async function showProtocolCredentials(email, filetype) {
     inputPlaceholder: "Select a protocol",
     showCancelButton: true,
     confirmButtonText: "Add",
+    reverseButtons: reverseSwalButtons,
     inputValidator: (value) => {
       return new Promise((resolve) => {
         if (value) {
@@ -2237,6 +2259,7 @@ async function showProtocolCredentials(email, filetype) {
         cancelButtonText: "Cancel",
         customClass: "swal-content-additional-link",
         showCancelButton: true,
+        reverseButtons: reverseSwalButtons,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         didOpen: () => {
@@ -2306,6 +2329,7 @@ async function addAdditionalLink() {
     cancelButtonText: "Cancel",
     customClass: "swal-content-additional-link",
     showCancelButton: true,
+    reverseButtons: reverseSwalButtons,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     didOpen: () => {
@@ -2423,6 +2447,7 @@ async function addProtocol() {
     cancelButtonText: "Cancel",
     customClass: "swal-content-additional-link",
     showCancelButton: true,
+    reverseButtons: reverseSwalButtons,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     didOpen: () => {
@@ -2547,6 +2572,7 @@ async function helpSPARCAward(filetype) {
         inputPlaceholder: "Select an award",
         showCancelButton: true,
         confirmButtonText: "Confirm",
+        reverseButtons: reverseSwalButtons,
         didOpen: () => {
           $("#select-sparc-award-dd-spinner").css("display", "none");
           populateSelectSPARCAward(awardObj);
@@ -2566,6 +2592,7 @@ async function helpSPARCAward(filetype) {
             title:
               "Are you sure you want to delete all of the previous contributor information?",
             showCancelButton: true,
+            reverseButtons: reverseSwalButtons,
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
             cancelButtonText: `No!`,
@@ -2590,6 +2617,7 @@ async function helpSPARCAward(filetype) {
           "At this moment, SODA is not connected with your Airtable account.",
         text: "Would you like to connect your Airtable account with SODA?",
         showCancelButton: true,
+        reverseButtons: reverseSwalButtons,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         cancelButtonText: `No!`,
@@ -2873,6 +2901,7 @@ function delete_current_con_id(ev) {
     cancelButtonColor: "#f44336",
     confirmButtonColor: "#3085d6",
     confirmButtonText: "Yes",
+    reverseButtons: reverseSwalButtons,
   }).then((boolean) => {
     if (boolean.isConfirmed) {
       // 1. Delete from table
@@ -3170,9 +3199,9 @@ function grabDSInfoEntries() {
 
 // study info
 function grabStudyInfoEntries() {
-  var studyOrganSystem = document.getElementById("ds-study-organ-system").value;
-  var studyApproach = document.getElementById("ds-study-approach").value;
-  var studyTechnique = document.getElementById("ds-study-technique").value;
+  var studyOrganSystem = studyOrganSystemsTagify.value;
+  var studyApproach = studyApproachesTagify.value;
+  var studyTechnique = studyTechniquesTagify.value;
   var studyPurpose = document.getElementById("ds-study-purpose").value;
   var studyDataCollection = document.getElementById("ds-study-data-collection").value;
   var studyPrimaryConclusion = document.getElementById("ds-study-primary-conclusion").value;

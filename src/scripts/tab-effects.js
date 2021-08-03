@@ -1659,6 +1659,7 @@ async function transitionFreeFormMode(
         backdrop: "rgba(0,0,0, 0.4)",
         confirmButtonText: "Yes",
         cancelButtonText: "No",
+        reverseButtons: reverseSwalButtons,
       });
       if (!continueProgressSubjects) {
         return;
@@ -1697,6 +1698,7 @@ async function transitionFreeFormMode(
         backdrop: "rgba(0,0,0, 0.4)",
         confirmButtonText: "Yes",
         cancelButtonText: "No",
+        reverseButtons: reverseSwalButtons,
       });
       if (!continueProgressSamples) {
         return;

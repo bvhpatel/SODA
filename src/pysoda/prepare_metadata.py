@@ -207,10 +207,19 @@ def populate_study_info(workbook, val_obj):
     workbook["D11"] = val_obj["study purpose"]
     workbook["D12"] = val_obj["study data collection"]
     workbook["D13"] = val_obj["study primary conclusion"]
-    workbook["D14"] = val_obj["study organ system"]
-    workbook["D15"] = val_obj["study approach"]
-    workbook["D16"] = val_obj["study technique"]
     workbook["D17"] = val_obj["study collection title"]
+
+    ## study organ system
+    for i, column in zip(range(len(val_obj["study organ system"])), excel_columns(start_index=3)):
+        workbook[column + "14"] = val_obj["study organ system"][i]
+    ## study approach
+    for i, column in zip(range(len(val_obj["study approach"])), excel_columns(start_index=3)):
+        workbook[column + "15"] = val_obj["study approach"][i]
+    ## study technique
+    for i, column in zip(range(len(val_obj["study technique"])), excel_columns(start_index=3)):
+        workbook[column + "16"] = val_obj["study technique"][i]
+
+    return max(len(val_obj["study organ system"]), len(val_obj["study approach"]), len(val_obj["study technique"]))
 
 def populate_contributor_info(workbook, val_array):
     ## award info
@@ -261,7 +270,7 @@ def save_ds_description_file(bfaccountname, filepath, dataset_str, study_str, co
 
     keyword_array = populate_dataset_info(ws1, val_obj_ds)
 
-    populate_study_info(ws1, val_obj_study)
+    study_array_len = populate_study_info(ws1, val_obj_study)
 
     (funding_array, contributor_role_array) = populate_contributor_info(ws1, val_arr_con)
 
@@ -277,7 +286,7 @@ def save_ds_description_file(bfaccountname, filepath, dataset_str, study_str, co
     funding_len = len(funding_array)
 
     # obtain length for formatting compliance purpose
-    max_len = max(keyword_len, funding_len, no_contributors, related_info_len)
+    max_len = max(keyword_len, funding_len, no_contributors, related_info_len, study_array_len)
 
     rename_headers(ws1, max_len, 3)
     grayout_subheaders(ws1, max_len, 3)

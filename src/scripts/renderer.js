@@ -980,28 +980,20 @@ var otherFundingInput = document.getElementById("ds-other-funding"),
     duplicates: false,
   });
 
-// var parentDSTagify = new Tagify(parentDSDropdown, {
-//   enforceWhitelist: true,
-//   whitelist: [],
-//   duplicates: false,
-//   dropdown: {
-//     maxItems: Infinity,
-//     enabled: 0,
-//     closeOnSelect: true,
-//   },
-// });
+var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
+  studyOrganSystemsTagify = new Tagify(studyOrganSystemsInput, {
+    duplicates: false,
+});
 
-// var completenessInput = document.getElementById("ds-completeness"),
-//   completenessTagify = new Tagify(completenessInput, {
-//     whitelist: ["hasChildren", "hasNext"],
-//     enforceWhitelist: true,
-//     duplicates: false,
-//     maxTags: 2,
-//     dropdown: {
-//       enabled: 0,
-//       closeOnSelect: true,
-//     },
-//   });
+var studyTechniquesInput = document.getElementById("ds-study-technique"),
+  studyTechniquesTagify = new Tagify(studyTechniquesInput, {
+    duplicates: false,
+});
+
+var studyApproachesInput = document.getElementById("ds-study-approach"),
+  studyApproachesTagify = new Tagify(studyApproachesInput, {
+    duplicates: false,
+});
 
 ///////////////////// Airtable Authentication /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -2898,23 +2890,40 @@ ipcRenderer.on(
         }).then((result) => {});
 
         var datasetInfoValueObj = grabDSInfoEntries();
+        var studyInfoValueObject = grabStudyInfoEntries()
+        //// grab entries from contributor info section and pass values to conSectionArray
+        var contributorObj = grabConInfoEntries();
+        // grab related information (protocols and additional links)
+        var relatedInfoArr = combineLinksSections();
 
         //// process obtained values to pass to an array ///
         ///////////////////////////////////////////////////
+
+        // process multiple Study info tagify values - keywords
         var keywordVal = [];
         for (var i = 0; i < datasetInfoValueObj["keywords"].length; i++) {
           keywordVal.push(datasetInfoValueObj["keywords"][i].value);
         }
-        /// replace keywordArray with keywordVal array
+        /// replace raw tagify values with processed tagify values
         datasetInfoValueObj["keywords"] = keywordVal;
 
-        var studyInfoValueObject = grabStudyInfoEntries()
-
-        //// grab entries from contributor info section and pass values to conSectionArray
-        var contributorObj = grabConInfoEntries();
-
-        // grab related information (protocols and additional links)
-        var relatedInfoArr = combineLinksSections();
+        // process multiple Study info tagify values - Study techniques, approaches, and study organ systems
+        var studyTechniqueArr = [];
+        for (var i = 0; i < studyInfoValueObject["study technique"].length; i++) {
+          studyTechniqueArr.push(studyInfoValueObject["study technique"][i].value);
+        }
+        var studyOrganSystemsArr = [];
+        for (var i = 0; i < studyInfoValueObject["study organ system"].length; i++) {
+          studyOrganSystemsArr.push(studyInfoValueObject["study organ system"][i].value);
+        }
+        var studyApproachesArr = [];
+        for (var i = 0; i < studyInfoValueObject["study approach"].length; i++) {
+          studyApproachesArr.push(studyInfoValueObject["study approach"][i].value);
+        }
+        /// replace raw tagify values with processed tagify values
+        studyInfoValueObject["study organ system"] = studyOrganSystemsArr;
+        studyInfoValueObject["study technique"] = studyTechniqueArr;
+        studyInfoValueObject["study approach"] = studyApproacesArr;
 
         ///////////// stringify JSON objects //////////////////////
         json_str_ds = JSON.stringify(datasetInfoValueObj);
