@@ -951,15 +951,6 @@ function editSample(ev, sampleID) {
       field.value !== undefined &&
       field.value !== "Select"
     ) {
-      // if it's age, then add age info input (day/week/month/year)
-      if (field.name === "Age") {
-        if (
-          $("#bootbox-sample-age-info").val() !== "Select" &&
-          $("#bootbox-sample-age-info").val() !== "N/A"
-        ) {
-          field.value = field.value + " " + $("#bootbox-sample-age-info").val();
-        }
-      }
       samplesFileData.push(field.value);
     } else {
       samplesFileData.push("");
@@ -1240,7 +1231,7 @@ function updateOrderIDTable(table, json, type) {
   for (var index = 1; index < length; index++) {
     var id = table.rows[index].cells[1].innerText;
     for (var ind of json.slice(1)) {
-      if (ind[0] === id) {
+      if (ind[1] === id) {
         orderedTableData[i] = ind;
         i += 1;
         break;
@@ -1994,7 +1985,7 @@ function loadDataFrametoUISamples() {
   for (var headerName of customHeaders) {
     addExistingCustomHeaderSamples(headerName);
   }
-  // load sub-ids to table
+ // load sub-ids to table
   loadSamplesDataToTable();
   $("#table-samples").show();
   $("#button-fake-confirm-existing-samples-file-load").click();
