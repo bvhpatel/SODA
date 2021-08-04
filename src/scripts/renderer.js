@@ -982,6 +982,7 @@ var otherFundingInput = document.getElementById("ds-other-funding"),
 
 var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
   studyOrganSystemsTagify = new Tagify(studyOrganSystemsInput, {
+    whitelist: ["autonomic ganglion", "brain", "colon", "heart", "intestine", "kidney", "large intestine", "liver", "lower urinary tract", "lung", "nervous system", "pancreas", "peripheral nervous system", "small intestine", "spinal cord", "spleen", "stomach", "sympathetic nervous system", "urinary bladder"],
     duplicates: false,
 });
 
