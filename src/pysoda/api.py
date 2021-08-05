@@ -14,7 +14,7 @@ from curate import validate_dataset, create_folder_level_manifest, \
     check_empty_files_folders, main_curate_function, main_curate_function_progress, generate_manifest_file_locally
 
 from prepare_metadata import save_submission_file, save_ds_description_file, extract_milestone_info, import_milestone, save_subjects_file, convert_subjects_samples_file_to_df, \
-    save_samples_file, load_taxonomy_species
+    save_samples_file, load_taxonomy_species, load_existing_DD_file
 
 from organize_datasets import generate_dataset_locally, bf_get_dataset_files_folders
 
@@ -42,6 +42,9 @@ class SodaApi(object):
 
     def api_convert_subjects_samples_file_to_df(self, type, filepath, fields):
         return convert_subjects_samples_file_to_df(type, filepath, fields)
+
+    def api_load_existing_DD_file(self, filepath):
+        return load_existing_DD_file(filepath)
 
     ### Save samples file
     def api_save_samples_file(self, filepath, datastructure):

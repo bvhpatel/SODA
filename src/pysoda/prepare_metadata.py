@@ -492,3 +492,62 @@ def load_taxonomy_species(animalList):
             animalDict[animal] = {"ScientificName": result[0]['ScientificName'], "OtherNames": result[0]['OtherNames']}
 
     return animalDict
+
+## check if any whole column is empty
+def checkEmptyColumn(column):
+    for element in column:
+        if element:
+            break
+        return True
+    return False
+
+## import existing dataset_description.xlsx file
+def load_existing_DD_file(filepath):
+    basicInfoHeaders = ["Type", "Title", "Subtitle", "Keywords", "Number of subjects", "Number of samples"]
+    studyInfoHeaders = ["Study purpose", "Study data collection", "Study primary conclusion", "Study organ system", "Study approach", "Study technique", "Study collection title"]
+    contributorInfoHeaders = ["Contributor name", "Contributor ORCiD", "Contributor affiliation", "Contributor role"]
+    awardInfoHeaders = ["Funding", "Acknowledgments"]
+    relatedInfoHeaders = ["Identifier description", "Relation type", "Identifier", "Identifier type"]
+
+    DD_df = pd.read_excel(filepath, engine='openpyxl', usecols=column_check, header=0)
+    DD_df = DD_df.dropna(axis = 0, how = 'all')
+    DD_df = DD_df.replace(np.nan, '', regex=True)
+    DD_df = DD_df.applymap(str)
+    DD_df = DD_df.applymap(str.strip)
+
+    # check if Metadata Element a.k.a Header column exists
+    if not "Metadata element" in DD_df:
+        raise Exception("The sub-header column 'Metadata element' is required to import an existing dataset_description file")
+
+    # check for at least 1 value is included
+    non_empty_1st_value = checkEmptyColumn(DD_df["Value"])
+    if non_empty_1st_value:
+        raise Exception("At least 1 value is required to import an existing dataset_description file")
+
+    # drop Description and Examples columns
+    DD_df = DD_df.drop(columns=['Description', 'Example'])
+
+    ## convert DD_df to array of arrays (a matrix)
+    DD_matrix = DD_df.to_numpy().tolist()
+
+    # divide DD_df into UI sections (Basic Info + Participant Info, Study Info, Contributor Info, Related Info)
+    basicInfoSection = []
+    studyInfoSection = []
+    conInfoSection = []
+    awardInfoSection = []
+    relatedInfoSection = []
+
+    for array in DD_matrix:
+        if array[0] in basicInfoHeaders:
+            basicInfoSection.append(array)
+        if array[0] in studyInfoHeaders:
+            studyInfoSection.append(array)
+        if array[0] in contributorInfoHeaders:
+            conInfoSection.append(array)
+        if array[0] in awardInfoHeaders:
+            awardInfoSection.append(array)
+        if array[0] in relatedInfoHeaders:
+            relatedInfoSection.append(array)
+
+    transformedObj = {"Basic information": basicInfoSection, "Study information": studyInfoSection, "Contributor Information": transposeMatrix(conInfoSection), "Award Information": awardInfoSection, "Related Information": transposeMatrix(relatedInfoSection)}
+    return transformedObj

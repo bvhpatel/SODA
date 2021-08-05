@@ -318,7 +318,7 @@ ipcMain.on("open-file-dialog-subjects", (event) => {
     BrowserWindow.getFocusedWindow(),
     {
       properties: ["openFile"],
-      filters: [{ name: "Excel", extensions: ["xlsx", "xls", "csv"] }],
+      filters: [{ name: "Excel", extensions: ["xlsx", "xls"] }],
     },
     (files) => {
       if (files) {
@@ -333,7 +333,7 @@ ipcMain.on("open-file-dialog-samples", (event) => {
     BrowserWindow.getFocusedWindow(),
     {
       properties: ["openFile"],
-      filters: [{ name: "Excel", extensions: ["xlsx", "xls", "csv"] }],
+      filters: [{ name: "Excel", extensions: ["xlsx", "xls"] }],
     },
     (files) => {
       if (files) {
@@ -349,7 +349,7 @@ ipcMain.on("open-file-dialog-existing-subjects", (event) => {
     BrowserWindow.getFocusedWindow(),
     {
       properties: ["openFile"],
-      filters: [{ name: "Excel", extensions: ["xlsx", "xls", "csv"] }],
+      filters: [{ name: "Excel", extensions: ["xlsx", "xls"] }],
     },
     (files) => {
       if (files) {
@@ -364,11 +364,27 @@ ipcMain.on("open-file-dialog-existing-samples", (event) => {
     BrowserWindow.getFocusedWindow(),
     {
       properties: ["openFile"],
-      filters: [{ name: "Excel", extensions: ["xlsx", "xls", "csv"] }],
+      filters: [{ name: "Excel", extensions: ["xlsx", "xls"] }],
     },
     (files) => {
       if (files) {
         event.sender.send("selected-existing-samples", files);
+      }
+    }
+  );
+});
+
+// import existing subjects.xlsx to continue working on
+ipcMain.on("open-file-dialog-existing-DD", (event) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openFile"],
+      filters: [{ name: "Excel", extensions: ["xlsx", "xls"] }],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send("selected-existing-DD", files);
       }
     }
   );

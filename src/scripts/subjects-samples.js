@@ -1294,18 +1294,22 @@ function importPrimaryFolderSubjects(folderPath) {
     headersArrSubjects.push(field.name);
   }
   if (folderPath === "Browse here") {
-    Swal.fire(
-      "No folder chosen",
-      "Please select a path to your primary folder",
-      "error"
-    );
+    Swal.fire({
+      title: "No folder chosen",
+      text: "Please select a path to your primary folder.",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      icon: "error"
+    })
   } else {
     if (path.parse(folderPath).base !== "primary") {
-      Swal.fire(
-        "Incorrect folder name",
-        "Your folder must be named 'primary' to be imported to SODA.",
-        "error"
-      );
+      Swal.fire({
+        title: "Incorrect folder name",
+        text: "Your folder must be named 'primary' to be imported to SODA.",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        icon: "error"
+      })
     } else {
       var folders = fs.readdirSync(folderPath);
       var j = 1;
@@ -1375,18 +1379,22 @@ function importPrimaryFolderSamples(folderPath) {
   }
   // var folderPath = $("#primary-folder-destination-input-samples").prop("placeholder");
   if (folderPath === "Browse here") {
-    Swal.fire(
-      "No folder chosen",
-      "Please select a path to your primary folder.",
-      "error"
-    );
+    Swal.fire({
+      title: "No folder chosen",
+      text: "Please select a path to your primary folder.",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      icon: "error"
+    })
   } else {
     if (path.parse(folderPath).base !== "primary") {
-      Swal.fire(
-        "Incorrect folder name",
-        "Your folder must be named 'primary' to be imported to SODA.",
-        "error"
-      );
+      Swal.fire({
+        title: "Incorrect folder name",
+        text: "Your folder must be named 'primary' to be imported to SODA.",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        icon: "error"
+      })
     } else {
       var folders = fs.readdirSync(folderPath);
       var j = 1;
@@ -1859,6 +1867,32 @@ $(document).ready(function () {
       $($("#div-confirm-existing-samples-import button")[0]).hide();
     }
   });
+
+  ipcRenderer.on("selected-existing-DD", (event, filepath) => {
+    if (filepath.length > 0) {
+      if (filepath !== null) {
+        document.getElementById(
+          "existing-dd-file-destination"
+        ).placeholder = filepath[0];
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Prepare Metadata - Continue with existing dataset_description.xlsx",
+          defaultBfAccount
+        );
+      }
+    }
+    if (
+      document.getElementById("existing-dd-file-destination")
+        .placeholder !== "Browse here"
+    ) {
+      $("#div-confirm-existing-dd-import").show();
+      $($("#div-confirm-existing-dd-import button")[0]).show();
+    } else {
+      $("#div-confirm-existing-dd-import").hide();
+      $($("#div-confirm-existing-dd-import button")[0]).hide();
+    }
+  });
 });
 
 function showExistingSubjectsFile() {
@@ -1867,6 +1901,10 @@ function showExistingSubjectsFile() {
 
 function showExistingSamplesFile() {
   ipcRenderer.send("open-file-dialog-existing-samples");
+}
+
+function showExistingDDFile() {
+  ipcRenderer.send("open-file-dialog-existing-DD");
 }
 
 function importExistingSubjectsFile() {
@@ -1879,11 +1917,13 @@ function importExistingSubjectsFile() {
     );
   } else {
     if (path.parse(filePath).base !== "subjects.xlsx") {
-      Swal.fire(
-        "Incorrect file name",
-        "Your file must be named 'subjects.xlsx' to be imported to SODA.",
-        "error"
-      );
+      Swal.fire({
+        title: "Incorrect file name",
+        text: "Your file must be named 'subjects.xlsx' to be imported to SODA.",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        icon: "error"
+      })
     } else {
       Swal.fire({
         title: "Loading an existing subjects.xlsx file",
@@ -1913,11 +1953,13 @@ function importExistingSamplesFile() {
     );
   } else {
     if (path.parse(filePath).base !== "samples.xlsx") {
-      Swal.fire(
-        "Incorrect file name",
-        "Your file must be named 'samples.xlsx' to be imported to SODA.",
-        "error"
-      );
+      Swal.fire({
+        title: "Incorrect file name",
+        text: "Your file must be named 'samples.xlsx' to be imported to SODA.",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        icon: "error"
+      })
     } else {
       Swal.fire({
         title: "Loading an existing samples.xlsx file",
@@ -1935,6 +1977,81 @@ function importExistingSamplesFile() {
       setTimeout(loadSamplesFileToDataframe(filePath), 1000);
     }
   }
+}
+
+function importExistingDDFile() {
+  var filePath = $("#existing-dd-file-destination").prop("placeholder");
+  if (filePath === "Browse here") {
+    Swal.fire(
+      "No file chosen",
+      "Please select a path to your dataset_description.xlsx file,",
+      "error"
+    );
+  } else {
+    if (path.parse(filePath).base !== "dataset_description.xlsx") {
+      Swal.fire({
+        title: "Incorrect file name",
+        text: "Your file must be named 'dataset_description.xlsx' to be imported to SODA.",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        icon: "error"
+      })
+    } else {
+      Swal.fire({
+        title: "Loading an existing dataset_description.xlsx file",
+        html: "Please wait...",
+        timer: 2000,
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      }).then((result) => {});
+      setTimeout(loadDDfileDataframe(filePath), 1000);
+    }
+  }
+}
+
+function loadDDfileDataframe(filePath) {
+  client.invoke("api_load_existing_DD_file", filePath, (error, res) => {
+    if (error) {
+      var emessage = userError(error);
+      console.log(error);
+      Swal.fire({
+        title: "Failed to load the existing dataset_description.xlsx file",
+        text: `${emessage}`,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        icon: "error"
+      })
+    } else {
+        loadDDFileToUI(res)
+      }
+    }
+  })
+}
+
+function loadDDFileToUI(object) {
+  ///// populating Basic info UI
+
+
+  //// populating Study info UI
+
+  /// populating Con info UI
+
+  
+  Swal.fire({
+    title: "Loaded successfully!",
+    // text: message,
+    icon: "warning",
+    showConfirmButton: true,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+  });
+  $("#button-fake-confirm-existing-dd-file-load").click()
 }
 
 function loadDataFrametoUI() {
