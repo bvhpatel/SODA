@@ -1880,15 +1880,23 @@ $(document).ready(function () {
           "Prepare Metadata - Continue with existing dataset_description.xlsx",
           defaultBfAccount
         );
+        if (
+          document.getElementById("existing-dd-file-destination")
+          .placeholder !== "Browse here"
+        ) {
+          $("#div-confirm-existing-dd-import").show();
+          $($("#div-confirm-existing-dd-import button")[0]).show();
+        } else {
+          $("#div-confirm-existing-dd-import").hide();
+          $($("#div-confirm-existing-dd-import button")[0]).hide();
+        }
+      } else {
+        document.getElementById("existing-dd-file-destination").placeholder = "Browse here"
+        $("#div-confirm-existing-dd-import").hide();
+        $($("#div-confirm-existing-dd-import button")[0]).hide();
       }
-    }
-    if (
-      document.getElementById("existing-dd-file-destination")
-        .placeholder !== "Browse here"
-    ) {
-      $("#div-confirm-existing-dd-import").show();
-      $($("#div-confirm-existing-dd-import button")[0]).show();
     } else {
+      document.getElementById("existing-dd-file-destination").placeholder = "Browse here"
       $("#div-confirm-existing-dd-import").hide();
       $($("#div-confirm-existing-dd-import button")[0]).hide();
     }
@@ -2034,22 +2042,74 @@ function loadDDfileDataframe(filePath) {
 }
 
 function loadDDFileToUI(object) {
+  var basicInfoObj = object["Basic information"]
+  var studyInfoObj = object["Study information"]
+  var conInfoObj = object["Contributor information"]
+  var awardInfoObj = object["Award information"]
+  var relatedInfoObj = object["Related information"]
+
   ///// populating Basic info UI
-
-
+  for (var arr of basicInfoObj) {
+    if (arr[0] === "Type") {
+      $("#ds-type").val(arr[1])
+    } else if (arr[0] === "Title") {
+      $("#ds-name").val(arr[1])
+    } else if (arr[0] === "Subtitle") {
+      $("#ds-description").val(arr[1])
+    } else if (arr[0] === "Number of subjects") {
+      $("#ds-subjects-no").val(arr[1])
+    } else if (arr[0] === "Number of samples") {
+      $("#ds-samples-no").val(arr[1])
+    } else if (arr[0] === "Keywords") {
+      // populate keywords
+    }
+  }
   //// populating Study info UI
+  for (var arr of studyInfoObj) {
+    if (arr[0] === "Study purpose") {
+      $("#ds-study-purpose").val(arr[1])
+    } else if (arr[0] === "Study data collection") {
+      $("#ds-study-data-collection").val(arr[1])
+    } else if (arr[0] === "Study primary conclusion") {
+      $("#ds-study-primary-conclusion").val(arr[1])
+    } else if (arr[0] === "Study organ system") {
+      // populate organ systems
+    } else if (arr[0] === "Study approach") {
+      // populate approach
+    } else if (arr[0] === "Study technique") {
+      // populate technique
+    } else if (arr[0] === "Study collection title") {
+      // populate collection title
+    }
+  }
+
+  for (var arr of awardInfoObj) {
+    if (arr[0] === "Acknowledgments") {
+      $("#ds-description-acknowledgments").val(arr[1])
+    } else if (arr[0] === "Funding") {
+      // populate awards
+    }
+  }
 
   /// populating Con info UI
+  for (var arr of conInfoObj) {
+    // populate contributor info
+  }
 
+  /// populating Related info UI
+  for (var arr of relatedInfoObj) {
+    // populate related info
+  }
 
   Swal.fire({
     title: "Loaded successfully!",
-    // text: message,
-    icon: "warning",
+    icon: "success",
     showConfirmButton: true,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
   });
+  $("#div-confirm-existing-dd-import").hide();
+  $($("#div-confirm-existing-dd-import button")[0]).hide();
   $("#button-fake-confirm-existing-dd-file-load").click()
 }
 

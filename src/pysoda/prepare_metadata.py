@@ -550,5 +550,5 @@ def load_existing_DD_file(filepath):
         if array[0] in relatedInfoHeaders:
             relatedInfoSection.append(array)
 
-    transformedObj = {"Basic information": basicInfoSection, "Study information": studyInfoSection, "Contributor Information": transposeMatrix(conInfoSection), "Award Information": awardInfoSection, "Related Information": transposeMatrix(relatedInfoSection)}
+    transformedObj = {"Basic information": basicInfoSection, "Study information": studyInfoSection, "Contributor information": transposeMatrix(conInfoSection), "Award information": awardInfoSection, "Related information": transposeMatrix(relatedInfoSection)}
     return transformedObj
