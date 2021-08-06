@@ -2030,7 +2030,6 @@ function loadDDfileDataframe(filePath) {
     } else {
         loadDDFileToUI(res)
       }
-    }
   })
 }
 
@@ -2042,7 +2041,7 @@ function loadDDFileToUI(object) {
 
   /// populating Con info UI
 
-  
+
   Swal.fire({
     title: "Loaded successfully!",
     // text: message,
@@ -2156,6 +2155,7 @@ function protocolAccountQuestion(type, changeAccountBoolean) {
             backdrop: "rgba(0,0,0, 0.4)",
             confirmButtonText: "Add",
             cancelButtonText: "Cancel",
+            showCancelButton: true,
             allowEscapeKey: false,
             allowOutsideClick: false,
             html:

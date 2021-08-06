@@ -40,6 +40,8 @@ from openpyxl.styles import PatternFill, Font
 from openpyxl.styles.colors import Color
 from docx import Document
 
+import demjson
+
 from datetime import datetime, timezone
 
 from Bio import Entrez
@@ -251,7 +253,6 @@ def populate_related_info(workbook, val_array):
 
 
 ### generate the dataset_description file
-import demjson
 
 def save_ds_description_file(bfaccountname, filepath, dataset_str, study_str, con_str, related_info_str):
     source = join(TEMPLATE_PATH, "dataset_description.xlsx")
