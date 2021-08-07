@@ -40,8 +40,6 @@ from openpyxl.styles import PatternFill, Font
 from openpyxl.styles.colors import Color
 from docx import Document
 
-import demjson
-
 from datetime import datetime, timezone
 
 from Bio import Entrez
@@ -260,8 +258,8 @@ def save_ds_description_file(bfaccountname, filepath, dataset_str, study_str, co
     shutil.copyfile(source, destination)
 
     # json array to python list
-    val_obj_ds = demjson.decode(dataset_str)
-    val_obj_study = demjson.decode(study_str)
+    val_obj_study = json.loads(study_str)
+    val_obj_ds = json.loads(dataset_str)
     val_arr_con = json.loads(con_str)
     val_arr_related_info = json.loads(related_info_str)
 

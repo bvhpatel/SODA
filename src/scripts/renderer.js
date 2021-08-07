@@ -2924,7 +2924,7 @@ ipcRenderer.on(
         /// replace raw tagify values with processed tagify values
         studyInfoValueObject["study organ system"] = studyOrganSystemsArr;
         studyInfoValueObject["study technique"] = studyTechniqueArr;
-        studyInfoValueObject["study approach"] = studyApproacesArr;
+        studyInfoValueObject["study approach"] = studyApproachesArr;
 
         ///////////// stringify JSON objects //////////////////////
         json_str_ds = JSON.stringify(datasetInfoValueObj);

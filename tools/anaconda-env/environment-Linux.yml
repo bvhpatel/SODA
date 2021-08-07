@@ -23,4 +23,3 @@ dependencies:
   - python-docx == 0.8.10
   - xlrd == 1.2.0
   - biopython == 1.78
-  - demjson == 2.2.4
