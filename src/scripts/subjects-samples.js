@@ -3218,7 +3218,7 @@ function edit_current_con_id(ev) {
             maxItems: 25,
             closeOnSelect: true, // keep the dropdown open after selecting a suggestion
           },
-          delimiters: null,
+          // delimiters: null,
           duplicates: false,
         }
       );
