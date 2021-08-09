@@ -1549,7 +1549,7 @@ function resetDD() {
       // 3. deleting table rows
       globalContributorNameObject = {};
       currentContributorsLastNames = [];
-      contributorObject = [];
+      contributorArray = [];
       $("#contributor-table-dd tr:gt(0)").remove();
       $("#protocol-link-table-dd tr:gt(0)").remove();
       $("#other-link-table-dd tr:gt(0)").remove();

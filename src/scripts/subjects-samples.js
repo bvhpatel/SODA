@@ -268,7 +268,7 @@ function validateSubSamID(ev) {
   var value = $("#" + id).val();
   //Validate TextBox value against the Regex.
   var isValid = regex.test(value);
-  if (!isValid && value !== "") {
+  if (!isValid && value.trim() !== "") {
     $(ev).addClass("invalid");
     $("#para-" + id).css("display", "block");
   } else {
@@ -382,7 +382,7 @@ function addSubjectIDtoDataBase(id) {
       break;
     }
   }
-  if (id !== "") {
+  if (id.trim() !== "") {
     if (!duplicate) {
       var message = addNewIDToTable(id, null, "subjects");
       addSubjectIDToJSON(id);
@@ -409,10 +409,10 @@ function addSampleIDtoDataBase(samID, subID) {
       break;
     }
   }
-  if (samID !== "" && subID !== "") {
+  if (samID.trim() !== "" && subID.trim() !== "") {
     if (!duplicate) {
-      var message = addNewIDToTable(samID, subID, "samples");
-      addSampleIDtoJSON(samID);
+      var message = addNewIDToTable(samID.trim(), subID.trim(), "samples");
+      addSampleIDtoJSON(samID.trim());
     } else {
       error =
         "A similar sample_id already exists. Please either delete the existing sample_id or choose a different sample_id.";
@@ -737,7 +737,7 @@ function loadSubjectInformation(ev, subjectID) {
     editSubject(ev, subjectID);
   });
   $("#new-custom-header-name").keyup(function () {
-    var customName = $(this).val();
+    var customName = $(this).val().trim();
     if (customName !== "") {
       $("#button-confirm-custom-header-name").show();
     } else {
@@ -747,7 +747,7 @@ function loadSubjectInformation(ev, subjectID) {
 }
 
 function populateForms(subjectID, type) {
-  if (subjectID !== "clear" && subjectID !== "") {
+  if (subjectID !== "clear" && subjectID.trim() !== "") {
     var infoJson = [];
     if (subjectsTableData.length > 1) {
       for (var i = 1; i < subjectsTableData.length; i++) {
@@ -802,7 +802,7 @@ function populateForms(subjectID, type) {
 }
 
 function populateFormsSamples(subjectID, sampleID, type) {
-  if (sampleID !== "clear" && sampleID !== "") {
+  if (sampleID !== "clear" && sampleID.trim() !== "") {
     var infoJson = [];
     if (samplesTableData.length > 1) {
       for (var i = 1; i < samplesTableData.length; i++) {
@@ -873,7 +873,7 @@ function loadSampleInformation(ev, subjectID, sampleID) {
     editSample(ev, sampleID);
   });
   $("#new-custom-header-name-samples").keyup(function () {
-    var customName = $(this).val();
+    var customName = $(this).val().trim();
     if (customName !== "") {
       $("#button-confirm-custom-header-name-samples").show();
     } else {
@@ -887,7 +887,7 @@ function editSubject(ev, subjectID) {
     .children()
     .find(".subjects-form-entry")) {
     if (
-      field.value !== "" &&
+      field.value.trim() !== "" &&
       field.value !== undefined &&
       field.value !== "Select"
     ) {
@@ -947,7 +947,7 @@ function editSample(ev, sampleID) {
     .children()
     .find(".samples-form-entry")) {
     if (
-      field.value !== "" &&
+      field.value.trim() !== "" &&
       field.value !== undefined &&
       field.value !== "Select"
     ) {
@@ -1261,7 +1261,7 @@ function updateOrderContributorTable(table, json) {
       }
     }
   }
-  contributorObject = orderedTableData;
+  contributorArray = orderedTableData;
 }
 
 function generateSubjects() {
@@ -2044,9 +2044,9 @@ function loadDDfileDataframe(filePath) {
 function loadDDFileToUI(object) {
   var basicInfoObj = object["Basic information"]
   var studyInfoObj = object["Study information"]
-  var conInfoObj = object["Contributor information"]
+  var conInfo = object["Contributor information"]
   var awardInfoObj = object["Award information"]
-  var relatedInfoObj = object["Related information"]
+  var relatedInfo = object["Related information"]
 
   ///// populating Basic info UI
   for (var arr of basicInfoObj) {
@@ -2062,6 +2062,7 @@ function loadDDFileToUI(object) {
       $("#ds-samples-no").val(arr[1])
     } else if (arr[0] === "Keywords") {
       // populate keywords
+      populateTagifyDD(keywordTagify, arr.splice(1))
     }
   }
   //// populating Study info UI
@@ -2074,12 +2075,16 @@ function loadDDFileToUI(object) {
       $("#ds-study-primary-conclusion").val(arr[1])
     } else if (arr[0] === "Study organ system") {
       // populate organ systems
+      populateTagifyDD(studyOrganSystemsTagify, arr.splice(1))
     } else if (arr[0] === "Study approach") {
       // populate approach
+      populateTagifyDD(studyApproachesTagify, arr.splice(1))
     } else if (arr[0] === "Study technique") {
       // populate technique
+      populateTagifyDD(studyTechniquesTagify, arr.splice(1))
     } else if (arr[0] === "Study collection title") {
       // populate collection title
+      $("#ds-study-collection-title").val(arr[1])
     }
   }
 
@@ -2088,18 +2093,18 @@ function loadDDFileToUI(object) {
       $("#ds-description-acknowledgments").val(arr[1])
     } else if (arr[0] === "Funding") {
       // populate awards
+      globalSPARCAward = arr[1]
+      $("#ds-description-award-input").val(arr[1])
+      changeAward(globalSPARCAward)
+      populateTagifyDD(otherFundingTagify, arr.splice(2))
     }
   }
 
   /// populating Con info UI
-  for (var arr of conInfoObj) {
-    // populate contributor info
-  }
+  loadContributorsToTable(conInfo)
 
   /// populating Related info UI
-  for (var arr of relatedInfoObj) {
-    // populate related info
-  }
+  loadRelatedInfoToTable(relatedInfo)
 
   Swal.fire({
     title: "Loaded successfully!",
@@ -2111,6 +2116,68 @@ function loadDDFileToUI(object) {
   $("#div-confirm-existing-dd-import").hide();
   $($("#div-confirm-existing-dd-import button")[0]).hide();
   $("#button-fake-confirm-existing-dd-file-load").click()
+}
+
+function populateTagifyDD(tagify, values) {
+  tagify.removeAllTags()
+  for (var value of values) {
+    if (value.trim() !== "") {
+      tagify.addTags(value.trim())
+    }
+  }
+}
+
+function loadContributorsToTable(array) {
+  contributorArray = []
+  $("#contributor-table-dd tr:gt(0)").remove();
+  $("#div-contributor-table-dd").css("display", "none");
+  for (var arr of array.splice(1)) {
+    if (arr[0].trim() !== "") {
+      var myCurrentCon = {
+        conName: arr[0].trim(),
+        conID: arr[1].trim(),
+        conAffliation: arr[2].trim(),
+        conRole: arr[3].trim(),
+      };
+      contributorArray.push(myCurrentCon);
+      var contact = ""
+      if (myCurrentCon.conRole.includes("CorrespondingAuthor")) {
+        contact = "Yes"
+      } else {
+        contact = "No"
+      }
+      addContributortoTableDD(myCurrentCon.conName, contact)
+    }
+  }
+}
+
+function loadRelatedInfoToTable(array) {
+  $("#protocol-link-table-dd tr:gt(0)").remove();
+  $("#div-protocol-link-table-dd").css("display", "none");
+  $("#other-link-table-dd tr:gt(0)").remove();
+  $("#div-other-link-table-dd").css("display", "none");
+  for (var arr of array.splice(1)) {
+    if (arr[2].trim() !== "") {
+      var protocolBoolean = protocolCheck(arr)
+      if (protocolBoolean) {
+        addProtocolLinktoTableDD(arr[2], arr[3], arr[1], arr[0]);
+      } else {
+        addAdditionalLinktoTableDD(arr[2], arr[3], arr[1], arr[0]);
+      }
+    }
+  }
+}
+
+// check if a link is a protocol for UI import purpose (Basic version, could be improved further for accuracy)
+// (nothing will be changed for the generating purpose, just for the UI link separation between protocols and other links)
+function protocolCheck(array) {
+  var boolean = false
+  // if relation includes IsProtocolFor, HasProtocol OR if description includes the word "protocol"(s) at all
+  if (array[1].includes("IsProtocolFor") || array[1].includes("HasProtocol")
+      || array[0].includes("protocol") || array[0].includes("protocols")) {
+    boolean = true
+  }
+  return boolean
 }
 
 function loadDataFrametoUI() {
@@ -2475,8 +2542,8 @@ function loadExistingProtocolInfo() {
   var protocolTokenContent = parseJson(protocolConfigPath);
   if (JSON.stringify(protocolTokenContent) !== "{}") {
     var protocolToken = protocolTokenContent["access-token"];
-    if (protocolToken !== "") {
-      sendHttpsRequestProtocol(protocolToken, "upon-loading");
+    if (protocolToken.trim() !== "") {
+      sendHttpsRequestProtocol(protocolToken.trim(), "upon-loading");
       protocolExists = true;
     }
   }
@@ -2582,16 +2649,16 @@ function readXMLScicrunch(xml, type) {
     }
   }
   if (type === "subjects") {
-    if (rrid !== "") {
-      $("#bootbox-subject-strain-RRID").val(rrid);
+    if (rrid.trim() !== "") {
+      $("#bootbox-subject-strain-RRID").val(rrid.trim());
       res = true;
     } else {
       $("#bootbox-subject-strain-RRID").val("");
       res = false;
     }
   } else {
-    if (rrid !== "") {
-      $("#bootbox-sample-strain-RRID").val(rrid);
+    if (rrid.trim() !== "") {
+      $("#bootbox-sample-strain-RRID").val(rrid.trim());
       res = true;
     } else {
       $("#bootbox-sample-strain-RRID").val("");
@@ -2751,11 +2818,12 @@ async function helpSPARCAward(filetype) {
             Swal.showValidationMessage("Please select an award.");
           } else {
             award = $("#select-SPARC-award").val();
+            globalSPARCAward = $("#select-SPARC-award").val();
           }
         },
       });
       if (awardVal) {
-        if (contributorObject.length !== 0) {
+        if (contributorArray.length !== 0) {
           Swal.fire({
             title:
               "Are you sure you want to delete all of the previous contributor information?",
@@ -2769,13 +2837,10 @@ async function helpSPARCAward(filetype) {
             confirmButtonText: "Yes",
           }).then((boolean) => {
             if (boolean.isConfirmed) {
-              // var awardValue =  $("#select-SPARC-award").val()
-              // $("#ds-description-award-input").val(awardValue)
               changeAward(award);
             }
           });
         } else {
-          // var awardValue =  $("#select-SPARC-award").val()
           changeAward(award);
         }
       }
@@ -2816,6 +2881,11 @@ function populateSelectSPARCAward(object) {
       award
     );
   }
+  if (globalSPARCAward.trim() !== "") {
+    if (Object.keys(object).includes(globalSPARCAward.trim())) {
+      $("#select-SPARC-award").val(globalSPARCAward.trim())
+    }
+  }
 }
 
 function changeAward(award) {
@@ -2824,7 +2894,7 @@ function changeAward(award) {
   currentContributorsLastNames = [];
   $("#contributor-table-dd tr:gt(0)").remove();
   $("#div-contributor-table-dd").css("display", "none");
-  contributorObject = [];
+  contributorArray = [];
   var airKeyContent = parseJson(airtableConfigPath);
   if (Object.keys(airKeyContent).length !== 0) {
     var airKeyInput = airKeyContent["api-key"];
@@ -2845,14 +2915,6 @@ function changeAward(award) {
           currentContributorsLastNames.push(lastName);
         }),
           fetchNextPage();
-        // var currentRowLeftID = $(
-        //   $($("#table-current-contributors").find("tr")[1].cells[0]).find(
-        //     "select"
-        //   )[0]
-        // ).prop("id");
-        // if (currentRowLeftID) {
-        //   cloneConNamesSelect(currentRowLeftID);
-        // }
       });
     function done(err) {
       if (err) {
@@ -2895,7 +2957,7 @@ var contributorElement =
 var contributorElementRaw =
   '<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><input id="dd-contributor-last-name" class="form-container-input-bf" style="line-height: 2"></input></div><div class="div-child"><label>First name</label><input id="dd-contributor-first-name" class="form-container-input-bf" style="line-height: 2"></input></div></div><div><label>ORCiD <i class="fas fa-info-circle swal-popover" data-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle swal-popover" data-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle swal-popover" data-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div><div style="margin-top:15px;display:flex;flex-direction:column"><label>Corresponding Author <i class="fas fa-info-circle swal-popover" data-content="Check if the contributor is a corresponding author for the dataset. At least one and only one of the contributors should be the corresponding author." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><label class="switch" style="margin-top: 15px"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"></input><span class="slider round"></span></label></div></div>';
 
-var contributorObject = [];
+var contributorArray = [];
 
 function showContributorSweetalert(key) {
   var currentContributortagify;
@@ -3029,10 +3091,9 @@ function showContributorSweetalert(key) {
                 conID: $("#input-con-ID").val().trim(),
                 conAffliation: affiliationVals,
                 conRole: roleVals + ", CorrespondingAuthor",
-                // conContact: "Yes",
               };
-              contributorObject.push(myCurrentCon);
-              return [myCurrentCon.conName, myCurrentCon.conContact];
+              contributorArray.push(myCurrentCon);
+              return [myCurrentCon.conName, "Yes"];
             }
           } else {
             var myCurrentCon = {
@@ -3042,8 +3103,8 @@ function showContributorSweetalert(key) {
               conRole: roleVals,
               // conContact: "No",
             };
-            contributorObject.push(myCurrentCon);
-            return [myCurrentCon.conName, myCurrentCon.conContact];
+            contributorArray.push(myCurrentCon);
+            return [myCurrentCon.conName, "No"];
           }
         } else {
           Swal.showValidationMessage(
@@ -3079,9 +3140,9 @@ function delete_current_con_id(ev) {
       updateIndexForTable(document.getElementById("contributor-table-dd"));
       // 2. Delete from JSON
       var contributorName = $(currentRow)[0].cells[1].innerText;
-      for (var i = 0; i < contributorObject.length; i++) {
-        if (contributorObject[i].conName === contributorName) {
-          contributorObject.splice(i, 1);
+      for (var i = 0; i < contributorArray.length; i++) {
+        if (contributorArray[i].conName === contributorName) {
+          contributorArray.splice(i, 1);
           break;
         }
       }
@@ -3161,7 +3222,7 @@ function edit_current_con_id(ev) {
           duplicates: false,
         }
       );
-      for (var contributor of contributorObject) {
+      for (var contributor of contributorArray) {
         if (contributor.conName === name) {
           // add existing tags to tagifies
           for (var affiliation of contributor.conAffliation.split(" ,")) {
@@ -3170,7 +3231,7 @@ function edit_current_con_id(ev) {
           for (var role of contributor.conRole.split(" ,")) {
             currentContributortagify.addTags(role);
           }
-          if (contributor.conContact === "Yes") {
+          if (contributor.conRole.includes("CorrespondingAuthor")) {
             $("#ds-contact-person").prop("checked", true);
           } else {
             $("#ds-contact-person").prop("checked", false);
@@ -3226,14 +3287,14 @@ function edit_current_con_id(ev) {
               conRole: roleVals + ", CorrespondingAuthor",
               // conContact: "Yes",
             };
-            for (var contributor of contributorObject) {
+            for (var contributor of contributorArray) {
               if (contributor.conName === name) {
-                contributorObject[contributorObject.indexOf(contributor)] =
+                contributorArray[contributorArray.indexOf(contributor)] =
                   myCurrentCon;
                 break;
               }
             }
-            return [myCurrentCon.conName, myCurrentCon.conContact];
+            return [myCurrentCon.conName, "Yes"];
           }
         } else {
           var myCurrentCon = {
@@ -3246,14 +3307,14 @@ function edit_current_con_id(ev) {
             conRole: roleVals,
             // conContact: "No",
           };
-          for (var contributor of contributorObject) {
+          for (var contributor of contributorArray) {
             if (contributor.conName === name) {
-              contributorObject[contributorObject.indexOf(contributor)] =
+              contributorArray[contributorArray.indexOf(contributor)] =
                 myCurrentCon;
               break;
             }
           }
-          return [myCurrentCon.conName, myCurrentCon.conContact];
+          return [myCurrentCon.conName, "No"];
         }
       }
     },
@@ -3268,8 +3329,8 @@ function grabCurrentTagifyContributor(tagify) {
   var infoArray = [];
   // var element = document.getElementById(id)
   var values = tagify.DOM.originalInput.value;
-  if (values !== "") {
-    var valuesArray = JSON.parse(values);
+  if (values.trim() !== "") {
+    var valuesArray = JSON.parse(values.trim());
     if (valuesArray.length > 0) {
       for (var val of valuesArray) {
         infoArray.push(val.value);
@@ -3407,7 +3468,7 @@ function grabConInfoEntries() {
 
   contributorInfo["funding"] = fundingArray;
   contributorInfo["acknowledgment"] = acknowledgment;
-  contributorInfo["contributors"] = contributorObject;
+  contributorInfo["contributors"] = contributorArray;
   return contributorInfo;
 }
 

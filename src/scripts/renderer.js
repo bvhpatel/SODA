@@ -984,6 +984,10 @@ var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
   studyOrganSystemsTagify = new Tagify(studyOrganSystemsInput, {
     whitelist: ["autonomic ganglion", "brain", "colon", "heart", "intestine", "kidney", "large intestine", "liver", "lower urinary tract", "lung", "nervous system", "pancreas", "peripheral nervous system", "small intestine", "spinal cord", "spleen", "stomach", "sympathetic nervous system", "urinary bladder"],
     duplicates: false,
+    dropdown: {
+      enabled: 0,
+      closeOnSelect: true,
+    },
 });
 
 var studyTechniquesInput = document.getElementById("ds-study-technique"),
@@ -2012,6 +2016,7 @@ function addSPARCAwards() {
 }
 
 var awardObj = {};
+var globalSPARCAward = "";
 // indicate to user that airtable records are being retrieved
 function loadAwardData() {
   ///// Construct table from data
@@ -2585,7 +2590,7 @@ $("#contributor-table-dd").mousedown(function (e) {
     updateIndexForTable(document.getElementById("contributor-table-dd"));
     updateOrderContributorTable(
       document.getElementById("contributor-table-dd"),
-      contributorObject
+      contributorArray
     );
   }
   $(document).mousemove(move).mouseup(up);
