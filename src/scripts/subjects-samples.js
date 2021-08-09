@@ -1584,6 +1584,9 @@ function resetSubjects() {
       // delete table rows except headers
       $("#table-subjects tr:gt(0)").remove();
       $("#table-subjects").css("display", "none");
+
+      $("#div-import-primary-folder-sub").show();
+
       // Hide Generate button
       $("#button-generate-subjects").css("display", "none");
     }
@@ -1630,7 +1633,7 @@ function resetSamples() {
           $($(field).parents()[2]).remove();
         }
       }
-
+      $("#div-import-primary-folder-sam").show();
       // delete table rows except headers
       $("#table-samples tr:gt(0)").remove();
       $("#table-samples").css("display", "none");

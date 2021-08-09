@@ -1536,6 +1536,14 @@ ipcRenderer.on(
 
 function transformImportedExcelFile(type, result) {
   for (var column of result.slice(1)) {
+    var indices = getAllIndexes(column, "");
+    // check if the first 2 columns are empty
+    if (indices.length > 18 && type === "samples" && (indices.includes(0) || indices.includes(1))) {
+      return false
+    }
+    if (indices.length > 17 && type === "subjects" && indices.includes(0)) {
+      return false
+    }
     var indices = getAllIndexes(column, "nan");
     for (var ind of indices) {
       column[ind] = "";
@@ -1545,8 +1553,8 @@ function transformImportedExcelFile(type, result) {
         column[5] = "";
       }
     }
+    return result;
   }
-  return result;
 }
 
 function getAllIndexes(arr, val) {
@@ -1578,7 +1586,19 @@ function loadSubjectsFileToDataframe(filePath) {
       } else {
         // res is a dataframe, now we load it into our subjectsTableData in order to populate the UI
         if (res.length > 1) {
-          subjectsTableData = transformImportedExcelFile("subjects", res);
+          result = transformImportedExcelFile("subjects", res);
+          if (result !== false) {
+            subjectsTableData = result
+          } else {
+            Swal.fire({
+              title: "Couldn't load existing subjects.xlsx file",
+              text: "Please make sure the imported file follows the latest SPARC Dataset Structure 2.0.0 and try again.",
+              icon: "error",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            });
+            return
+          }
           loadDataFrametoUI();
           ipcRenderer.send(
             "track-event",
@@ -1593,7 +1613,6 @@ function loadSubjectsFileToDataframe(filePath) {
             "Prepare Metadata - Create subjects.xlsx - Load existing subjects.xlsx file",
             error
           );
-
           Swal.fire({
             title: "Couldn't load existing subjects.xlsx file",
             text: "Please make sure there is at least one subject in the subjects.xlsx file.",
@@ -1627,14 +1646,26 @@ function loadSamplesFileToDataframe(filePath) {
       } else {
         // res is a dataframe, now we load it into our samplesTableData in order to populate the UI
         if (res.length > 1) {
-          samplesTableData = transformImportedExcelFile("samples", res);
+          result = transformImportedExcelFile("samples", res);
+          if (result !== false) {
+            samplesTableData = result
+          } else {
+            Swal.fire({
+              title: "Couldn't load existing samples.xlsx file",
+              text: "Please make sure the imported file follows the latest SPARC Dataset Structure 2.0.0 and try again.",
+              icon: "error",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            });
+            return
+          }
+          loadDataFrametoUISamples();
           ipcRenderer.send(
             "track-event",
             "Success",
             "Prepare Metadata - Create samples.xlsx - Load existing samples.xlsx file",
             samplesTableData
           );
-          loadDataFrametoUISamples();
         } else {
           ipcRenderer.send(
             "track-event",
