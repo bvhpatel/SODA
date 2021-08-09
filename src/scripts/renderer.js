@@ -696,9 +696,6 @@ const dsContributorArrayLast1 = document.getElementById(
 const dsContributorArrayFirst1 = document.getElementById(
   "ds-description-contributor-list-first-1"
 );
-
-// var contributorRoles = document.getElementById("input-con-role-1");
-// const affiliationInput = document.getElementById("input-con-affiliation-1");
 const addCurrentContributorsBtn = document.getElementById(
   "button-ds-add-contributor"
 );
@@ -960,10 +957,12 @@ dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
 /////// Save and load award and milestone info
 var metadataPath = path.join(homeDirectory, "SODA", "METADATA");
 var awardFileName = "awards.json";
+var affiliationFileName = "affiliations.json"
 var milestoneFileName = "milestones.json";
 var airtableConfigFileName = "airtable-config.json";
 var protocolConfigFileName = "protocol-config.json";
 var awardPath = path.join(metadataPath, awardFileName);
+var affiliationConfigPath = path.join(metadataPath, affiliationFileName);
 var milestonePath = path.join(metadataPath, milestoneFileName);
 var airtableConfigPath = path.join(metadataPath, airtableConfigFileName);
 var progressFilePath = path.join(homeDirectory, "SODA", "Progress");
@@ -2316,6 +2315,7 @@ function loadContributorInfo(lastName, firstName) {
         maxItems: 25,
         closeOnSelect: true, // keep the dropdown open after selecting a suggestion
       },
+      whitelist: affiliationSuggestions,
       delimiters: null,
       duplicates: false,
     }

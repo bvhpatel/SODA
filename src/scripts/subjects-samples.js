@@ -2958,6 +2958,7 @@ var contributorElementRaw =
   '<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><input id="dd-contributor-last-name" class="form-container-input-bf" style="line-height: 2"></input></div><div class="div-child"><label>First name</label><input id="dd-contributor-first-name" class="form-container-input-bf" style="line-height: 2"></input></div></div><div><label>ORCiD <i class="fas fa-info-circle swal-popover" data-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle swal-popover" data-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle swal-popover" data-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div><div style="margin-top:15px;display:flex;flex-direction:column"><label>Corresponding Author <i class="fas fa-info-circle swal-popover" data-content="Check if the contributor is a corresponding author for the dataset. At least one and only one of the contributors should be the corresponding author." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><label class="switch" style="margin-top: 15px"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"></input><span class="slider round"></span></label></div></div>';
 
 var contributorArray = [];
+var affiliationSuggestions = []
 
 function showContributorSweetalert(key) {
   var currentContributortagify;
@@ -3036,6 +3037,7 @@ function showContributorSweetalert(key) {
             maxItems: 25,
             closeOnSelect: true, // keep the dropdown open after selecting a suggestion
           },
+          whitelist: affiliationSuggestions,
           delimiters: null,
           duplicates: false,
         }
@@ -3054,9 +3056,15 @@ function showContributorSweetalert(key) {
       popup: "animate__animated animate__fadeOutUp animate__faster",
     },
     preConfirm: () => {
-      var affiliationVals = grabCurrentTagifyContributor(
+      var affValues = grabCurrentTagifyContributor(
         currentAffliationtagify
-      ).join(", ");
+      )
+      // store affiliation info as suggestions
+      affiliationSuggestions.push.apply(affiliationSuggestions, affValues)
+      var affSet = new Set(affiliationSuggestions);
+      var affArray = [...affSet];
+      affiliationSuggestions = affArray;
+      var affiliationVals = affValues.join(", ");
       var roleVals = grabCurrentTagifyContributor(
         currentContributortagify
       ).join(", ");
@@ -3101,7 +3109,6 @@ function showContributorSweetalert(key) {
               conID: $("#input-con-ID").val().trim(),
               conAffliation: affiliationVals,
               conRole: roleVals,
-              // conContact: "No",
             };
             contributorArray.push(myCurrentCon);
             return [myCurrentCon.conName, "No"];
@@ -3116,6 +3123,8 @@ function showContributorSweetalert(key) {
   }).then((result) => {
     if (result.isConfirmed) {
       addContributortoTableDD(result.value[0], result.value[1]);
+      // memorize Affiliation info for next time as suggestions
+      memorizeAffiliationInfo(affiliationSuggestions)
     }
   });
 }
@@ -3218,7 +3227,8 @@ function edit_current_con_id(ev) {
             maxItems: 25,
             closeOnSelect: true, // keep the dropdown open after selecting a suggestion
           },
-          // delimiters: null,
+          // delimiters: ",",
+          whitelist: affiliationSuggestions,
           duplicates: false,
         }
       );
@@ -3264,9 +3274,14 @@ function edit_current_con_id(ev) {
       ) {
         Swal.showValidationMessage(`Please fill in all required fields!`);
       } else {
-        var affiliationVals = grabCurrentTagifyContributor(
+        var affValues = grabCurrentTagifyContributor(
           currentAffliationtagify
-        ).join(", ");
+        )
+        affiliationSuggestions.push.apply(affiliationSuggestions, affValues)
+        var affSet = new Set(affiliationSuggestions);
+        var affArray = [...affSet];
+        affiliationSuggestions = affArray;
+        var affiliationVals = affValues.join(", ");
         var roleVals = grabCurrentTagifyContributor(
           currentContributortagify
         ).join(", ");
@@ -3294,6 +3309,7 @@ function edit_current_con_id(ev) {
                 break;
               }
             }
+
             return [myCurrentCon.conName, "Yes"];
           }
         } else {
@@ -3321,8 +3337,16 @@ function edit_current_con_id(ev) {
   }).then((result) => {
     if (result.isConfirmed) {
       $(currentRow)[0].cells[2].innerText = result.value[1];
+      memorizeAffiliationInfo(affiliationSuggestions)
     }
   });
+}
+
+function memorizeAffiliationInfo(values) {
+  createMetadataDir();
+  var content = parseJson(affiliationConfigPath);
+  content["affiliation"] = values;
+  fs.writeFileSync(affiliationConfigPath, JSON.stringify(content));
 }
 
 function grabCurrentTagifyContributor(tagify) {

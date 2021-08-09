@@ -142,34 +142,13 @@ $(document).ready(function () {
     }
   });
 
-  // ipcRenderer.on(
-  //   "warning-share-with-curation-team-selection",
-  //   (event, index) => {
-  //     if (index === 0) {
-  //       var account = $("#current-bf-account").text();
-  //       var dataset = $(".bf-dataset-span")
-  //         .html()
-  //         .replace(/^\s+|\s+$/g, "");
-  //       disseminateCurationTeam(account, dataset);
-  //     } else {
-  //       $("#share-curation-team-spinner").hide();
-  //     }
-  //   }
-  // );
-
-  // ipcRenderer.on("warning-share-with-consortium-selection", (event, index) => {
-  //   if (index === 0) {
-  //     var account = $("#current-bf-account").text();
-  //     var dataset = $(".bf-dataset-span")
-  //       .html()
-  //       .replace(/^\s+|\s+$/g, "");
-  //     disseminateConsortium(account, dataset);
-  //   } else {
-  //     $("#share-with-sparc-consortium-spinner").show();
-  //   }
-  // });
-
   checkAirtableStatus("");
+
+  // load affiliation suggestions
+  var affContent = parseJson(affiliationConfigPath);
+  if (Object.keys(affContent).length > 0) {
+    affiliationSuggestions = affContent["affiliation"]
+  }
 
   ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
     if (dirpath.length > 0) {
