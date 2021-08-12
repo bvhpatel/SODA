@@ -1831,7 +1831,13 @@ $(document).ready(function () {
           "Prepare Metadata - Continue with existing subjects.xlsx",
           defaultBfAccount
         );
+      } else {
+        document.getElementById("existing-subjects-file-destination").placeholder = "Browse here"
+        $("#div-confirm-existing-subjects-import").hide();
       }
+    } else {
+      document.getElementById("existing-subjects-file-destination").placeholder = "Browse here"
+      $("#div-confirm-existing-subjects-import").hide();
     }
     if (
       document.getElementById("existing-subjects-file-destination")
@@ -1857,7 +1863,13 @@ $(document).ready(function () {
           "Prepare Metadata - Continue with existing samples.xlsx",
           defaultBfAccount
         );
+      } else {
+        document.getElementById("existing-samples-file-destination").placeholder = "Browse here"
+        $("#div-confirm-existing-samples-import").hide();
       }
+    } else {
+      document.getElementById("existing-samples-file-destination").placeholder = "Browse here"
+      $("#div-confirm-existing-samples-import").hide();
     }
     if (
       document.getElementById("existing-samples-file-destination")
@@ -1868,6 +1880,7 @@ $(document).ready(function () {
     } else {
       $("#div-confirm-existing-samples-import").hide();
       $($("#div-confirm-existing-samples-import button")[0]).hide();
+
     }
   });
 
@@ -1896,26 +1909,96 @@ $(document).ready(function () {
       } else {
         document.getElementById("existing-dd-file-destination").placeholder = "Browse here"
         $("#div-confirm-existing-dd-import").hide();
-        $($("#div-confirm-existing-dd-import button")[0]).hide();
       }
     } else {
       document.getElementById("existing-dd-file-destination").placeholder = "Browse here"
       $("#div-confirm-existing-dd-import").hide();
-      $($("#div-confirm-existing-dd-import button")[0]).hide();
     }
   });
 });
 
 function showExistingSubjectsFile() {
-  ipcRenderer.send("open-file-dialog-existing-subjects");
+  if ($("#existing-subjects-file-destination").prop("placeholder") !== "Browse here") {
+    Swal.fire({
+      title: "Are you sure you want to import a different subjects file?",
+      text: "This will delete all of your previous work on this file.",
+      showCancelButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      cancelButtonText: `No!`,
+      cancelButtonColor: "#f44336",
+      confirmButtonColor: "#3085d6",
+      confirmButtonText: "Yes",
+      icon: "warning",
+      reverseButtons: reverseSwalButtons,
+    }).then((boolean) => {
+      if (boolean.isConfirmed) {
+        ipcRenderer.send("open-file-dialog-existing-subjects");
+        document.getElementById("existing-subjects-file-destination").placeholder = "Browse here"
+        $("#div-confirm-existing-subjects-import").hide();
+        $($("#div-confirm-existing-subjects-import button")[0]).hide();
+        $("#Question-prepare-subjects-3").removeClass("show")
+      }
+    })
+  } else {
+    ipcRenderer.send("open-file-dialog-existing-subjects");
+  }
 }
 
 function showExistingSamplesFile() {
-  ipcRenderer.send("open-file-dialog-existing-samples");
+  if ($("#existing-samples-file-destination").prop("placeholder") !== "Browse here") {
+    Swal.fire({
+      title: "Are you sure you want to import a different samples file?",
+      text: "This will delete all of your previous work on this file.",
+      showCancelButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      cancelButtonText: `No!`,
+      cancelButtonColor: "#f44336",
+      confirmButtonColor: "#3085d6",
+      confirmButtonText: "Yes",
+      icon: "warning",
+      reverseButtons: reverseSwalButtons,
+    }).then((boolean) => {
+      if (boolean.isConfirmed) {
+        ipcRenderer.send("open-file-dialog-existing-samples");
+        document.getElementById("existing-samples-file-destination").placeholder = "Browse here"
+        $("#div-confirm-existing-samples-import").hide();
+        $($("#div-confirm-existing-samples-import button")[0]).hide();
+        $("#Question-prepare-samples-3").removeClass("show")
+      }
+    })
+  } else {
+    ipcRenderer.send("open-file-dialog-existing-samples");
+  }
 }
 
 function showExistingDDFile() {
-  ipcRenderer.send("open-file-dialog-existing-DD");
+  if ($("#existing-dd-file-destination").prop("placeholder") !== "Browse here") {
+    Swal.fire({
+      title: "Are you sure you want to import a different dataset_description file?",
+      text: "This will delete all of your previous work on this file.",
+      showCancelButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      cancelButtonText: `No!`,
+      cancelButtonColor: "#f44336",
+      confirmButtonColor: "#3085d6",
+      confirmButtonText: "Yes",
+      icon: "warning",
+      reverseButtons: reverseSwalButtons,
+    }).then((boolean) => {
+      if (boolean.isConfirmed) {
+        ipcRenderer.send("open-file-dialog-existing-DD");
+        document.getElementById("existing-dd-file-destination").placeholder = "Browse here"
+        $("#div-confirm-existing-dd-import").hide();
+        $($("#div-confirm-existing-dd-import button")[0]).hide();
+        $("#Question-prepare-dd-2").removeClass("show")
+      }
+    })
+  } else {
+    ipcRenderer.send("open-file-dialog-existing-DD");
+  }
 }
 
 function importExistingSubjectsFile() {
@@ -2011,7 +2094,7 @@ function importExistingDDFile() {
       Swal.fire({
         title: "Loading an existing dataset_description.xlsx file",
         html: "Please wait...",
-        timer: 2000,
+        timer: 5000,
         allowEscapeKey: false,
         allowOutsideClick: false,
         heightAuto: false,
@@ -2033,7 +2116,7 @@ function loadDDfileDataframe(filePath) {
       console.log(error);
       Swal.fire({
         title: "Failed to load the existing dataset_description.xlsx file",
-        text: `${emessage}`,
+        html: emessage,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         icon: "error"

@@ -4937,8 +4937,6 @@
           <div class="grouped fields">
             <label style="font-size: 17px; color: var(--color-bg-plum)"
               >Start adding your subject(s) below: <br />
-              <!-- <span style="color: #898989; font-size: 12px"
-                  >When ready, click "Generate".</span> -->
             </label>
             <div
               style="display: flex; flex-direction: column; margin: 10px auto"
@@ -5529,7 +5527,7 @@
                 <div class="tooltipnew demo-controls-end">
                   <i
                     class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content="Provide a population that the specimen of your subject belongs to."
+                    data-content="Provide a population that the specimen of your subject belongs to. <br>For example: pop-1"
                     rel="popover"
                     data-placement="right"
                     data-html="true"
@@ -6074,7 +6072,7 @@
                 <div class="tooltipnew demo-controls-end">
                   <i
                     class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content="Provide the intervention applied to your subject (if any)."
+                    data-content="Provide the intervention applied to your subject (if any). <br> For example: a surgery."
                     rel="popover"
                     data-placement="right"
                     data-html="true"
@@ -6103,7 +6101,7 @@
                 <div class="tooltipnew demo-controls-end">
                   <i
                     class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content="The reference atlas and organ. <br>
+                    data-content="The reference atlas and organ. </br>
                     <i>Example: Paxinos Rat V3 <i>"
                     rel="popover"
                     data-placement="right"
@@ -7198,7 +7196,7 @@
                 <div class="tooltipnew demo-controls-end">
                   <i
                     class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content="Provide a population that the specimen or sample belongs to."
+                    data-content="Provide a population that the specimen or sample belongs to. <br>For example: pop-1"
                     rel="popover"
                     data-placement="right"
                     data-html="true"
@@ -7423,7 +7421,7 @@
                 <div class="tooltipnew demo-controls-end">
                   <i
                     class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content="Provide the pathological condition of the diseased subject if applicable."
+                    data-content="Provide the pathological condition of the sample if applicable."
                     rel="popover"
                     data-placement="right"
                     data-html="true"
@@ -7455,7 +7453,7 @@
                 <div class="tooltipnew demo-controls-end">
                   <i
                     class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content=""
+                    data-content="This indicates which one of a pair of organs (i.e: kidneys or lungs) the sample is. <br>For example: Left."
                     rel="popover"
                     data-placement="right"
                     data-html="true"
@@ -7501,13 +7499,18 @@
                 </div>
                 <div class="demo-controls-body">
                   <div class="ui input modified">
-                    <input
-                      type="text"
+                    <select
                       id="bootbox-sample-plane-of-section"
                       name="plane of section"
                       class="samples-form-entry"
-                      placeholder="Type here..."
-                    />
+                    >
+                    <option value="Select">Select here</option>
+                    <option value="anatomical plane">Anatomical plane</option>
+                    <option value="transverse">Transverse</option>
+                    <option value="coronal">Coronal</option>
+                    <option value="sagittal">Sagittal</option>
+                    <option value="horizontal">Horizontal</option>
+                    </select>
                   </div>
                 </div>
                 <div class="tooltipnew demo-controls-end">
@@ -7542,7 +7545,7 @@
                 <div class="tooltipnew demo-controls-end">
                   <i
                     class="fas fa-info-circle popover-tooltip subjects-form"
-                    data-content="The reference atlas and organ. <br>
+                    data-content="The reference atlas and organ. </br>
                     <i>Example: Paxinos Rat V3 <i>"
                     rel="popover"
                     data-placement="right"

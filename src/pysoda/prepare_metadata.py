@@ -414,15 +414,33 @@ def column_check(x):
     return True
 
 def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
-    if type == "subjects":
-        templateHeaderList = subjectsTemplateHeaderList
-    else:
-        templateHeaderList = samplesTemplateHeaderList
 
     subjects_df = pd.read_excel(filepath, engine='openpyxl', usecols=column_check, header=0)
     subjects_df = subjects_df.dropna(axis = 0, how = 'all')
+    subjects_df = subjects_df.replace(np.nan, '', regex=True)
     subjects_df = subjects_df.applymap(str)
     subjects_df.columns = map(str.lower, subjects_df.columns)
+
+    if type == "subjects":
+        if "subject id" not in list(subjects_df.columns.values):
+            raise Exception("The header 'subject id' is required to import an existing subjects file")
+
+        else:
+            if checkEmptyColumn(subjects_df["subject id"]):
+                raise Exception("At least 1 'subject id' is required to import an existing subjects file")
+
+        templateHeaderList = subjectsTemplateHeaderList
+
+    else:
+        if "subject id" not in list(subjects_df.columns.values) or "sample id" not in list(subjects_df.columns.values) :
+            raise Exception("The headers 'subject id' and 'sample id' are required to import an existing samples file")
+
+        else:
+            if checkEmptyColumn(subjects_df["sample id"]) or checkEmptyColumn(subjects_df["sample id"]):
+                raise Exception("At least 1 'subject id' and 'sample id' pair is required to import an existing samples file")
+
+        templateHeaderList = samplesTemplateHeaderList
+
     importedHeaderList = list(subjects_df.columns.values)
 
     transpose = []
@@ -513,6 +531,12 @@ def load_existing_DD_file(filepath):
     DD_df = DD_df.replace(np.nan, '', regex=True)
     DD_df = DD_df.applymap(str)
     DD_df = DD_df.applymap(str.strip)
+
+    header_list = list(itertools.chain(basicInfoHeaders,studyInfoHeaders,contributorInfoHeaders, awardInfoHeaders, relatedInfoHeaders))
+
+    for header_name in header_list:
+        if header_name not in list(DD_df["Metadata element"]):
+            raise Exception("The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/dataset_description.xlsx'>template</a> of the dataset_description.")
 
     # check if Metadata Element a.k.a Header column exists
     if not "Metadata element" in DD_df:
