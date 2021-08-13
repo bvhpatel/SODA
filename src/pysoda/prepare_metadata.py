@@ -423,7 +423,7 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
 
     if type == "subjects":
         if "subject id" not in list(subjects_df.columns.values):
-            raise Exception("The header 'subject id' is required to import an existing subjects file")
+            raise Exception("The header 'subject id' is required to import an existing subjects file. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/subjects.xlsx'>template</a> of the subjects file.")
 
         else:
             if checkEmptyColumn(subjects_df["subject id"]):
@@ -433,7 +433,7 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
 
     else:
         if "subject id" not in list(subjects_df.columns.values) or "sample id" not in list(subjects_df.columns.values) :
-            raise Exception("The headers 'subject id' and 'sample id' are required to import an existing samples file")
+            raise Exception("The headers 'subject id' and 'sample id' are required to import an existing samples file. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/samples.xlsx'>template</a> of the samples file.")
 
         else:
             if checkEmptyColumn(subjects_df["sample id"]) or checkEmptyColumn(subjects_df["sample id"]):

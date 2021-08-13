@@ -1586,7 +1586,7 @@ function loadSubjectsFileToDataframe(filePath) {
         var emessage = userError(error);
         Swal.fire({
           title: "Couldn't load existing subjects.xlsx file",
-          text: emessage,
+          html: emessage,
           icon: "error",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
@@ -1654,7 +1654,7 @@ function loadSamplesFileToDataframe(filePath) {
         var emessage = userError(error);
         Swal.fire({
           title: "Couldn't load existing samples.xlsx file",
-          text: emessage,
+          html: emessage,
           icon: "error",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
