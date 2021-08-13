@@ -1474,8 +1474,8 @@ function importPrimaryFolderSamples(folderPath) {
 function loadSubjectsDataToTable() {
   var iconMessage = "success";
   var showConfirmButtonBool = false;
-  var text =
-    "Please add or edit your subject_id(s) in the following subjects table.";
+  // var text =
+  //   "Please add or edit your subject_id(s) in the following subjects table.";
   // delete table rows except headers
   $("#table-subjects tr:gt(0)").remove();
   for (var i = 1; i < subjectsTableData.length; i++) {
@@ -1493,7 +1493,7 @@ function loadSubjectsDataToTable() {
   } else {
     Swal.fire({
       title: "Loaded successfully!",
-      text: "Please add or edit your subject_id(s) in the following subjects table.",
+      html: 'Add or edit your subject_id(s) in the following table. <br><br><b>Note</b>: Any value that does not follow SPARC standards (For example: Values for the fields: "Sex", "Age category", and "Handedness") will be not be imported by SODA.',
       icon: "success",
       showConfirmButton: true,
       heightAuto: false,
@@ -1502,10 +1502,10 @@ function loadSubjectsDataToTable() {
   }
   Swal.fire({
     title: "Loaded successfully!",
-    text: text,
+    html: 'Add or edit your subject_id(s) in the following table. <br><br><b>Note</b>: Any value that does not follow SPARC standards (For example: Values for the fields: "Sex", "Age category", and "Handedness") will be not be imported by SODA.',
     icon: iconMessage,
-    showConfirmButton: showConfirmButtonBool,
-    timer: 1200,
+    showConfirmButton: true,
+    // timer: 1200,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
   });
@@ -1535,10 +1535,9 @@ function loadSamplesDataToTable() {
   } else {
     Swal.fire({
       title: "Loaded successfully!",
-      text: "Please add or edit your sample_id(s) in the following samples table.",
+      html: 'Add or edit your sample_id(s) in the following table. <br><br><b>Note</b>:: Any value that does not follow SPARC standards (For example: Values for the fields: "Sample type", "Laterality", and "Plane of section") will be not be imported by SODA.',
       icon: "success",
-      showConfirmButton: false,
-      timer: 1200,
+      showConfirmButton: true,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
     });
