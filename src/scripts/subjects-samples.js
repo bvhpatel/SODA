@@ -432,6 +432,8 @@ function clearAllSubjectFormFields(form) {
   for (var field of $(form).children().find("select")) {
     $(field).val("Select");
   }
+  $(form).find(".title").removeClass("active");
+  $(form).find(".content").removeClass("active");
 }
 
 // add new subject ID to JSON file (main file to be converted to excel)
@@ -1227,11 +1229,16 @@ function updateOrderIDTable(table, json, type) {
   // 2. add headers as the first array
   orderedTableData[0] = json[0];
   // 3. loop through the UI table by index -> grab subject_id accordingly, find subject_id in json, append that to orderedSubjectsTableData
+  if (type === "subjects") {
+    order = 0
+  } else if (type === "samples") {
+    order = 1
+  }
   i = 1;
   for (var index = 1; index < length; index++) {
     var id = table.rows[index].cells[1].innerText;
     for (var ind of json.slice(1)) {
-      if (ind[1] === id) {
+      if (ind[order] === id) {
         orderedTableData[i] = ind;
         i += 1;
         break;

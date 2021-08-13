@@ -1728,6 +1728,27 @@ async function transitionFreeFormMode(
     }
   }
 
+  if ($(ev).attr("data-current") === "Question-prepare-dd-1") {
+    if ($("#Question-prepare-dd-2").hasClass("show")) {
+      var { value: continueProgressDD } = await Swal.fire({
+        title:
+        "This will reset your progress so far with the dataset_description.xlsx file. Are you sure you want to continue?",
+        showCancelButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "Yes",
+        cancelButtonText: "No",
+        reverseButtons: reverseSwalButtons,
+      });
+      if (!continueProgressDD) {
+        return;
+      } else {
+        $("#existing-dd-file-destination").val("");
+        resetDDFields()
+      }
+    }
+  }
+
   $(ev).removeClass("non-selected");
   $(ev).children().find(".folder-input-check").prop("checked", true);
   $(ev).addClass("checked");

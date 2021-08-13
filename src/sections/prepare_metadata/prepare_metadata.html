@@ -2063,6 +2063,7 @@
                 <div
                   class="option-card radio-button"
                   data-next="Question-prepare-dd-2"
+                  data-current="Question-prepare-dd-1"
                   onclick="transitionFreeFormMode(this, 'Question-prepare-dd-1', 'create_dataset_description-tab', '', 'individual-question prepare-dd')"
                   style="
                     max-width: 200px;
@@ -2108,6 +2109,7 @@
                 <div
                   class="option-card radio-button"
                   data-next="Question-prepare-dd-3"
+                  data-current="Question-prepare-dd-1"
                   onclick="transitionFreeFormMode(this, 'Question-prepare-dd-1', 'create_dataset_description-tab', '', 'individual-question prepare-dd')"
                   style="
                     max-width: 200px;
@@ -2157,7 +2159,7 @@
               >Fill out the sections below and generate your dataset_description
               file
             </label>
-            <div class="ui styled accordion" style="width: 100% !important">
+            <div class="ui styled accordion" id="dd-accordion" style="width: 100% !important">
               <div
                 class="title"
                 style="background: var(--color-bg-light-green-button)"
