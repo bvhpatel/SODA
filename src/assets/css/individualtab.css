@@ -1689,3 +1689,7 @@ body.swal2-shown > [aria-hidden="true"] {
   background: #0c63e4;
   color: #e7f1ff;
 }
+
+.second-option-swal-btn {
+  background: var(--color-bg-plum-light) !important
+}

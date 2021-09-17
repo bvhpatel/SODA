@@ -939,12 +939,6 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
             }
           );
         }
-        // if (result.isDismissed) {
-        //   if (result.dismiss === Swal.DismissReason.cancel) {
-        //     // else, if users click Add account
-        //     showBFAddAccountBootbox();
-        //   }
-        // }
       });
     }
   } else if (dropdown === "dataset") {
@@ -984,12 +978,6 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
         .trigger("change");
 
       initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
-
-      // $("#curatebfdatasetlist").selectpicker("hide");
-      // $("#curatebfdatasetlist").selectpicker("refresh");
-      // $(".selectpicker").selectpicker("hide");
-      // $(".selectpicker").selectpicker("refresh");
-      // $("#bf-dataset-select-div").hide();
 
       const { value: bfDS } = await Swal.fire({
         backdrop: "rgba(0,0,0, 0.4)",

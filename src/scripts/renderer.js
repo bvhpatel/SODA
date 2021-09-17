@@ -5950,6 +5950,9 @@ ipcRenderer.on("selected-folders-organize-datasets", (event, pathElement) => {
         "<div style='max-height:300px; overflow-y:auto'>" +
         irregularFolderArray.join("</br>") +
         "</div>",
+      customClass: {
+        denyButton: "second-option-swal-btn"
+      },
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showDenyButton: true,
@@ -6126,6 +6129,9 @@ function drop(ev) {
         "<div style='max-height:300px; overflow-y:auto'>" +
         irregularFolderArray.join("</br>") +
         "</div>",
+      customClass: {
+        denyButton: "second-option-swal-btn"
+      },
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showDenyButton: true,
@@ -7243,6 +7249,9 @@ ipcRenderer.on(
                   irregularFolderArray.join("</br>") +
                   "</div>",
                 heightAuto: false,
+                customClass: {
+                  denyButton: "second-option-swal-btn"
+                },
                 backdrop: "rgba(0,0,0, 0.4)",
                 showDenyButton: true,
                 showCancelButton: true,

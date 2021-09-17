@@ -20,38 +20,9 @@ function showForm(type, editBoolean) {
 }
 
 function showFormSamples(type, editBoolean) {
-  // if (samplesTableData.length > 1) {
-  //   var samplesDropdownOptions = [];
-  //   var subjectsDropdownOptions = [];
-  //   for (var i = 1; i < samplesTableData.length; i++) {
-  //     samplesDropdownOptions.push(samplesTableData[i][1]);
-  //     subjectsDropdownOptions.push(samplesTableData[i][0]);
-  //   }
-  //   if (!editBoolean) {
-  //     // prompt users if they want to import entries from previous sub_ids
-  //     Swal.fire({
-  //       title: "Would you like to re-use information from previous sample(s)?",
-  //       showCancelButton: true,
-  //       cancelButtonText: `No, start fresh!`,
-  //       cancelButtonColor: "#f44336",
-  //       confirmButtonColor: "#3085d6",
-  //       confirmButtonText: "Yes!",
-  //     }).then((boolean) => {
-  //       if (boolean.isConfirmed) {
-  //         promptImportPrevInfoSamples(
-  //           subjectsDropdownOptions,
-  //           samplesDropdownOptions
-  //         );
-  //       } else {
-  //         clearAllSubjectFormFields(samplesFormDiv);
-  //       }
-  //     });
-  //   }
-  // } else {
   if (type !== "edit") {
     clearAllSubjectFormFields(samplesFormDiv);
   }
-  // }
   samplesFormDiv.style.display = "flex";
   $("#create_samples-tab").removeClass("show");
   $("#create_samples-tab").css("display", "none");
@@ -3369,4 +3340,157 @@ function grabCompletenessInfo() {
     optionalSectionObj["completeDSTitle"] = completeDSTitle;
   }
   return optionalSectionObj;
+}
+
+// this function show options for Generating metadata files
+function showGenerateOptions(filetype) {
+  Swal.fire({
+    title: "Where would you like to generate the file?",
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    customClass: {
+      denyButton: "second-option-swal-btn"
+    },
+    showConfirmButton: true,
+    confirmButtonText: "Directly on Pennsieve",
+    showDenyButton: true,
+    denyButtonText: "Locally on my computer",
+    showCancelButton: true,
+    cancelButtonText: "Cancel"
+  }).then((result) => {
+    if (result.isConfirmed) {
+      /// TODO: generate onto Penn helper function
+      generateOntoPennHelper(filetype)
+    } else if (result.isDenied) {
+      /// here, generate locally
+      // TODO: change click option to a function and bring here
+
+      // for submission file, onclick function is generateSubmissionFile()
+    }
+  })
+}
+
+// for generating Metadata files onto Pennsieve
+// this helper function shows datasets on Pennsieve and show duplicate handling options for users
+async function generateOntoPennHelper(filetype) {
+  // if users edit Current dataset
+  datasetPermissionDiv.style.display = "block";
+  $(datasetPermissionDiv)
+    .find("#curatebfdatasetlist")
+    .find("option")
+    .empty()
+    .append('<option value="Select dataset">Search here...</option>')
+    .val("Select dataset");
+
+  $(datasetPermissionDiv)
+    .find("#div-filter-datasets-progress-2")
+    .css("display", "block");
+
+  $("#bf-dataset-select-header").css("display", "none");
+
+  $(datasetPermissionDiv).find("#para-filter-datasets-status-2").text("");
+  $("#para-continue-bf-dataset-getting-started").text("");
+
+  $(datasetPermissionDiv)
+    .find("#select-permission-list-2")
+    .val("All")
+    .trigger("change");
+  $(datasetPermissionDiv)
+    .find("#curatebfdatasetlist")
+    .val("Select dataset")
+    .trigger("change");
+
+  initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
+
+  const { value: bfDS } = await Swal.fire({
+    backdrop: "rgba(0,0,0, 0.4)",
+    cancelButtonText: "Cancel",
+    confirmButtonText: "Confirm",
+    focusCancel: true,
+    focusConfirm: false,
+    heightAuto: false,
+    allowOutsideClick: false,
+    allowEscapeKey: true,
+    html: datasetPermissionDiv,
+    reverseButtons: reverseSwalButtons,
+    showCloseButton: true,
+    showCancelButton: true,
+    title:
+      "<h3 style='margin-bottom:20px !important'>Select your dataset</h3>",
+    showClass: {
+      popup: "animate__animated animate__fadeInDown animate__faster",
+    },
+    hideClass: {
+      popup:
+        "animate__animated animate__fadeOutUp animate__faster animate_fastest",
+    },
+    willOpen: () => {
+      $("#curatebfdatasetlist").selectpicker("hide");
+      $("#curatebfdatasetlist").selectpicker("refresh");
+      $("#bf-dataset-select-div").hide();
+    },
+    didOpen: () => {
+      $(".ui.active.green.inline.loader.small").css("display", "none");
+    },
+    preConfirm: () => {
+      $("body").addClass("waiting");
+
+      $(datasetPermissionDiv)
+        .find("#div-filter-datasets-progress-2")
+        .css("display", "block");
+      $("#curatebfdatasetlist").selectpicker("hide");
+      $("#curatebfdatasetlist").selectpicker("refresh");
+      $("#bf-dataset-select-div").hide();
+
+      bfDataset = $("#curatebfdatasetlist").val();
+
+      if (!bfDataset) {
+        Swal.showValidationMessage("Please select a dataset!");
+
+        $(datasetPermissionDiv)
+          .find("#div-filter-datasets-progress-2")
+          .css("display", "none");
+        $("#curatebfdatasetlist").selectpicker("show");
+        $("#curatebfdatasetlist").selectpicker("refresh");
+        $("#bf-dataset-select-div").show();
+
+        return undefined;
+      } else {
+        if (bfDataset === "Select dataset") {
+          Swal.showValidationMessage("Please select a dataset!");
+
+          $(datasetPermissionDiv)
+            .find("#div-filter-datasets-progress-2")
+            .css("display", "none");
+          $("#curatebfdatasetlist").selectpicker("show");
+          $("#curatebfdatasetlist").selectpicker("refresh");
+          $("#bf-dataset-select-div").show();
+          return undefined;
+        } else {
+          return bfDataset;
+        }
+      }
+    },
+  });
+  // check return value
+  if (bfDS) {
+    Swal.fire({
+      title: `Would you like this file to replace any existing ${filetype} file on Pennsieve?`,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      confirmButtonText: "Yes, replace it",
+      showCancelButton: true,
+      cancelButtonText: "No, cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // pass onto Generate function with inputs:
+        // 1. filetype
+        // 2. duplicate handling
+        // 3. Dataset name
+        console.log(bfDS)
+        console.log(filetype)
+      }
+    })
+  }
 }
