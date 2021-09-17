@@ -1154,11 +1154,13 @@ function generateSubjectsFileHelper(mypath) {
         var emessage = userError(error);
         log.error(error);
         console.error(error);
-        Swal.fire(
-          "Failed to generate the subjects.xlsx file.",
-          `${emessage}`,
-          "error"
-        );
+        Swal.fire({
+          title: "Failed to generate the subjects.xlsx file.",
+          text: emessage,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          icon: "error"
+        })
         ipcRenderer.send(
           "track-event",
           "Error",
@@ -1265,11 +1267,13 @@ function generateSamplesFileHelper(mypath) {
           "Prepare Metadata - Create samples.xlsx",
           samplesTableData
         );
-        Swal.fire(
-          "Failed to generate the samples.xlsx file.",
-          `${emessage}`,
-          "error"
-        );
+        Swal.fire({
+          title: "Failed to generate the samples.xlsx file.",
+          text: emessage,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          icon: "error"
+        })
       } else {
         ipcRenderer.send(
           "track-event",
