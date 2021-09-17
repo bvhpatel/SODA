@@ -697,9 +697,6 @@ const dsContributorArrayLast1 = document.getElementById(
 const dsContributorArrayFirst1 = document.getElementById(
   "ds-description-contributor-list-first-1"
 );
-
-// var contributorRoles = document.getElementById("input-con-role-1");
-// const affiliationInput = document.getElementById("input-con-affiliation-1");
 const addCurrentContributorsBtn = document.getElementById(
   "button-ds-add-contributor"
 );
@@ -708,7 +705,7 @@ const currentConTable = document.getElementById("table-current-contributors");
 const generateDSBtn = document.getElementById("button-generate-ds-description");
 const addAdditionalLinkBtn = document.getElementById("button-ds-add-link");
 const datasetDescriptionFileDataset = document.getElementById("ds-name");
-const parentDSDropdown = document.getElementById("input-parent-ds");
+// const parentDSDropdown = document.getElementById("input-parent-ds");
 
 /////// New Organize Datasets /////////////////////
 const organizeDSglobalPath = document.getElementById("input-global-path");
@@ -921,10 +918,12 @@ dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
 /////// Save and load award and milestone info
 var metadataPath = path.join(homeDirectory, "SODA", "METADATA");
 var awardFileName = "awards.json";
+var affiliationFileName = "affiliations.json"
 var milestoneFileName = "milestones.json";
 var airtableConfigFileName = "airtable-config.json";
 var protocolConfigFileName = "protocol-config.json";
 var awardPath = path.join(metadataPath, awardFileName);
+var affiliationConfigPath = path.join(metadataPath, affiliationFileName);
 var milestonePath = path.join(metadataPath, milestoneFileName);
 var airtableConfigPath = path.join(metadataPath, airtableConfigFileName);
 var progressFilePath = path.join(homeDirectory, "SODA", "Progress");
@@ -941,28 +940,25 @@ var otherFundingInput = document.getElementById("ds-other-funding"),
     duplicates: false,
   });
 
-var parentDSTagify = new Tagify(parentDSDropdown, {
-  enforceWhitelist: true,
-  whitelist: [],
-  duplicates: false,
-  dropdown: {
-    maxItems: Infinity,
-    enabled: 0,
-    closeOnSelect: true,
-  },
-});
-
-var completenessInput = document.getElementById("ds-completeness"),
-  completenessTagify = new Tagify(completenessInput, {
-    whitelist: ["hasChildren", "hasNext"],
-    enforceWhitelist: true,
+var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
+  studyOrganSystemsTagify = new Tagify(studyOrganSystemsInput, {
+    whitelist: ["autonomic ganglion", "brain", "colon", "heart", "intestine", "kidney", "large intestine", "liver", "lower urinary tract", "lung", "nervous system", "pancreas", "peripheral nervous system", "small intestine", "spinal cord", "spleen", "stomach", "sympathetic nervous system", "urinary bladder"],
     duplicates: false,
-    maxTags: 2,
     dropdown: {
       enabled: 0,
       closeOnSelect: true,
     },
-  });
+});
+
+var studyTechniquesInput = document.getElementById("ds-study-technique"),
+  studyTechniquesTagify = new Tagify(studyTechniquesInput, {
+    duplicates: false,
+});
+
+var studyApproachesInput = document.getElementById("ds-study-approach"),
+  studyApproachesTagify = new Tagify(studyApproachesInput, {
+    duplicates: false,
+});
 
 ///////////////////// Airtable Authentication /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -1310,6 +1306,14 @@ ipcRenderer.on(
 
 function transformImportedExcelFile(type, result) {
   for (var column of result.slice(1)) {
+    var indices = getAllIndexes(column, "");
+    // check if the first 2 columns are empty
+    if (indices.length > 18 && type === "samples" && (indices.includes(0) || indices.includes(1))) {
+      return false
+    }
+    if (indices.length > 17 && type === "subjects" && indices.includes(0)) {
+      return false
+    }
     var indices = getAllIndexes(column, "nan");
     for (var ind of indices) {
       column[ind] = "";
@@ -1319,8 +1323,8 @@ function transformImportedExcelFile(type, result) {
         column[5] = "";
       }
     }
+    return result;
   }
-  return result;
 }
 
 function getAllIndexes(arr, val) {
@@ -1352,7 +1356,7 @@ function loadSubjectsFileToDataframe(filePath) {
         var emessage = userError(error);
         Swal.fire({
           title: "Couldn't load existing subjects.xlsx file",
-          text: emessage,
+          html: emessage,
           icon: "error",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
@@ -1360,7 +1364,19 @@ function loadSubjectsFileToDataframe(filePath) {
       } else {
         // res is a dataframe, now we load it into our subjectsTableData in order to populate the UI
         if (res.length > 1) {
-          subjectsTableData = transformImportedExcelFile("subjects", res);
+          result = transformImportedExcelFile("subjects", res);
+          if (result !== false) {
+            subjectsTableData = result
+          } else {
+            Swal.fire({
+              title: "Couldn't load existing subjects.xlsx file",
+              text: "Please make sure the imported file follows the latest SPARC Dataset Structure 2.0.0 and try again.",
+              icon: "error",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            });
+            return
+          }
           loadDataFrametoUI();
           ipcRenderer.send(
             "track-event",
@@ -1375,7 +1391,6 @@ function loadSubjectsFileToDataframe(filePath) {
             "Prepare Metadata - Create subjects.xlsx - Load existing subjects.xlsx file",
             error
           );
-
           Swal.fire({
             title: "Couldn't load existing subjects.xlsx file",
             text: "Please make sure there is at least one subject in the subjects.xlsx file.",
@@ -1409,7 +1424,7 @@ function loadSamplesFileToDataframe(filePath) {
         var emessage = userError(error);
         Swal.fire({
           title: "Couldn't load existing samples.xlsx file",
-          text: emessage,
+          html: emessage,
           icon: "error",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
@@ -1417,14 +1432,26 @@ function loadSamplesFileToDataframe(filePath) {
       } else {
         // res is a dataframe, now we load it into our samplesTableData in order to populate the UI
         if (res.length > 1) {
-          samplesTableData = transformImportedExcelFile("samples", res);
+          result = transformImportedExcelFile("samples", res);
+          if (result !== false) {
+            samplesTableData = result
+          } else {
+            Swal.fire({
+              title: "Couldn't load existing samples.xlsx file",
+              text: "Please make sure the imported file follows the latest SPARC Dataset Structure 2.0.0 and try again.",
+              icon: "error",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            });
+            return
+          }
+          loadDataFrametoUISamples();
           ipcRenderer.send(
             "track-event",
             "Success",
             "Prepare Metadata - Create samples.xlsx - Load existing samples.xlsx file",
             samplesTableData
           );
-          loadDataFrametoUISamples();
         } else {
           ipcRenderer.send(
             "track-event",
@@ -1667,6 +1694,13 @@ function createStrain(id, type) {
   });
 }
 
+$(document).ready(function () {
+  createSpeciesAutocomplete("bootbox-subject-species");
+  // createSpeciesAutocomplete("bootbox-sample-species");
+  // createStrain("bootbox-sample-strain", "samples");
+  createStrain("bootbox-subject-strain", "subjects");
+});
+
 async function loadTaxonomySpecies(commonName, destinationInput) {
   Swal.fire({
     title: "Finding the scientific name for " + commonName + "...",
@@ -1732,6 +1766,7 @@ function addOption(selectbox, text, value) {
 }
 
 var awardObj = {};
+var globalSPARCAward = "";
 // indicate to user that airtable records are being retrieved
 function loadAwardData() {
   ///// Construct table from data
@@ -2015,6 +2050,7 @@ function loadContributorInfo(lastName, firstName) {
         maxItems: 25,
         closeOnSelect: true, // keep the dropdown open after selecting a suggestion
       },
+      whitelist: affiliationSuggestions,
       delimiters: null,
       duplicates: false,
     }
@@ -2289,7 +2325,7 @@ $("#contributor-table-dd").mousedown(function (e) {
     updateIndexForTable(document.getElementById("contributor-table-dd"));
     updateOrderContributorTable(
       document.getElementById("contributor-table-dd"),
-      contributorObject
+      contributorArray
     );
   }
   $(document).mousemove(move).mouseup(up);
@@ -2476,7 +2512,7 @@ function detectEmptyRequiredFields(funding) {
     conEmptyField.push("SPARC Award");
   }
   if (!contactPersonExists) {
-    conEmptyField.push("One contact person");
+    conEmptyField.push("One Corresponding Author");
   }
   if (contributorNumber <= 1) {
     conEmptyField.push("At least one contributor");
@@ -2607,81 +2643,98 @@ ipcRenderer.on(
   }
 );
 
-function generateDDFile(fullpath, destinationPath) {
-  var datasetInfoValueArray = grabDSInfoEntries();
+        var datasetInfoValueObj = grabDSInfoEntries();
+        var studyInfoValueObject = grabStudyInfoEntries()
+        //// grab entries from contributor info section and pass values to conSectionArray
+        var contributorObj = grabConInfoEntries();
+        // grab related information (protocols and additional links)
+        var relatedInfoArr = combineLinksSections();
 
-  //// process obtained values to pass to an array ///
-  ///////////////////////////////////////////////////
-  var keywordVal = [];
-  for (var i = 0; i < datasetInfoValueArray["keywords"].length; i++) {
-    keywordVal.push(datasetInfoValueArray["keywords"][i].value);
-  }
-  /// replace keywordArray with keywordVal array
-  datasetInfoValueArray["keywords"] = keywordVal;
+        //// process obtained values to pass to an array ///
+        ///////////////////////////////////////////////////
 
-  //// push to all ds info values to dsSectionArray
-  var dsSectionArray = [];
-  for (let elementDS in datasetInfoValueArray) {
-    dsSectionArray.push(datasetInfoValueArray[elementDS]);
-  }
-  //// grab entries from contributor info section and pass values to conSectionArray
-  var contributorObj = grabConInfoEntries();
-  /// grab entries from other misc info section
-  var miscObj = combineLinksSections();
+        // process multiple Study info tagify values - keywords
+        var keywordVal = [];
+        for (var i = 0; i < datasetInfoValueObj["keywords"].length; i++) {
+          keywordVal.push(datasetInfoValueObj["keywords"][i].value);
+        }
+        /// replace raw tagify values with processed tagify values
+        datasetInfoValueObj["keywords"] = keywordVal;
 
-  /// grab entries from other optional info section
-  var completenessSectionObj = grabCompletenessInfo();
+        // process multiple Study info tagify values - Study techniques, approaches, and study organ systems
+        var studyTechniqueArr = [];
+        for (var i = 0; i < studyInfoValueObject["study technique"].length; i++) {
+          studyTechniqueArr.push(studyInfoValueObject["study technique"][i].value);
+        }
+        var studyOrganSystemsArr = [];
+        for (var i = 0; i < studyInfoValueObject["study organ system"].length; i++) {
+          studyOrganSystemsArr.push(studyInfoValueObject["study organ system"][i].value);
+        }
+        var studyApproachesArr = [];
+        for (var i = 0; i < studyInfoValueObject["study approach"].length; i++) {
+          studyApproachesArr.push(studyInfoValueObject["study approach"][i].value);
+        }
+        /// replace raw tagify values with processed tagify values
+        studyInfoValueObject["study organ system"] = studyOrganSystemsArr;
+        studyInfoValueObject["study technique"] = studyTechniqueArr;
+        studyInfoValueObject["study approach"] = studyApproachesArr;
 
-  ///////////// stringify JSON objects //////////////////////
-  json_str_ds = JSON.stringify(dsSectionArray);
-  json_str_misc = JSON.stringify(miscObj);
-  json_str_completeness = JSON.stringify(completenessSectionObj);
-  json_str_con = JSON.stringify(contributorObj);
+        ///////////// stringify JSON objects //////////////////////
+        json_str_ds = JSON.stringify(datasetInfoValueObj);
+        json_str_study = JSON.stringify(studyInfoValueObject);
+        json_str_con = JSON.stringify(contributorObj);
+        json_str_related_info = JSON.stringify(relatedInfoArr);
 
   /// get current, selected Pennsieve account
   var bfaccountname = $("#current-bf-account").text();
 
-  /// call python function to save file
-  if (fullpath != null) {
-    client.invoke(
-      "api_save_ds_description_file",
-      bfaccountname,
-      destinationPath,
-      json_str_ds,
-      json_str_misc,
-      json_str_completeness,
-      json_str_con,
-      (error, res) => {
-        if (error) {
-          var emessage = userError(error);
-          log.error(error);
-          console.error(error);
-          Swal.fire({
-            title: "Failed to generate the dataset_description file.",
-            text: emessage,
-            icon: "error",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            "Prepare Metadata - Create dataset_description",
-            defaultBfDataset
-          );
-        } else {
-          Swal.fire({
-            title:
-              "The dataset_description.xlsx file has been successfully generated at the specified location.",
-            icon: "success",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            "Prepare Metadata - Create dataset_description",
-            defaultBfDataset
+        /// call python function to save file
+        if (dirpath != null) {
+          client.invoke(
+            "api_save_ds_description_file",
+            bfaccountname,
+            destinationPath,
+            json_str_ds,
+            json_str_study,
+            json_str_con,
+            json_str_related_info,
+            (error, res) => {
+              if (error) {
+                var emessage = userError(error);
+                log.error(error);
+                console.error(error);
+                Swal.fire({
+                  title:
+                    "Failed to generate the dataset_description file",
+                  text: emessage,
+                  icon: "warning",
+                  heightAuto: false,
+                  backdrop: "rgba(0,0,0, 0.4)",
+                });
+                ipcRenderer.send(
+                  "track-event",
+                  "Error",
+                  "Prepare Metadata - Create dataset_description",
+                  defaultBfDataset
+                );
+                // $("#generate-dd-spinner").hide();
+              } else {
+                Swal.fire({
+                  title:
+                    "The dataset_description.xlsx file has been successfully generated at the specified location.",
+                  icon: "success",
+                  heightAuto: false,
+                  backdrop: "rgba(0,0,0, 0.4)",
+                });
+                ipcRenderer.send(
+                  "track-event",
+                  "Success",
+                  "Prepare Metadata - Create dataset_description",
+                  defaultBfDataset
+                );
+                // $("#generate-dd-spinner").hide();
+              }
+            }
           );
         }
       }
@@ -5149,7 +5202,7 @@ function refreshDatasetList() {
   });
 
   populateDatasetDropdowns(filteredDatasets);
-  parentDSTagify.settings.whitelist = getParentDatasets();
+  // parentDSTagify.settings.whitelist = getParentDatasets();
   return filteredDatasets.length;
 }
 
