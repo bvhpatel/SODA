@@ -1342,10 +1342,10 @@ function helpMilestoneSubmission() {
                 Swal.fire({
                   backdrop: "rgba(0,0,0, 0.4)",
                   heightAuto: false,
-                  timer: 3000,
-                  timerProgressBar: true,
+                  timer: 2000,
+                  timerProgressBar: false,
                   icon: "success",
-                  text: `Successfully loaded your DataDeliverables.docx document`,
+                  title: `Successfully loaded your DataDeliverables.docx document`,
                 });
                 removeOptions(descriptionDateInput);
                 milestoneTagify1.removeAllTags();
@@ -1387,6 +1387,7 @@ function openDDDimport() {
       }
     }
   );
+}
 
   function resetDDFields() {
     // 1. empty all input, textarea, select, para-elements
@@ -1407,7 +1408,7 @@ function openDDDimport() {
     otherFundingTagify.removeAllTags();
     studyTechniquesTagify.removeAllTags();
     studyOrganSystemsTagify.removeAllTags();
-    studyApproachesInput.removeAllTags();
+    studyApproachesTagify.removeAllTags();
 
     // 3. deleting table rows
     globalContributorNameObject = {};

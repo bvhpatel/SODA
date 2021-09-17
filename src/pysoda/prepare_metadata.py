@@ -382,9 +382,6 @@ def save_samples_file(filepath, datastructure):
     else:
         refinedDatastructure = transposeMatrix(sortMatrix)
 
-    # # 1. delete rows using delete_rows(index, amount=2) -- description and example rows
-    # ws1.delete_rows(2, 2)
-    # delete all optional columns first (from the template)
     ws1.delete_cols(10, 9)
 
     # 2. see if the length of datastructure[0] == length of datastructure. If yes, go ahead. If no, add new columns from headers[n-1] onward.
@@ -449,26 +446,6 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
         templateHeaderList = samplesTemplateHeaderList
 
     importedHeaderList = list(subjects_df.columns.values)
-
-    if type == "subjects":
-        if "subject_id" not in list(subjects_df.columns.values):
-            raise Exception("The header 'subject_id' is required to import an existing subjects file")
-
-        else:
-            if checkEmptyColumn(subjects_df["subject_id"]):
-                raise Exception("At least 1 'subject id' is required to import an existing subjects file")
-
-        templateHeaderList = subjectsTemplateHeaderList
-
-    else:
-        if "subject_id" not in list(subjects_df.columns.values) or "sample_id" not in list(subjects_df.columns.values) :
-            raise Exception("The headers 'subject_id' and 'sample_id' are required to import an existing samples file")
-
-        else:
-            if checkEmptyColumn(subjects_df["sample_id"]) or checkEmptyColumn(subjects_df["sample_id"]):
-                raise Exception("At least 1 'subject_id' and 'sample_id' pair is required to import an existing samples file")
-
-        templateHeaderList = samplesTemplateHeaderList
 
     transpose = []
     for header in templateHeaderList:

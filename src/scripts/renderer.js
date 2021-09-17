@@ -2643,98 +2643,94 @@ ipcRenderer.on(
   }
 );
 
-        var datasetInfoValueObj = grabDSInfoEntries();
-        var studyInfoValueObject = grabStudyInfoEntries()
-        //// grab entries from contributor info section and pass values to conSectionArray
-        var contributorObj = grabConInfoEntries();
-        // grab related information (protocols and additional links)
-        var relatedInfoArr = combineLinksSections();
+function generateDDFile(dirpath, destinationPath) {
+  var datasetInfoValueObj = grabDSInfoEntries();
+  var studyInfoValueObject = grabStudyInfoEntries()
+  //// grab entries from contributor info section and pass values to conSectionArray
+  var contributorObj = grabConInfoEntries();
+  // grab related information (protocols and additional links)
+  var relatedInfoArr = combineLinksSections();
 
-        //// process obtained values to pass to an array ///
-        ///////////////////////////////////////////////////
+  //// process obtained values to pass to an array ///
+  ///////////////////////////////////////////////////
 
-        // process multiple Study info tagify values - keywords
-        var keywordVal = [];
-        for (var i = 0; i < datasetInfoValueObj["keywords"].length; i++) {
-          keywordVal.push(datasetInfoValueObj["keywords"][i].value);
-        }
-        /// replace raw tagify values with processed tagify values
-        datasetInfoValueObj["keywords"] = keywordVal;
+  // process multiple Study info tagify values - keywords
+  var keywordVal = [];
+  for (var i = 0; i < datasetInfoValueObj["keywords"].length; i++) {
+    keywordVal.push(datasetInfoValueObj["keywords"][i].value);
+  }
+  /// replace raw tagify values with processed tagify values
+  datasetInfoValueObj["keywords"] = keywordVal;
 
-        // process multiple Study info tagify values - Study techniques, approaches, and study organ systems
-        var studyTechniqueArr = [];
-        for (var i = 0; i < studyInfoValueObject["study technique"].length; i++) {
-          studyTechniqueArr.push(studyInfoValueObject["study technique"][i].value);
-        }
-        var studyOrganSystemsArr = [];
-        for (var i = 0; i < studyInfoValueObject["study organ system"].length; i++) {
-          studyOrganSystemsArr.push(studyInfoValueObject["study organ system"][i].value);
-        }
-        var studyApproachesArr = [];
-        for (var i = 0; i < studyInfoValueObject["study approach"].length; i++) {
-          studyApproachesArr.push(studyInfoValueObject["study approach"][i].value);
-        }
-        /// replace raw tagify values with processed tagify values
-        studyInfoValueObject["study organ system"] = studyOrganSystemsArr;
-        studyInfoValueObject["study technique"] = studyTechniqueArr;
-        studyInfoValueObject["study approach"] = studyApproachesArr;
+  // process multiple Study info tagify values - Study techniques, approaches, and study organ systems
+  var studyTechniqueArr = [];
+  for (var i = 0; i < studyInfoValueObject["study technique"].length; i++) {
+    studyTechniqueArr.push(studyInfoValueObject["study technique"][i].value);
+  }
+  var studyOrganSystemsArr = [];
+  for (var i = 0; i < studyInfoValueObject["study organ system"].length; i++) {
+    studyOrganSystemsArr.push(studyInfoValueObject["study organ system"][i].value);
+  }
+  var studyApproachesArr = [];
+  for (var i = 0; i < studyInfoValueObject["study approach"].length; i++) {
+    studyApproachesArr.push(studyInfoValueObject["study approach"][i].value);
+  }
+  /// replace raw tagify values with processed tagify values
+  studyInfoValueObject["study organ system"] = studyOrganSystemsArr;
+  studyInfoValueObject["study technique"] = studyTechniqueArr;
+  studyInfoValueObject["study approach"] = studyApproachesArr;
 
-        ///////////// stringify JSON objects //////////////////////
-        json_str_ds = JSON.stringify(datasetInfoValueObj);
-        json_str_study = JSON.stringify(studyInfoValueObject);
-        json_str_con = JSON.stringify(contributorObj);
-        json_str_related_info = JSON.stringify(relatedInfoArr);
+  ///////////// stringify JSON objects //////////////////////
+  json_str_ds = JSON.stringify(datasetInfoValueObj);
+  json_str_study = JSON.stringify(studyInfoValueObject);
+  json_str_con = JSON.stringify(contributorObj);
+  json_str_related_info = JSON.stringify(relatedInfoArr);
 
   /// get current, selected Pennsieve account
   var bfaccountname = $("#current-bf-account").text();
 
-        /// call python function to save file
-        if (dirpath != null) {
-          client.invoke(
-            "api_save_ds_description_file",
-            bfaccountname,
-            destinationPath,
-            json_str_ds,
-            json_str_study,
-            json_str_con,
-            json_str_related_info,
-            (error, res) => {
-              if (error) {
-                var emessage = userError(error);
-                log.error(error);
-                console.error(error);
-                Swal.fire({
-                  title:
-                    "Failed to generate the dataset_description file",
-                  text: emessage,
-                  icon: "warning",
-                  heightAuto: false,
-                  backdrop: "rgba(0,0,0, 0.4)",
-                });
-                ipcRenderer.send(
-                  "track-event",
-                  "Error",
-                  "Prepare Metadata - Create dataset_description",
-                  defaultBfDataset
-                );
-                // $("#generate-dd-spinner").hide();
-              } else {
-                Swal.fire({
-                  title:
-                    "The dataset_description.xlsx file has been successfully generated at the specified location.",
-                  icon: "success",
-                  heightAuto: false,
-                  backdrop: "rgba(0,0,0, 0.4)",
-                });
-                ipcRenderer.send(
-                  "track-event",
-                  "Success",
-                  "Prepare Metadata - Create dataset_description",
-                  defaultBfDataset
-                );
-                // $("#generate-dd-spinner").hide();
-              }
-            }
+  /// call python function to save file
+  if (dirpath != null) {
+    client.invoke(
+      "api_save_ds_description_file",
+      bfaccountname,
+      destinationPath,
+      json_str_ds,
+      json_str_study,
+      json_str_con,
+      json_str_related_info,
+      (error, res) => {
+        if (error) {
+          var emessage = userError(error);
+          log.error(error);
+          console.error(error);
+          Swal.fire({
+            title:
+              "Failed to generate the dataset_description file",
+            text: emessage,
+            icon: "warning",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Prepare Metadata - Create dataset_description",
+            defaultBfDataset
+          );
+        } else {
+          Swal.fire({
+            title:
+              "The dataset_description.xlsx file has been successfully generated at the specified location.",
+            icon: "success",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Prepare Metadata - Create dataset_description",
+            defaultBfDataset
           );
         }
       }
