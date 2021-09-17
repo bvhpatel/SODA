@@ -1694,13 +1694,6 @@ function createStrain(id, type) {
   });
 }
 
-$(document).ready(function () {
-  createSpeciesAutocomplete("bootbox-subject-species");
-  // createSpeciesAutocomplete("bootbox-sample-species");
-  // createStrain("bootbox-sample-strain", "samples");
-  createStrain("bootbox-subject-strain", "subjects");
-});
-
 async function loadTaxonomySpecies(commonName, destinationInput) {
   Swal.fire({
     title: "Finding the scientific name for " + commonName + "...",
