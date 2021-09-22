@@ -869,10 +869,12 @@ dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
 /////// Save and load award and milestone info
 var metadataPath = path.join(homeDirectory, "SODA", "METADATA");
 var awardFileName = "awards.json";
+var affiliationFileName = "affiliations.json"
 var milestoneFileName = "milestones.json";
 var airtableConfigFileName = "airtable-config.json";
 var protocolConfigFileName = "protocol-config.json";
 var awardPath = path.join(metadataPath, awardFileName);
+var affiliationConfigPath = path.join(metadataPath, affiliationFileName);
 var milestonePath = path.join(metadataPath, milestoneFileName);
 var airtableConfigPath = path.join(metadataPath, airtableConfigFileName);
 var progressFilePath = path.join(homeDirectory, "SODA", "Progress");
@@ -889,28 +891,25 @@ var otherFundingInput = document.getElementById("ds-other-funding"),
     duplicates: false,
   });
 
-var parentDSTagify = new Tagify(parentDSDropdown, {
-  enforceWhitelist: true,
-  whitelist: [],
-  duplicates: false,
-  dropdown: {
-    maxItems: Infinity,
-    enabled: 0,
-    closeOnSelect: true,
-  },
-});
-
-var completenessInput = document.getElementById("ds-completeness"),
-  completenessTagify = new Tagify(completenessInput, {
-    whitelist: ["hasChildren", "hasNext"],
-    enforceWhitelist: true,
+var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
+  studyOrganSystemsTagify = new Tagify(studyOrganSystemsInput, {
+    whitelist: ["autonomic ganglion", "brain", "colon", "heart", "intestine", "kidney", "large intestine", "liver", "lower urinary tract", "lung", "nervous system", "pancreas", "peripheral nervous system", "small intestine", "spinal cord", "spleen", "stomach", "sympathetic nervous system", "urinary bladder"],
     duplicates: false,
-    maxTags: 2,
     dropdown: {
       enabled: 0,
       closeOnSelect: true,
     },
-  });
+});
+
+var studyTechniquesInput = document.getElementById("ds-study-technique"),
+  studyTechniquesTagify = new Tagify(studyTechniquesInput, {
+    duplicates: false,
+});
+
+var studyApproachesInput = document.getElementById("ds-study-approach"),
+  studyApproachesTagify = new Tagify(studyApproachesInput, {
+    duplicates: false,
+});
 
 ///////////////////// Airtable Authentication /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -1102,11 +1101,13 @@ function generateSubjectsFileHelper(mypath) {
         var emessage = userError(error);
         log.error(error);
         console.error(error);
-        Swal.fire(
-          "Failed to generate the subjects.xlsx file.",
-          `${emessage}`,
-          "error"
-        );
+        Swal.fire({
+          title: "Failed to generate the subjects.xlsx file.",
+          text: emessage,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          icon: "error"
+        })
         ipcRenderer.send(
           "track-event",
           "Error",
@@ -1213,11 +1214,13 @@ function generateSamplesFileHelper(mypath) {
           "Prepare Metadata - Create samples.xlsx",
           samplesTableData
         );
-        Swal.fire(
-          "Failed to generate the samples.xlsx file.",
-          `${emessage}`,
-          "error"
-        );
+        Swal.fire({
+          title: "Failed to generate the samples.xlsx file.",
+          text: emessage,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          icon: "error"
+        })
       } else {
         ipcRenderer.send(
           "track-event",
@@ -1254,6 +1257,14 @@ ipcRenderer.on(
 
 function transformImportedExcelFile(type, result) {
   for (var column of result.slice(1)) {
+    var indices = getAllIndexes(column, "");
+    // check if the first 2 columns are empty
+    if (indices.length > 18 && type === "samples" && (indices.includes(0) || indices.includes(1))) {
+      return false
+    }
+    if (indices.length > 17 && type === "subjects" && indices.includes(0)) {
+      return false
+    }
     var indices = getAllIndexes(column, "nan");
     for (var ind of indices) {
       column[ind] = "";
@@ -1263,8 +1274,8 @@ function transformImportedExcelFile(type, result) {
         column[5] = "";
       }
     }
+    return result;
   }
-  return result;
 }
 
 function getAllIndexes(arr, val) {
@@ -1296,7 +1307,7 @@ function loadSubjectsFileToDataframe(filePath) {
         var emessage = userError(error);
         Swal.fire({
           title: "Couldn't load existing subjects.xlsx file",
-          text: emessage,
+          html: emessage,
           icon: "error",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
@@ -1304,7 +1315,19 @@ function loadSubjectsFileToDataframe(filePath) {
       } else {
         // res is a dataframe, now we load it into our subjectsTableData in order to populate the UI
         if (res.length > 1) {
-          subjectsTableData = transformImportedExcelFile("subjects", res);
+          result = transformImportedExcelFile("subjects", res);
+          if (result !== false) {
+            subjectsTableData = result
+          } else {
+            Swal.fire({
+              title: "Couldn't load existing subjects.xlsx file",
+              text: "Please make sure the imported file follows the latest SPARC Dataset Structure 2.0.0 and try again.",
+              icon: "error",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            });
+            return
+          }
           loadDataFrametoUI();
           ipcRenderer.send(
             "track-event",
@@ -1319,7 +1342,6 @@ function loadSubjectsFileToDataframe(filePath) {
             "Prepare Metadata - Create subjects.xlsx - Load existing subjects.xlsx file",
             error
           );
-
           Swal.fire({
             title: "Couldn't load existing subjects.xlsx file",
             text: "Please make sure there is at least one subject in the subjects.xlsx file.",
@@ -1353,7 +1375,7 @@ function loadSamplesFileToDataframe(filePath) {
         var emessage = userError(error);
         Swal.fire({
           title: "Couldn't load existing samples.xlsx file",
-          text: emessage,
+          html: emessage,
           icon: "error",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
@@ -1361,14 +1383,26 @@ function loadSamplesFileToDataframe(filePath) {
       } else {
         // res is a dataframe, now we load it into our samplesTableData in order to populate the UI
         if (res.length > 1) {
-          samplesTableData = transformImportedExcelFile("samples", res);
+          result = transformImportedExcelFile("samples", res);
+          if (result !== false) {
+            samplesTableData = result
+          } else {
+            Swal.fire({
+              title: "Couldn't load existing samples.xlsx file",
+              text: "Please make sure the imported file follows the latest SPARC Dataset Structure 2.0.0 and try again.",
+              icon: "error",
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+            });
+            return
+          }
+          loadDataFrametoUISamples();
           ipcRenderer.send(
             "track-event",
             "Success",
             "Prepare Metadata - Create samples.xlsx - Load existing samples.xlsx file",
             samplesTableData
           );
-          loadDataFrametoUISamples();
         } else {
           ipcRenderer.send(
             "track-event",
@@ -1676,6 +1710,7 @@ function addOption(selectbox, text, value) {
 }
 
 var awardObj = {};
+var globalSPARCAward = "";
 // indicate to user that airtable records are being retrieved
 function loadAwardData() {
   ///// Construct table from data
@@ -1898,6 +1933,7 @@ function loadContributorInfo(lastName, firstName) {
         maxItems: 25,
         closeOnSelect: true, // keep the dropdown open after selecting a suggestion
       },
+      whitelist: affiliationSuggestions,
       delimiters: null,
       duplicates: false,
     }
@@ -2172,7 +2208,7 @@ $("#contributor-table-dd").mousedown(function (e) {
     updateIndexForTable(document.getElementById("contributor-table-dd"));
     updateOrderContributorTable(
       document.getElementById("contributor-table-dd"),
-      contributorObject
+      contributorArray
     );
   }
   $(document).mousemove(move).mouseup(up);
@@ -2320,7 +2356,7 @@ function detectEmptyRequiredFields(funding) {
     conEmptyField.push("SPARC Award");
   }
   if (!contactPersonExists) {
-    conEmptyField.push("One contact person");
+    conEmptyField.push("One Corresponding Author");
   }
   if (contributorNumber <= 1) {
     conEmptyField.push("At least one contributor");
@@ -3165,7 +3201,7 @@ const refreshDatasetList = () => {
   });
 
   populateDatasetDropdowns(filteredDatasets);
-  parentDSTagify.settings.whitelist = getParentDatasets();
+  // parentDSTagify.settings.whitelist = getParentDatasets();
   return filteredDatasets.length;
 }
 
