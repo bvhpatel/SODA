@@ -381,9 +381,12 @@ function clearAllSubjectFormFields(form) {
     $("#bootbox-"+keyword+"-strain").css("display", "none");
 
     $("#button-add-species-"+keyword+"").html(
+      `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
+    );
+    $("#button-add-strain-"+keyword+"").html(
       `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
     );
-  } 
+  }
 }
 
 // add new subject ID to JSON file (main file to be converted to excel)
@@ -422,23 +425,25 @@ async function addSpecies(ev, type) {
   if (value) {
     if (value !== "") {
       $("#bootbox-" + type + "-species").val(value);
-      $("#bootbox-" + type + "-species").css("display", "block");
-      $("#bootbox-" + type + "-species").attr("readonly", true);
-      $("#bootbox-" + type + "-species").css("background", "#f5f5f5");
-      $(ev).html("<i class='pen icon'></i>Edit");
+      switchSpeciesStrainInput("species", "edit")
     }
   } else {
-    $("#bootbox-" + type + "-species").css("display", "none");
-    $("#bootbox-" + type + "-species").val("");
-    if (type.includes("subject")) {
-      $("#button-add-species-subject").html(
-        `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
-      );
-    } else {
-      $("#button-add-species-sample").html(
-        `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
-      );
-    }
+    switchSpeciesStrainInput("species", "add")
+  }
+}
+
+function switchSpeciesStrainInput(type, mode) {
+  if (mode === "add") {
+    $("#button-add-"+type+"-subject").html(
+      `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add ${type}`
+    );
+    $(`#bootbox-subject-${type}`).css("display", "none");
+    $(`#bootbox-subject-${type}`).val("");
+  } else if (mode === "edit") {
+    $(`#bootbox-subject-${type}`).css("display", "block");
+    $(`#bootbox-subject-${type}`).attr("readonly", true);
+    $(`#bootbox-subject-${type}`).css("background", "#f5f5f5");
+    $("#button-add-"+type+"-subject").html("<i class='pen icon'></i>Edit");
   }
 }
 
@@ -470,23 +475,10 @@ async function addStrain(ev, type) {
   if (value) {
     if (value !== "") {
       $("#bootbox-" + type + "-strain").val(value);
-      $("#bootbox-" + type + "-strain").css("display", "block");
-      $("#bootbox-" + type + "-strain").attr("readonly", true);
-      $("#bootbox-" + type + "-strain").css("background", "#f5f5f5");
-      $(ev).html("<i class='pen icon'></i>Edit");
+      switchSpeciesStrainInput("strain", "edit")
     }
   } else {
-    $("#bootbox-" + type + "-strain").css("display", "none");
-    $("#bootbox-" + type + "-strain-RRID").val("");
-    if (type.includes("subject")) {
-      $("#button-add-strain-subject").html(
-        `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
-      );
-    } else {
-      $("#button-add-strain-sample").html(
-        `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
-      );
-    }
+    switchSpeciesStrainInput("strain", "add")
   }
 }
 
@@ -555,11 +547,12 @@ function populateRRID(strain, type) {
           } else {
             $("#button-add-strain-sample").html("<i class='pen icon'></i>Edit");
           }
-          Swal.fire(
-            `Successfully retrieved the RRID for "${strain}".`,
-            "",
-            "success"
-          );
+          Swal.fire({
+            title: `Successfully retrieved the RRID for "${strain}".`,
+            icon: "success",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
         }
       });
     } else {
@@ -842,6 +835,13 @@ function populateForms(subjectID, type) {
                 $("#bootbox-subject-age-info").val("N/A");
               }
             }
+          } else if (field.name === "Species" && infoJson[i] !== "") {
+            $("#bootbox-subject-species").val(infoJson[i]);
+            // manipulate the Add Strains/Species UI accordingly
+            switchSpeciesStrainInput("species", "edit")
+          } else if (field.name === "Strain" && infoJson[i] !== "") {
+            $("#bootbox-subject-strain").val(infoJson[i]);
+            switchSpeciesStrainInput("strain", "edit")
           } else {
             if (type === "import") {
               if (field.name === "subject id") {
