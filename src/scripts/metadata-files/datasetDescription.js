@@ -172,7 +172,6 @@ function checkForUniqueRowID(rowID, no) {
   }
 }
 
-
 function populateProtocolLink(ev) {
   if ($(ev).val() === "Protocol URL or DOI*") {
     // display dropdown to select protocol titles
@@ -205,7 +204,6 @@ function populateProtocolLink(ev) {
     }
   }
 }
-
 
 // check for duplicates in names of contributors
 function checkContributorNameDuplicates(table, currentRow) {
@@ -347,7 +345,6 @@ function convertDropdownToTextBox(dropdown) {
   }
 }
 
-
 /* The functions ddNoAirtableMode() and resetDDUI() is needed to track when Airtable connection status is changed within
   a SODA session -> SODA will accordingly update what to show under Submission and DD files
 */
@@ -445,7 +442,6 @@ function resetDDUI(table) {
   );
 }
 
-
 function checkEmptyConRowInfo(table, row) {
   var empty = false;
   var type = ["select", "input"];
@@ -476,7 +472,6 @@ function checkEmptyConRowInfo(table, row) {
   }
   return empty;
 }
-
 
 function resetDD() {
   Swal.fire({
@@ -509,7 +504,7 @@ function resetDD() {
         "checked",
         false
       );
-      resetDDFields()
+      resetDDFields();
     }
   });
 }
@@ -547,12 +542,10 @@ function resetDDFields() {
   document.getElementById("protocol-link-table-dd").style.display = "none";
   document.getElementById("div-protocol-link-table-dd").style.display = "none";
   document.getElementById("div-other-link-table-dd").style.display = "none";
-  document.getElementById("other-link-table-dd").style.display =
-    "none";
+  document.getElementById("other-link-table-dd").style.display = "none";
   $("#dd-accordion").find(".title").removeClass("active");
   $("#dd-accordion").find(".content").removeClass("active");
 }
-
 
 /////////////// Generate ds description file ///////////////////
 ////////////////////////////////////////////////////////////////
@@ -602,7 +595,7 @@ generateDSBtn.addEventListener("click", (event) => {
 
 function generateDDFile(dirpath, destinationPath) {
   var datasetInfoValueObj = grabDSInfoEntries();
-  var studyInfoValueObject = grabStudyInfoEntries()
+  var studyInfoValueObject = grabStudyInfoEntries();
   //// grab entries from contributor info section and pass values to conSectionArray
   var contributorObj = grabConInfoEntries();
   // grab related information (protocols and additional links)
@@ -626,7 +619,9 @@ function generateDDFile(dirpath, destinationPath) {
   }
   var studyOrganSystemsArr = [];
   for (var i = 0; i < studyInfoValueObject["study organ system"].length; i++) {
-    studyOrganSystemsArr.push(studyInfoValueObject["study organ system"][i].value);
+    studyOrganSystemsArr.push(
+      studyInfoValueObject["study organ system"][i].value
+    );
   }
   var studyApproachesArr = [];
   for (var i = 0; i < studyInfoValueObject["study approach"].length; i++) {
@@ -662,8 +657,7 @@ function generateDDFile(dirpath, destinationPath) {
           log.error(error);
           console.error(error);
           Swal.fire({
-            title:
-              "Failed to generate the dataset_description file",
+            title: "Failed to generate the dataset_description file",
             text: emessage,
             icon: "warning",
             heightAuto: false,
@@ -774,8 +768,8 @@ function grabProtocolSection() {
 function combineLinksSections() {
   var protocolLinks = grabProtocolSection();
   var otherLinks = grabAdditionalLinkSection();
-  protocolLinks.push.apply(protocolLinks, otherLinks)
-  return protocolLinks
+  protocolLinks.push.apply(protocolLinks, otherLinks);
+  return protocolLinks;
 }
 
 // add protocol function for DD file
@@ -812,15 +806,20 @@ async function addProtocol() {
       if ($("#DD-protocol-description").val() === "") {
         Swal.showValidationMessage(`Please enter a short description!`);
       }
-      var duplicate = checkLinkDuplicate($("#DD-protocol-link").val(), document.getElementById("protocol-link-table-dd"))
+      var duplicate = checkLinkDuplicate(
+        $("#DD-protocol-link").val(),
+        document.getElementById("protocol-link-table-dd")
+      );
       if (duplicate) {
-        Swal.showValidationMessage("Duplicate protocol. The protocol you entered is already added.")
+        Swal.showValidationMessage(
+          "Duplicate protocol. The protocol you entered is already added."
+        );
       }
       return [
         $("#DD-protocol-link").val(),
         $("#DD-protocol-link-select").val(),
         $("#DD-protocol-link-relation").val(),
-        $("#DD-protocol-description").val()
+        $("#DD-protocol-description").val(),
       ];
     },
   });
@@ -839,7 +838,12 @@ function addExistingProtocol() {
   }
 }
 
-function addProtocolLinktoTableDD(protocolLink, protocolType, protocolRelation, protocolDesc) {
+function addProtocolLinktoTableDD(
+  protocolLink,
+  protocolType,
+  protocolRelation,
+  protocolDesc
+) {
   var protocolTable = document.getElementById("protocol-link-table-dd");
   protocolTable.style.display = "block";
   document.getElementById("div-protocol-link-table-dd").style.display = "block";
@@ -871,7 +875,7 @@ function addProtocolLinktoTableDD(protocolLink, protocolType, protocolRelation, 
 function addAdditionalLinktoTableDD(link, linkType, linkRelation, description) {
   var linkTable = document.getElementById("other-link-table-dd");
   linkTable.style.display = "block";
-  document.getElementById("div-other-link-table-dd").style.display = "block"
+  document.getElementById("div-other-link-table-dd").style.display = "block";
   var rowcount = linkTable.rows.length;
   /// append row to table from the bottom
   var rowIndex = rowcount;
@@ -883,21 +887,21 @@ function addAdditionalLinktoTableDD(link, linkType, linkRelation, description) {
   );
   var indexNumber = rowIndex;
   var row = (linkTable.insertRow(rowIndex).outerHTML =
-  "<tr id='row-current-other" +
-  newRowIndex +
-  "' class='row-protocol'><td class='contributor-table-row'>" +
-  indexNumber +
-  "</td><td><a href='" +
-  link +
-  "' target='_blank'>" +
-  link +
-  "</a></td><td class='contributor-table-row' style='display:none'>" +
-  linkType +
-  "</td><td class='contributor-table-row'>" +
-  linkRelation +
-  "</td><td class='contributor-table-row' style='display:none'>" +
-  description +
-  "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_additional_link_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_additional_link_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+    "<tr id='row-current-other" +
+    newRowIndex +
+    "' class='row-protocol'><td class='contributor-table-row'>" +
+    indexNumber +
+    "</td><td><a href='" +
+    link +
+    "' target='_blank'>" +
+    link +
+    "</a></td><td class='contributor-table-row' style='display:none'>" +
+    linkType +
+    "</td><td class='contributor-table-row'>" +
+    linkRelation +
+    "</td><td class='contributor-table-row' style='display:none'>" +
+    description +
+    "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_additional_link_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_additional_link_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
 }
 
 async function helpSPARCAward(filetype) {
@@ -1059,7 +1063,7 @@ function populateSelectSPARCAward(object, id) {
   }
   if (globalSPARCAward.trim() !== "") {
     if (Object.keys(object).includes(globalSPARCAward.trim())) {
-      $("#select-SPARC-award").val(globalSPARCAward.trim())
+      $("#select-SPARC-award").val(globalSPARCAward.trim());
     }
   }
 }
@@ -1147,7 +1151,6 @@ function addContributortoTableDD(name, contactStatus) {
     "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_con_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_con_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
 }
 
-
 var contributorElement =
   '<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><select id="dd-contributor-last-name" class="form-container-input-bf" onchange="onchangeLastNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div><div class="div-child"><label>First name </label><select id="dd-contributor-first-name" disabled class="form-container-input-bf" onchange="onchangeFirstNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div></div><div><label>ORCiD <i class="fas fa-info-circle swal-popover" data-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle swal-popover" data-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle swal-popover" data-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div><div style="margin-top:15px;display:flex;flex-direction:column"><label>Corresponding Author <i class="fas fa-info-circle swal-popover" data-content="Check if the contributor is a corresponding author for the dataset. At least one and only one of the contributors should be the corresponding author." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><label class="switch" style="margin-top: 15px"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"></input><span class="slider round"></span></label></div></div>';
 
@@ -1155,7 +1158,7 @@ var contributorElementRaw =
   '<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><input id="dd-contributor-last-name" class="form-container-input-bf" style="line-height: 2"></input></div><div class="div-child"><label>First name</label><input id="dd-contributor-first-name" class="form-container-input-bf" style="line-height: 2"></input></div></div><div><label>ORCiD <i class="fas fa-info-circle swal-popover" data-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle swal-popover" data-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle swal-popover" data-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div><div style="margin-top:15px;display:flex;flex-direction:column"><label>Corresponding Author <i class="fas fa-info-circle swal-popover" data-content="Check if the contributor is a corresponding author for the dataset. At least one and only one of the contributors should be the corresponding author." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><label class="switch" style="margin-top: 15px"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"></input><span class="slider round"></span></label></div></div>';
 
 var contributorArray = [];
-var affiliationSuggestions = []
+var affiliationSuggestions = [];
 
 function showContributorSweetalert(key) {
   var currentContributortagify;
@@ -1261,11 +1264,9 @@ function showContributorSweetalert(key) {
       popup: "animate__animated animate__fadeOutUp animate__faster",
     },
     preConfirm: () => {
-      var affValues = grabCurrentTagifyContributor(
-        currentAffliationtagify
-      )
+      var affValues = grabCurrentTagifyContributor(currentAffliationtagify);
       // store affiliation info as suggestions
-      affiliationSuggestions.push.apply(affiliationSuggestions, affValues)
+      affiliationSuggestions.push.apply(affiliationSuggestions, affValues);
       var affSet = new Set(affiliationSuggestions);
       var affArray = [...affSet];
       affiliationSuggestions = affArray;
@@ -1329,7 +1330,7 @@ function showContributorSweetalert(key) {
     if (result.isConfirmed) {
       addContributortoTableDD(result.value[0], result.value[1]);
       // memorize Affiliation info for next time as suggestions
-      memorizeAffiliationInfo(affiliationSuggestions)
+      memorizeAffiliationInfo(affiliationSuggestions);
     }
   });
 }
@@ -1487,10 +1488,8 @@ function edit_current_con_id(ev) {
       ) {
         Swal.showValidationMessage(`Please fill in all required fields!`);
       } else {
-        var affValues = grabCurrentTagifyContributor(
-          currentAffliationtagify
-        )
-        affiliationSuggestions.push.apply(affiliationSuggestions, affValues)
+        var affValues = grabCurrentTagifyContributor(currentAffliationtagify);
+        affiliationSuggestions.push.apply(affiliationSuggestions, affValues);
         var affSet = new Set(affiliationSuggestions);
         var affArray = [...affSet];
         affiliationSuggestions = affArray;
@@ -1550,7 +1549,7 @@ function edit_current_con_id(ev) {
   }).then((result) => {
     if (result.isConfirmed) {
       $(currentRow)[0].cells[2].innerText = result.value[1];
-      memorizeAffiliationInfo(affiliationSuggestions)
+      memorizeAffiliationInfo(affiliationSuggestions);
     }
   });
 }
@@ -1657,7 +1656,6 @@ function checkDuplicateLink(link, table) {
 
 // dataset and participant info
 function grabDSInfoEntries() {
-
   var name = document.getElementById("ds-name").value;
   var description = document.getElementById("ds-description").value;
   var type = $("#ds-type").val();
@@ -1675,16 +1673,21 @@ function grabDSInfoEntries() {
   };
 }
 
-
 // study info
 function grabStudyInfoEntries() {
   var studyOrganSystem = studyOrganSystemsTagify.value;
   var studyApproach = studyApproachesTagify.value;
   var studyTechnique = studyTechniquesTagify.value;
   var studyPurpose = document.getElementById("ds-study-purpose").value;
-  var studyDataCollection = document.getElementById("ds-study-data-collection").value;
-  var studyPrimaryConclusion = document.getElementById("ds-study-primary-conclusion").value;
-  var studyCollectionTitle = document.getElementById("ds-study-collection-title").value;
+  var studyDataCollection = document.getElementById(
+    "ds-study-data-collection"
+  ).value;
+  var studyPrimaryConclusion = document.getElementById(
+    "ds-study-primary-conclusion"
+  ).value;
+  var studyCollectionTitle = document.getElementById(
+    "ds-study-collection-title"
+  ).value;
 
   return {
     "study organ system": studyOrganSystem,
@@ -1693,10 +1696,9 @@ function grabStudyInfoEntries() {
     "study purpose": studyPurpose,
     "study data collection": studyDataCollection,
     "study primary conclusion": studyPrimaryConclusion,
-    "study collection title": studyCollectionTitle
+    "study collection title": studyCollectionTitle,
   };
 }
-
 
 function showAddAirtableAccountSweetalert(keyword) {
   var htmlTitle = `<h4 style="text-align:center">Please enter your Airtable API key below: <i class="fas fa-info-circle swal-popover" data-tippy-content="Note that the key will be stored locally on your computer and the SODA Team will not have access to it." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h4>`;
@@ -1900,7 +1902,6 @@ function addNewRow(table) {
     }
   }
 }
-
 
 function addAirtableAccountInsideSweetalert(keyword) {
   // var name = $("#bootbox-airtable-key-name").val();

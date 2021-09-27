@@ -96,15 +96,15 @@ function promptImportPrevInfoSubject(arr1) {
         `<option value="Select">Select a subject</option>`
       );
       for (var ele of arr1) {
-        $("#previous-subject-single").append(`<option value="${ele}">${ele}</option>`);
+        $("#previous-subject-single").append(
+          `<option value="${ele}">${ele}</option>`
+        );
       }
     },
   }).then((result) => {
     if (result.isConfirmed) {
-      if (
-        $("#previous-subject-single").val() !== "Select"
-      ) {
-        prevSubIDSingle = $("#previous-subject-single").val()
+      if ($("#previous-subject-single").val() !== "Select") {
+        prevSubIDSingle = $("#previous-subject-single").val();
         populateForms(prevSubIDSingle, "import");
       }
     } else {
@@ -188,17 +188,17 @@ function warningBeforeHideForm(type) {
 function hideForm(type) {
   var formDiv;
   if (type === "subject") {
-    formDiv = subjectsFormDiv
+    formDiv = subjectsFormDiv;
   } else if (type === "sample") {
-    formDiv = samplesFormDiv
+    formDiv = samplesFormDiv;
   }
   formDiv.style.display = "none";
-  $("#create_"+type+"s-tab").addClass("show");
-  $("#create_"+type+"s-tab").css("display", "flex");
-  $("#footer-div-"+type+"s").css("display", "flex");
+  $("#create_" + type + "s-tab").addClass("show");
+  $("#create_" + type + "s-tab").css("display", "flex");
+  $("#footer-div-" + type + "s").css("display", "flex");
   $("#sidebarCollapse").prop("disabled", false);
-  $("#btn-edit-"+type+"").css("display", "none");
-  $("#btn-add-"+type+"").css("display", "inline-block");
+  $("#btn-edit-" + type + "").css("display", "none");
+  $("#btn-add-" + type + "").css("display", "inline-block");
 }
 
 function validateSubSamID(ev) {
@@ -377,13 +377,13 @@ function clearAllSubjectFormFields(form) {
   // hide Strains and Species
   if (form === subjectsFormDiv) {
     var keyword = "subject";
-    $("#bootbox-"+keyword+"-species").css("display", "none");
-    $("#bootbox-"+keyword+"-strain").css("display", "none");
+    $("#bootbox-" + keyword + "-species").css("display", "none");
+    $("#bootbox-" + keyword + "-strain").css("display", "none");
 
-    $("#button-add-species-"+keyword+"").html(
+    $("#button-add-species-" + keyword + "").html(
       `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
     );
-    $("#button-add-strain-"+keyword+"").html(
+    $("#button-add-strain-" + keyword + "").html(
       `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
     );
   }
@@ -425,16 +425,16 @@ async function addSpecies(ev, type) {
   if (value) {
     if (value !== "") {
       $("#bootbox-" + type + "-species").val(value);
-      switchSpeciesStrainInput("species", "edit")
+      switchSpeciesStrainInput("species", "edit");
     }
   } else {
-    switchSpeciesStrainInput("species", "add")
+    switchSpeciesStrainInput("species", "add");
   }
 }
 
 function switchSpeciesStrainInput(type, mode) {
   if (mode === "add") {
-    $("#button-add-"+type+"-subject").html(
+    $("#button-add-" + type + "-subject").html(
       `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add ${type}`
     );
     $(`#bootbox-subject-${type}`).css("display", "none");
@@ -443,7 +443,7 @@ function switchSpeciesStrainInput(type, mode) {
     $(`#bootbox-subject-${type}`).css("display", "block");
     $(`#bootbox-subject-${type}`).attr("readonly", true);
     $(`#bootbox-subject-${type}`).css("background", "#f5f5f5");
-    $("#button-add-"+type+"-subject").html("<i class='pen icon'></i>Edit");
+    $("#button-add-" + type + "-subject").html("<i class='pen icon'></i>Edit");
   }
 }
 
@@ -475,10 +475,10 @@ async function addStrain(ev, type) {
   if (value) {
     if (value !== "") {
       $("#bootbox-" + type + "-strain").val(value);
-      switchSpeciesStrainInput("strain", "edit")
+      switchSpeciesStrainInput("strain", "edit");
     }
   } else {
-    switchSpeciesStrainInput("strain", "add")
+    switchSpeciesStrainInput("strain", "add");
   }
 }
 
@@ -650,7 +650,7 @@ function addTheRestSampleEntriesToJSON() {
   $("#table-samples").css("display", "block");
   $("#button-generate-samples").css("display", "block");
   clearAllSubjectFormFields(samplesFormDiv);
-  hideForm('sample');
+  hideForm("sample");
 }
 
 function addSampleIDtoJSON(sampleID) {
@@ -682,10 +682,14 @@ async function edit_current_protocol_id(ev) {
   const { value: values } = await Swal.fire({
     title: "Edit protocol",
     html:
-    '<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one \'Protocol URLs or DOIs\' link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL" value="'+link+'"/>' +
-    '<label>Protocol Type: <i class="fas fa-info-circle swal-popover" data-content="This will state whether your protocol is a \'URL\' or \'DOI\' item. Use one of those two items to reference the type of identifier." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-select" class="swal2-input"><option value="Select">Select a type</option><option value="URL">URL</option><option value="DOI">DOI</option></select>' +
-    '<label>Relation to the dataset: <i class="fas fa-info-circle swal-popover" data-content="A prespecified list of relations for common protocols used in SPARC datasets. </br> The value in this field must be read as the \'relationship that this dataset has to the specified protocol\'." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-relation" class="swal2-input"><option value="Select">Select a relation</option><option value="IsProtocolFor">IsProtocolFor</option><option value="HasProtocol">HasProtocol</option><option value="IsSoftwareFor">IsSoftwareFor</option><option value="HasSoftware">HasSoftware</option></select>' +
-    '<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description">'+ desc +'</textarea>',
+      '<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one \'Protocol URLs or DOIs\' link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL" value="' +
+      link +
+      '"/>' +
+      '<label>Protocol Type: <i class="fas fa-info-circle swal-popover" data-content="This will state whether your protocol is a \'URL\' or \'DOI\' item. Use one of those two items to reference the type of identifier." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-select" class="swal2-input"><option value="Select">Select a type</option><option value="URL">URL</option><option value="DOI">DOI</option></select>' +
+      '<label>Relation to the dataset: <i class="fas fa-info-circle swal-popover" data-content="A prespecified list of relations for common protocols used in SPARC datasets. </br> The value in this field must be read as the \'relationship that this dataset has to the specified protocol\'." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-relation" class="swal2-input"><option value="Select">Select a relation</option><option value="IsProtocolFor">IsProtocolFor</option><option value="HasProtocol">HasProtocol</option><option value="IsSoftwareFor">IsSoftwareFor</option><option value="HasSoftware">HasSoftware</option></select>' +
+      '<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description">' +
+      desc +
+      "</textarea>",
     focusConfirm: false,
     showCancelButton: true,
     heightAuto: false,
@@ -712,7 +716,7 @@ async function edit_current_protocol_id(ev) {
         $("#DD-protocol-link").val(),
         $("#DD-protocol-link-select").val(),
         $("#DD-protocol-link-relation").val(),
-        $("#DD-protocol-description").val()
+        $("#DD-protocol-description").val(),
       ];
     },
   });
@@ -734,10 +738,14 @@ async function edit_current_additional_link_id(ev) {
   const { value: values } = await Swal.fire({
     title: "Edit link",
     html:
-    '<label>URL or DOI: <i class="fas fa-info-circle swal-popover" data-content="Specify your actual URL (if resource is public) or DOI (if resource is private). This can be web links to repositories or papers (DOI)."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-other-link" class="swal2-input" placeholder="Enter a URL" value="'+link+'"/>' +
-    '<label>Link Type: <i class="fas fa-info-circle swal-popover" data-content="This will state whether your link is a \'URL\' or \'DOI\' item. Use one of those two items to reference the type of link." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-other-link-type" class="swal2-input"><option value="Select">Select a type</option><option value="URL">URL</option><option value="DOI">DOI</option></select>' +
-    '<label>Relation to the dataset: <i class="fas fa-info-circle swal-popover" data-content="A prespecified list of relations for common URLs or DOIs used in SPARC datasets. </br> The value in this field must be read as the \'relationship that this dataset has to the specified URL/DOI\'."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-other-link-relation" class="swal2-input"><option value="Select">Select a relation</option><option value="IsCitedBy">IsCitedBy</option><option value="Cites">Cites</option><option value="IsSupplementTo">IsSupplementTo</option><option value="IsSupplementedBy">IsSupplementedBy</option><option value="IsContinuedByContinues">IsContinuedByContinues</option><option value="IsDescribedBy">IsDescribedBy</option><option value="Describes">Describes</option><option value="HasMetadata">HasMetadata</option><option value="IsMetadataFor">IsMetadataFor</option><option value="HasVersion">HasVersion</option><option value="IsVersionOf">IsVersionOf</option><option value="IsNewVersionOf">IsNewVersionOf</option><option value="IsPreviousVersionOf">IsPreviousVersionOf</option><option value="IsPreviousVersionOf">IsPreviousVersionOf</option><option value="HasPart">HasPart</option><option value="IsPublishedIn">IsPublishedIn</option><option value="IsReferencedBy">IsReferencedBy</option><option value="References">References</option><option value="IsDocumentedBy">IsDocumentedBy</option><option value="Documents">Documents</option><option value="IsCompiledBy">IsCompiledBy</option><option value="Compiles">Compiles</option><option value="IsVariantFormOf">IsVariantFormOf</option><option value="IsOriginalFormOf">IsOriginalFormOf</option><option value="IsIdenticalTo">IsIdenticalTo</option><option value="IsReviewedBy">IsReviewedBy</option><option value="Reviews">Reviews</option><option value="IsDerivedFrom">IsDerivedFrom</option><option value="IsSourceOf">IsSourceOf</option><option value="IsRequiredBy">IsRequiredBy</option><option value="Requires">Requires</option><option value="IsObsoletedBy">IsObsoletedBy</option><option value="Obsoletes">Obsoletes</option></select>' +
-    '<label>Link description: <i class="fas fa-info-circle swal-popover" data-content="Provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-other-description" class="swal2-textarea" placeholder="Enter a description">'+desc+'</textarea>',
+      '<label>URL or DOI: <i class="fas fa-info-circle swal-popover" data-content="Specify your actual URL (if resource is public) or DOI (if resource is private). This can be web links to repositories or papers (DOI)."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-other-link" class="swal2-input" placeholder="Enter a URL" value="' +
+      link +
+      '"/>' +
+      '<label>Link Type: <i class="fas fa-info-circle swal-popover" data-content="This will state whether your link is a \'URL\' or \'DOI\' item. Use one of those two items to reference the type of link." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-other-link-type" class="swal2-input"><option value="Select">Select a type</option><option value="URL">URL</option><option value="DOI">DOI</option></select>' +
+      '<label>Relation to the dataset: <i class="fas fa-info-circle swal-popover" data-content="A prespecified list of relations for common URLs or DOIs used in SPARC datasets. </br> The value in this field must be read as the \'relationship that this dataset has to the specified URL/DOI\'."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-other-link-relation" class="swal2-input"><option value="Select">Select a relation</option><option value="IsCitedBy">IsCitedBy</option><option value="Cites">Cites</option><option value="IsSupplementTo">IsSupplementTo</option><option value="IsSupplementedBy">IsSupplementedBy</option><option value="IsContinuedByContinues">IsContinuedByContinues</option><option value="IsDescribedBy">IsDescribedBy</option><option value="Describes">Describes</option><option value="HasMetadata">HasMetadata</option><option value="IsMetadataFor">IsMetadataFor</option><option value="HasVersion">HasVersion</option><option value="IsVersionOf">IsVersionOf</option><option value="IsNewVersionOf">IsNewVersionOf</option><option value="IsPreviousVersionOf">IsPreviousVersionOf</option><option value="IsPreviousVersionOf">IsPreviousVersionOf</option><option value="HasPart">HasPart</option><option value="IsPublishedIn">IsPublishedIn</option><option value="IsReferencedBy">IsReferencedBy</option><option value="References">References</option><option value="IsDocumentedBy">IsDocumentedBy</option><option value="Documents">Documents</option><option value="IsCompiledBy">IsCompiledBy</option><option value="Compiles">Compiles</option><option value="IsVariantFormOf">IsVariantFormOf</option><option value="IsOriginalFormOf">IsOriginalFormOf</option><option value="IsIdenticalTo">IsIdenticalTo</option><option value="IsReviewedBy">IsReviewedBy</option><option value="Reviews">Reviews</option><option value="IsDerivedFrom">IsDerivedFrom</option><option value="IsSourceOf">IsSourceOf</option><option value="IsRequiredBy">IsRequiredBy</option><option value="Requires">Requires</option><option value="IsObsoletedBy">IsObsoletedBy</option><option value="Obsoletes">Obsoletes</option></select>' +
+      '<label>Link description: <i class="fas fa-info-circle swal-popover" data-content="Provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-other-description" class="swal2-textarea" placeholder="Enter a description">' +
+      desc +
+      "</textarea>",
     focusConfirm: false,
     showCancelButton: true,
     reverseButtons: reverseSwalButtons,
@@ -764,7 +772,7 @@ async function edit_current_additional_link_id(ev) {
         $("#DD-other-link").val(),
         $("#DD-other-link-type").val(),
         $("#DD-other-link-relation").val(),
-        $("#DD-other-description").val()
+        $("#DD-other-description").val(),
       ];
     },
   });
@@ -838,10 +846,10 @@ function populateForms(subjectID, type) {
           } else if (field.name === "Species" && infoJson[i] !== "") {
             $("#bootbox-subject-species").val(infoJson[i]);
             // manipulate the Add Strains/Species UI accordingly
-            switchSpeciesStrainInput("species", "edit")
+            switchSpeciesStrainInput("species", "edit");
           } else if (field.name === "Strain" && infoJson[i] !== "") {
             $("#bootbox-subject-strain").val(infoJson[i]);
-            switchSpeciesStrainInput("strain", "edit")
+            switchSpeciesStrainInput("strain", "edit");
           } else {
             if (type === "import") {
               if (field.name === "subject id") {
@@ -1271,11 +1279,11 @@ function updateIndexForTable(table) {
         "none";
     } else if (table === document.getElementById("protocol-link-table-dd")) {
       document.getElementById("protocol-link-table-dd").style.display = "none";
-      document.getElementById("div-protocol-link-table-dd").style.display = "none";
+      document.getElementById("div-protocol-link-table-dd").style.display =
+        "none";
     } else if (table === document.getElementById("other-link-table-dd")) {
       document.getElementById("other-link-table-dd").style.display = "none";
-      document.getElementById("div-other-link-table-dd").style.display =
-        "none";
+      document.getElementById("div-other-link-table-dd").style.display = "none";
     }
   }
   $("#table-subjects").css("pointer-events", "auto");
@@ -1366,8 +1374,8 @@ function importPrimaryFolderSubjects(folderPath) {
       text: "Please select a path to your primary folder.",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-      icon: "error"
-    })
+      icon: "error",
+    });
   } else {
     if (path.parse(folderPath).base !== "primary") {
       Swal.fire({
@@ -1375,8 +1383,8 @@ function importPrimaryFolderSubjects(folderPath) {
         text: "Your folder must be named 'primary' to be imported to SODA.",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
-        icon: "error"
-      })
+        icon: "error",
+      });
     } else {
       var folders = fs.readdirSync(folderPath);
       var j = 1;
@@ -1451,8 +1459,8 @@ function importPrimaryFolderSamples(folderPath) {
       text: "Please select a path to your primary folder.",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-      icon: "error"
-    })
+      icon: "error",
+    });
   } else {
     if (path.parse(folderPath).base !== "primary") {
       Swal.fire({
@@ -1460,8 +1468,8 @@ function importPrimaryFolderSamples(folderPath) {
         text: "Your folder must be named 'primary' to be imported to SODA.",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
-        icon: "error"
-      })
+        icon: "error",
+      });
     } else {
       var folders = fs.readdirSync(folderPath);
       var j = 1;
@@ -1485,7 +1493,6 @@ function importPrimaryFolderSamples(folderPath) {
               j += 1;
             }
           }
-
         }
       }
       samplesFileData = [];
@@ -1909,11 +1916,15 @@ $(document).ready(function () {
           defaultBfAccount
         );
       } else {
-        document.getElementById("existing-subjects-file-destination").placeholder = "Browse here"
+        document.getElementById(
+          "existing-subjects-file-destination"
+        ).placeholder = "Browse here";
         $("#div-confirm-existing-subjects-import").hide();
       }
     } else {
-      document.getElementById("existing-subjects-file-destination").placeholder = "Browse here"
+      document.getElementById(
+        "existing-subjects-file-destination"
+      ).placeholder = "Browse here";
       $("#div-confirm-existing-subjects-import").hide();
     }
     if (
@@ -1941,11 +1952,14 @@ $(document).ready(function () {
           defaultBfAccount
         );
       } else {
-        document.getElementById("existing-samples-file-destination").placeholder = "Browse here"
+        document.getElementById(
+          "existing-samples-file-destination"
+        ).placeholder = "Browse here";
         $("#div-confirm-existing-samples-import").hide();
       }
     } else {
-      document.getElementById("existing-samples-file-destination").placeholder = "Browse here"
+      document.getElementById("existing-samples-file-destination").placeholder =
+        "Browse here";
       $("#div-confirm-existing-samples-import").hide();
     }
     if (
@@ -1957,16 +1971,14 @@ $(document).ready(function () {
     } else {
       $("#div-confirm-existing-samples-import").hide();
       $($("#div-confirm-existing-samples-import button")[0]).hide();
-
     }
   });
 
   ipcRenderer.on("selected-existing-DD", (event, filepath) => {
     if (filepath.length > 0) {
       if (filepath !== null) {
-        document.getElementById(
-          "existing-dd-file-destination"
-        ).placeholder = filepath[0];
+        document.getElementById("existing-dd-file-destination").placeholder =
+          filepath[0];
         ipcRenderer.send(
           "track-event",
           "Success",
@@ -1975,7 +1987,7 @@ $(document).ready(function () {
         );
         if (
           document.getElementById("existing-dd-file-destination")
-          .placeholder !== "Browse here"
+            .placeholder !== "Browse here"
         ) {
           $("#div-confirm-existing-dd-import").show();
           $($("#div-confirm-existing-dd-import button")[0]).show();
@@ -1984,18 +1996,23 @@ $(document).ready(function () {
           $($("#div-confirm-existing-dd-import button")[0]).hide();
         }
       } else {
-        document.getElementById("existing-dd-file-destination").placeholder = "Browse here"
+        document.getElementById("existing-dd-file-destination").placeholder =
+          "Browse here";
         $("#div-confirm-existing-dd-import").hide();
       }
     } else {
-      document.getElementById("existing-dd-file-destination").placeholder = "Browse here"
+      document.getElementById("existing-dd-file-destination").placeholder =
+        "Browse here";
       $("#div-confirm-existing-dd-import").hide();
     }
   });
 });
 
 function showExistingSubjectsFile() {
-  if ($("#existing-subjects-file-destination").prop("placeholder") !== "Browse here") {
+  if (
+    $("#existing-subjects-file-destination").prop("placeholder") !==
+    "Browse here"
+  ) {
     Swal.fire({
       title: "Are you sure you want to import a different subjects file?",
       text: "This will delete all of your previous work on this file.",
@@ -2011,19 +2028,24 @@ function showExistingSubjectsFile() {
     }).then((boolean) => {
       if (boolean.isConfirmed) {
         ipcRenderer.send("open-file-dialog-existing-subjects");
-        document.getElementById("existing-subjects-file-destination").placeholder = "Browse here"
+        document.getElementById(
+          "existing-subjects-file-destination"
+        ).placeholder = "Browse here";
         $("#div-confirm-existing-subjects-import").hide();
         $($("#div-confirm-existing-subjects-import button")[0]).hide();
-        $("#Question-prepare-subjects-3").removeClass("show")
+        $("#Question-prepare-subjects-3").removeClass("show");
       }
-    })
+    });
   } else {
     ipcRenderer.send("open-file-dialog-existing-subjects");
   }
 }
 
 function showExistingSamplesFile() {
-  if ($("#existing-samples-file-destination").prop("placeholder") !== "Browse here") {
+  if (
+    $("#existing-samples-file-destination").prop("placeholder") !==
+    "Browse here"
+  ) {
     Swal.fire({
       title: "Are you sure you want to import a different samples file?",
       text: "This will delete all of your previous work on this file.",
@@ -2039,21 +2061,26 @@ function showExistingSamplesFile() {
     }).then((boolean) => {
       if (boolean.isConfirmed) {
         ipcRenderer.send("open-file-dialog-existing-samples");
-        document.getElementById("existing-samples-file-destination").placeholder = "Browse here"
+        document.getElementById(
+          "existing-samples-file-destination"
+        ).placeholder = "Browse here";
         $("#div-confirm-existing-samples-import").hide();
         $($("#div-confirm-existing-samples-import button")[0]).hide();
-        $("#Question-prepare-samples-3").removeClass("show")
+        $("#Question-prepare-samples-3").removeClass("show");
       }
-    })
+    });
   } else {
     ipcRenderer.send("open-file-dialog-existing-samples");
   }
 }
 
 function showExistingDDFile() {
-  if ($("#existing-dd-file-destination").prop("placeholder") !== "Browse here") {
+  if (
+    $("#existing-dd-file-destination").prop("placeholder") !== "Browse here"
+  ) {
     Swal.fire({
-      title: "Are you sure you want to import a different dataset_description file?",
+      title:
+        "Are you sure you want to import a different dataset_description file?",
       text: "This will delete all of your previous work on this file.",
       showCancelButton: true,
       heightAuto: false,
@@ -2067,12 +2094,13 @@ function showExistingDDFile() {
     }).then((boolean) => {
       if (boolean.isConfirmed) {
         ipcRenderer.send("open-file-dialog-existing-DD");
-        document.getElementById("existing-dd-file-destination").placeholder = "Browse here"
+        document.getElementById("existing-dd-file-destination").placeholder =
+          "Browse here";
         $("#div-confirm-existing-dd-import").hide();
         $($("#div-confirm-existing-dd-import button")[0]).hide();
-        $("#Question-prepare-dd-2").removeClass("show")
+        $("#Question-prepare-dd-2").removeClass("show");
       }
-    })
+    });
   } else {
     ipcRenderer.send("open-file-dialog-existing-DD");
   }
@@ -2093,8 +2121,8 @@ function importExistingSubjectsFile() {
         text: "Your file must be named 'subjects.xlsx' to be imported to SODA.",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
-        icon: "error"
-      })
+        icon: "error",
+      });
     } else {
       Swal.fire({
         title: "Loading an existing subjects.xlsx file",
@@ -2128,8 +2156,8 @@ function importExistingSamplesFile() {
         text: "Your file must be named 'samples.xlsx' to be imported to SODA.",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
-        icon: "error"
-      })
+        icon: "error",
+      });
     } else {
       Swal.fire({
         title: "Loading an existing samples.xlsx file",
@@ -2164,8 +2192,8 @@ function importExistingDDFile() {
         text: "Your file must be named 'dataset_description.xlsx' to be imported to SODA.",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
-        icon: "error"
-      })
+        icon: "error",
+      });
     } else {
       Swal.fire({
         title: "Loading an existing dataset_description.xlsx file",
@@ -2195,78 +2223,78 @@ function loadDDfileDataframe(filePath) {
         html: emessage,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
-        icon: "error"
-      })
+        icon: "error",
+      });
     } else {
-        loadDDFileToUI(res)
-      }
-  })
+      loadDDFileToUI(res);
+    }
+  });
 }
 
 function loadDDFileToUI(object) {
-  var basicInfoObj = object["Basic information"]
-  var studyInfoObj = object["Study information"]
-  var conInfo = object["Contributor information"]
-  var awardInfoObj = object["Award information"]
-  var relatedInfo = object["Related information"]
+  var basicInfoObj = object["Basic information"];
+  var studyInfoObj = object["Study information"];
+  var conInfo = object["Contributor information"];
+  var awardInfoObj = object["Award information"];
+  var relatedInfo = object["Related information"];
 
   ///// populating Basic info UI
   for (var arr of basicInfoObj) {
     if (arr[0] === "Type") {
-      $("#ds-type").val(arr[1])
+      $("#ds-type").val(arr[1]);
     } else if (arr[0] === "Title") {
-      $("#ds-name").val(arr[1])
+      $("#ds-name").val(arr[1]);
     } else if (arr[0] === "Subtitle") {
-      $("#ds-description").val(arr[1])
+      $("#ds-description").val(arr[1]);
     } else if (arr[0] === "Number of subjects") {
-      $("#ds-subjects-no").val(arr[1])
+      $("#ds-subjects-no").val(arr[1]);
     } else if (arr[0] === "Number of samples") {
-      $("#ds-samples-no").val(arr[1])
+      $("#ds-samples-no").val(arr[1]);
     } else if (arr[0] === "Keywords") {
       // populate keywords
-      populateTagifyDD(keywordTagify, arr.splice(1))
+      populateTagifyDD(keywordTagify, arr.splice(1));
     }
   }
   //// populating Study info UI
   for (var arr of studyInfoObj) {
     if (arr[0] === "Study purpose") {
-      $("#ds-study-purpose").val(arr[1])
+      $("#ds-study-purpose").val(arr[1]);
     } else if (arr[0] === "Study data collection") {
-      $("#ds-study-data-collection").val(arr[1])
+      $("#ds-study-data-collection").val(arr[1]);
     } else if (arr[0] === "Study primary conclusion") {
-      $("#ds-study-primary-conclusion").val(arr[1])
+      $("#ds-study-primary-conclusion").val(arr[1]);
     } else if (arr[0] === "Study organ system") {
       // populate organ systems
-      populateTagifyDD(studyOrganSystemsTagify, arr.splice(1))
+      populateTagifyDD(studyOrganSystemsTagify, arr.splice(1));
     } else if (arr[0] === "Study approach") {
       // populate approach
-      populateTagifyDD(studyApproachesTagify, arr.splice(1))
+      populateTagifyDD(studyApproachesTagify, arr.splice(1));
     } else if (arr[0] === "Study technique") {
       // populate technique
-      populateTagifyDD(studyTechniquesTagify, arr.splice(1))
+      populateTagifyDD(studyTechniquesTagify, arr.splice(1));
     } else if (arr[0] === "Study collection title") {
       // populate collection title
-      $("#ds-study-collection-title").val(arr[1])
+      $("#ds-study-collection-title").val(arr[1]);
     }
   }
 
   for (var arr of awardInfoObj) {
     if (arr[0] === "Acknowledgments") {
-      $("#ds-description-acknowledgments").val(arr[1])
+      $("#ds-description-acknowledgments").val(arr[1]);
     } else if (arr[0] === "Funding") {
       // populate awards
-      globalSPARCAward = arr[1]
-      $("#ds-description-award-input").val(arr[1])
-      changeAward(globalSPARCAward)
-      populateTagifyDD(otherFundingTagify, arr.splice(2))
+      globalSPARCAward = arr[1];
+      $("#ds-description-award-input").val(arr[1]);
+      changeAward(globalSPARCAward);
+      populateTagifyDD(otherFundingTagify, arr.splice(2));
     }
   }
 
   /// populating Con info UI
-  loadContributorsToTable(conInfo)
+  loadContributorsToTable(conInfo);
 
   /// populating Related info UI
-  loadRelatedInfoToTable(relatedInfo)
+  loadRelatedInfoToTable(relatedInfo);
 
   Swal.fire({
     title: "Loaded successfully!",
@@ -2275,25 +2303,25 @@ function loadDDFileToUI(object) {
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     didOpen: () => {
-      Swal.hideLoading()
-    }
+      Swal.hideLoading();
+    },
   });
   $("#div-confirm-existing-dd-import").hide();
   $($("#div-confirm-existing-dd-import button")[0]).hide();
-  $("#button-fake-confirm-existing-dd-file-load").click()
+  $("#button-fake-confirm-existing-dd-file-load").click();
 }
 
 function populateTagifyDD(tagify, values) {
-  tagify.removeAllTags()
+  tagify.removeAllTags();
   for (var value of values) {
     if (value.trim() !== "") {
-      tagify.addTags(value.trim())
+      tagify.addTags(value.trim());
     }
   }
 }
 
 function loadContributorsToTable(array) {
-  contributorArray = []
+  contributorArray = [];
   $("#contributor-table-dd tr:gt(0)").remove();
   $("#div-contributor-table-dd").css("display", "none");
   for (var arr of array.splice(1)) {
@@ -2305,13 +2333,13 @@ function loadContributorsToTable(array) {
         conRole: arr[3].trim(),
       };
       contributorArray.push(myCurrentCon);
-      var contact = ""
+      var contact = "";
       if (myCurrentCon.conRole.includes("CorrespondingAuthor")) {
-        contact = "Yes"
+        contact = "Yes";
       } else {
-        contact = "No"
+        contact = "No";
       }
-      addContributortoTableDD(myCurrentCon.conName, contact)
+      addContributortoTableDD(myCurrentCon.conName, contact);
     }
   }
 }
@@ -2323,7 +2351,7 @@ function loadRelatedInfoToTable(array) {
   $("#div-other-link-table-dd").css("display", "none");
   for (var arr of array.splice(1)) {
     if (arr[2].trim() !== "") {
-      var protocolBoolean = protocolCheck(arr)
+      var protocolBoolean = protocolCheck(arr);
       if (protocolBoolean) {
         addProtocolLinktoTableDD(arr[2], arr[3], arr[1], arr[0]);
       } else {
@@ -2336,13 +2364,17 @@ function loadRelatedInfoToTable(array) {
 // check if a link is a protocol for UI import purpose (Basic version, could be improved further for accuracy)
 // (nothing will be changed for the generating purpose, just for the UI link separation between protocols and other links)
 function protocolCheck(array) {
-  var boolean = false
+  var boolean = false;
   // if relation includes IsProtocolFor, HasProtocol OR if description includes the word "protocol"(s) at all
-  if (array[1].includes("IsProtocolFor") || array[1].includes("HasProtocol")
-      || array[0].includes("protocol") || array[0].includes("protocols")) {
-    boolean = true
+  if (
+    array[1].includes("IsProtocolFor") ||
+    array[1].includes("HasProtocol") ||
+    array[0].includes("protocol") ||
+    array[0].includes("protocols")
+  ) {
+    boolean = true;
   }
-  return boolean
+  return boolean;
 }
 
 function loadDataFrametoUI() {
@@ -2393,7 +2425,7 @@ function loadDataFrametoUISamples() {
   for (var headerName of customHeaders) {
     addExistingCustomHeaderSamples(headerName);
   }
- // load sub-ids to table
+  // load sub-ids to table
   loadSamplesDataToTable();
   $("#table-samples").show();
   $("#button-fake-confirm-existing-samples-file-load").click();
@@ -2452,34 +2484,39 @@ function protocolAccountQuestion(type, changeAccountBoolean) {
             allowEscapeKey: false,
             allowOutsideClick: false,
             html:
-            '<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one \'Protocol URLs or DOIs\' link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL">' +
-            '<label>Protocol Type: <i class="fas fa-info-circle swal-popover" data-content="This will state whether your protocol is a \'URL\' or \'DOI\' item. Use one of those two items to reference the type of protocol." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-select" class="swal2-input"><option value="Select">Select a type</option><option value="URL">URL</option><option value="DOI">DOI</option></select>' +
-            '<label>Relation to the dataset: <i class="fas fa-info-circle swal-popover" data-content="A prespecified list of relations for common protocols used in SPARC datasets. </br>  The value in this field must be read as the \'relationship that this dataset has to the specified protocol\'." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-relation" class="swal2-input"><option value="Select">Select a relation</option><option value="IsProtocolFor">IsProtocolFor</option><option value="HasProtocol">HasProtocol</option><option value="IsSoftwareFor">IsSoftwareFor</option><option value="HasSoftware">HasSoftware</option></select>' +
-            '<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description"></textarea>',
+              '<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one \'Protocol URLs or DOIs\' link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL">' +
+              '<label>Protocol Type: <i class="fas fa-info-circle swal-popover" data-content="This will state whether your protocol is a \'URL\' or \'DOI\' item. Use one of those two items to reference the type of protocol." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-select" class="swal2-input"><option value="Select">Select a type</option><option value="URL">URL</option><option value="DOI">DOI</option></select>' +
+              '<label>Relation to the dataset: <i class="fas fa-info-circle swal-popover" data-content="A prespecified list of relations for common protocols used in SPARC datasets. </br>  The value in this field must be read as the \'relationship that this dataset has to the specified protocol\'." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-relation" class="swal2-input"><option value="Select">Select a relation</option><option value="IsProtocolFor">IsProtocolFor</option><option value="HasProtocol">HasProtocol</option><option value="IsSoftwareFor">IsSoftwareFor</option><option value="HasSoftware">HasSoftware</option></select>' +
+              '<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description"></textarea>',
             focusConfirm: false,
             preConfirm: () => {
-                if ($("#DD-protocol-link").val() === "") {
-                  Swal.showValidationMessage(`Please enter a link!`);
-                }
-                if ($("#DD-protocol-link-select").val() === "Select") {
-                  Swal.showValidationMessage(`Please choose a link type!`);
-                }
-                if ($("#DD-protocol-link-relation").val() === "Select") {
-                  Swal.showValidationMessage(`Please choose a link relation!`);
-                }
-                if ($("#DD-protocol-description").val() === "") {
-                  Swal.showValidationMessage(`Please enter a short description!`);
-                }
-                return [
-                  $("#DD-protocol-link").val(),
-                  $("#DD-protocol-link-select").val(),
-                  $("#DD-protocol-link-relation").val(),
-                  $("#DD-protocol-description").val()
+              if ($("#DD-protocol-link").val() === "") {
+                Swal.showValidationMessage(`Please enter a link!`);
+              }
+              if ($("#DD-protocol-link-select").val() === "Select") {
+                Swal.showValidationMessage(`Please choose a link type!`);
+              }
+              if ($("#DD-protocol-link-relation").val() === "Select") {
+                Swal.showValidationMessage(`Please choose a link relation!`);
+              }
+              if ($("#DD-protocol-description").val() === "") {
+                Swal.showValidationMessage(`Please enter a short description!`);
+              }
+              return [
+                $("#DD-protocol-link").val(),
+                $("#DD-protocol-link-select").val(),
+                $("#DD-protocol-link-relation").val(),
+                $("#DD-protocol-description").val(),
               ];
             },
           });
           if (formValues) {
-            addProtocolLinktoTableDD(formValues[0], formValues[1], formValues[2], formValues[3]);
+            addProtocolLinktoTableDD(
+              formValues[0],
+              formValues[1],
+              formValues[2],
+              formValues[3]
+            );
           }
         }
       }
@@ -2652,9 +2689,9 @@ async function showProtocolCredentials(email, filetype) {
     } else {
       const { value: formValue } = await Swal.fire({
         html:
-        '<label>Protocol Type: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one \'Protocol URLs or DOIs\' link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-select" class="swal2-input"><option value="Select">Select a type</option><option value="URL">URL</option><option value="DOI">DOI</option></select>' +
-        '<label>Relation to the dataset: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one \'Protocol URLs or DOIs\' link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-relation" class="swal2-input"><option value="Select">Select a relation</option><option value="IsProtocolFor">IsProtocolFor</option><option value="HasProtocol">HasProtocol</option><option value="IsSoftwareFor">IsSoftwareFor</option><option value="HasSoftware">HasSoftware</option></select>' +
-        '<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Optionally provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description"></textarea>',
+          '<label>Protocol Type: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one \'Protocol URLs or DOIs\' link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-select" class="swal2-input"><option value="Select">Select a type</option><option value="URL">URL</option><option value="DOI">DOI</option></select>' +
+          '<label>Relation to the dataset: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one \'Protocol URLs or DOIs\' link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-relation" class="swal2-input"><option value="Select">Select a relation</option><option value="IsProtocolFor">IsProtocolFor</option><option value="HasProtocol">HasProtocol</option><option value="IsSoftwareFor">IsSoftwareFor</option><option value="HasSoftware">HasSoftware</option></select>' +
+          '<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Optionally provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description"></textarea>',
         title: "Fill in the below fields to add the protocol: ",
         focusConfirm: false,
         heightAuto: false,
@@ -2678,20 +2715,30 @@ async function showProtocolCredentials(email, filetype) {
           if ($("#DD-protocol-description").val() === "") {
             Swal.showValidationMessage(`Please enter a short description!`);
           }
-          var duplicate = checkLinkDuplicate(protocol, document.getElementById("protocol-link-table-dd"))
+          var duplicate = checkLinkDuplicate(
+            protocol,
+            document.getElementById("protocol-link-table-dd")
+          );
           if (duplicate) {
-            Swal.showValidationMessage("Duplicate protocol. The protocol you entered is already added.")
+            Swal.showValidationMessage(
+              "Duplicate protocol. The protocol you entered is already added."
+            );
           }
           return [
             protocol,
             $("#DD-protocol-link-select").val(),
             $("#DD-protocol-link-relation").val(),
-            $("#DD-protocol-description").val()
+            $("#DD-protocol-description").val(),
           ];
         },
       });
       if (formValue) {
-        addProtocolLinktoTableDD(formValue[0], formValue[1], formValue[2], formValue[3]);
+        addProtocolLinktoTableDD(
+          formValue[0],
+          formValue[1],
+          formValue[2],
+          formValue[3]
+        );
       }
     }
   }
@@ -2752,15 +2799,20 @@ async function addAdditionalLink() {
       if ($("#DD-other-description").val() === "") {
         Swal.showValidationMessage(`Please enter a short description.`);
       }
-      var duplicate = checkLinkDuplicate(link, document.getElementById("other-link-table-dd"))
+      var duplicate = checkLinkDuplicate(
+        link,
+        document.getElementById("other-link-table-dd")
+      );
       if (duplicate) {
-        Swal.showValidationMessage("Duplicate URL/DOI. The URL/DOI you entered is already added.")
+        Swal.showValidationMessage(
+          "Duplicate URL/DOI. The URL/DOI you entered is already added."
+        );
       }
       return [
         $("#DD-other-link").val(),
         $("#DD-other-link-type").val(),
         $("#DD-other-link-relation").val(),
-        $("#DD-other-description").val()
+        $("#DD-other-description").val(),
       ];
     },
   });

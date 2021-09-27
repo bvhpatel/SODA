@@ -869,7 +869,7 @@ dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
 /////// Save and load award and milestone info
 var metadataPath = path.join(homeDirectory, "SODA", "METADATA");
 var awardFileName = "awards.json";
-var affiliationFileName = "affiliations.json"
+var affiliationFileName = "affiliations.json";
 var milestoneFileName = "milestones.json";
 var airtableConfigFileName = "airtable-config.json";
 var protocolConfigFileName = "protocol-config.json";
@@ -893,23 +893,43 @@ var otherFundingInput = document.getElementById("ds-other-funding"),
 
 var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
   studyOrganSystemsTagify = new Tagify(studyOrganSystemsInput, {
-    whitelist: ["autonomic ganglion", "brain", "colon", "heart", "intestine", "kidney", "large intestine", "liver", "lower urinary tract", "lung", "nervous system", "pancreas", "peripheral nervous system", "small intestine", "spinal cord", "spleen", "stomach", "sympathetic nervous system", "urinary bladder"],
+    whitelist: [
+      "autonomic ganglion",
+      "brain",
+      "colon",
+      "heart",
+      "intestine",
+      "kidney",
+      "large intestine",
+      "liver",
+      "lower urinary tract",
+      "lung",
+      "nervous system",
+      "pancreas",
+      "peripheral nervous system",
+      "small intestine",
+      "spinal cord",
+      "spleen",
+      "stomach",
+      "sympathetic nervous system",
+      "urinary bladder",
+    ],
     duplicates: false,
     dropdown: {
       enabled: 0,
       closeOnSelect: true,
     },
-});
+  });
 
 var studyTechniquesInput = document.getElementById("ds-study-technique"),
   studyTechniquesTagify = new Tagify(studyTechniquesInput, {
     duplicates: false,
-});
+  });
 
 var studyApproachesInput = document.getElementById("ds-study-approach"),
   studyApproachesTagify = new Tagify(studyApproachesInput, {
     duplicates: false,
-});
+  });
 
 ///////////////////// Airtable Authentication /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -1106,8 +1126,8 @@ function generateSubjectsFileHelper(mypath) {
           text: emessage,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
-          icon: "error"
-        })
+          icon: "error",
+        });
         ipcRenderer.send(
           "track-event",
           "Error",
@@ -1219,8 +1239,8 @@ function generateSamplesFileHelper(mypath) {
           text: emessage,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
-          icon: "error"
-        })
+          icon: "error",
+        });
       } else {
         ipcRenderer.send(
           "track-event",
@@ -1259,11 +1279,15 @@ function transformImportedExcelFile(type, result) {
   for (var column of result.slice(1)) {
     var indices = getAllIndexes(column, "");
     // check if the first 2 columns are empty
-    if (indices.length > 18 && type === "samples" && (indices.includes(0) || indices.includes(1))) {
-      return false
+    if (
+      indices.length > 18 &&
+      type === "samples" &&
+      (indices.includes(0) || indices.includes(1))
+    ) {
+      return false;
     }
     if (indices.length > 17 && type === "subjects" && indices.includes(0)) {
-      return false
+      return false;
     }
     var indices = getAllIndexes(column, "nan");
     for (var ind of indices) {
@@ -1317,7 +1341,7 @@ function loadSubjectsFileToDataframe(filePath) {
         if (res.length > 1) {
           result = transformImportedExcelFile("subjects", res);
           if (result !== false) {
-            subjectsTableData = result
+            subjectsTableData = result;
           } else {
             Swal.fire({
               title: "Couldn't load existing subjects.xlsx file",
@@ -1326,7 +1350,7 @@ function loadSubjectsFileToDataframe(filePath) {
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
             });
-            return
+            return;
           }
           loadDataFrametoUI();
           ipcRenderer.send(
@@ -1385,7 +1409,7 @@ function loadSamplesFileToDataframe(filePath) {
         if (res.length > 1) {
           result = transformImportedExcelFile("samples", res);
           if (result !== false) {
-            samplesTableData = result
+            samplesTableData = result;
           } else {
             Swal.fire({
               title: "Couldn't load existing samples.xlsx file",
@@ -1394,7 +1418,7 @@ function loadSamplesFileToDataframe(filePath) {
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
             });
-            return
+            return;
           }
           loadDataFrametoUISamples();
           ipcRenderer.send(
@@ -2411,8 +2435,6 @@ const tuiInstance = new Editor({
   ],
 });
 
-
-
 var displaySize = 1000;
 
 //////////////////////////////////
@@ -2798,9 +2820,6 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
 }
 ///////////////////////////////END OF NEW CURATE UI CODE ADAPTATION ///////////////////////////////////////////////////
 
-
-
-
 const metadataDatasetlistChange = () => {
   $("#bf-dataset-subtitle").val("");
   $("#para-dataset-banner-image-status").html("");
@@ -2869,8 +2888,6 @@ var cropOptions = {
 
 var imageExtension;
 var myCropper = new Cropper(bfViewImportedImage, cropOptions);
-
-
 
 function submitReviewDatasetCheck(res) {
   $("#submit_prepublishing_review-spinner").show();
@@ -3096,14 +3113,6 @@ function userError(error) {
 
 // Manage Datasets //
 
-
-
-
-
-
-
-
-
 function refreshBfUsersList() {
   var accountSelected = defaultBfAccount;
 
@@ -3178,14 +3187,12 @@ function refreshBfTeamsList(teamList) {
   }
 }
 
-
-const selectOptionColor = (mylist) =>{
+const selectOptionColor = (mylist) => {
   mylist.style.color = mylist.options[mylist.selectedIndex].style.color;
-}
+};
 
 ////////////////////////////////DATASET FILTERING FEATURE/////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
-
 
 // this function now is only used to load all datasets ("All" permission)
 // onto the dataset_description file ds-name select
@@ -3205,7 +3212,7 @@ const refreshDatasetList = () => {
   populateDatasetDropdowns(filteredDatasets);
   // parentDSTagify.settings.whitelist = getParentDatasets();
   return filteredDatasets.length;
-}
+};
 
 /// populate the dropdowns with refreshed dataset list
 const populateDatasetDropdowns = (mylist) => {
@@ -3224,7 +3231,7 @@ const populateDatasetDropdowns = (mylist) => {
   permissionDatasetlistChange();
   postCurationListChange();
   datasetStatusListChange();
-}
+};
 ////////////////////////////////////END OF DATASET FILTERING FEATURE//////////////////////////////
 
 function loadDefaultAccount() {
