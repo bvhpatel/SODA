@@ -20,38 +20,9 @@ function showForm(type, editBoolean) {
 }
 
 function showFormSamples(type, editBoolean) {
-  // if (samplesTableData.length > 1) {
-  //   var samplesDropdownOptions = [];
-  //   var subjectsDropdownOptions = [];
-  //   for (var i = 1; i < samplesTableData.length; i++) {
-  //     samplesDropdownOptions.push(samplesTableData[i][1]);
-  //     subjectsDropdownOptions.push(samplesTableData[i][0]);
-  //   }
-  //   if (!editBoolean) {
-  //     // prompt users if they want to import entries from previous sub_ids
-  //     Swal.fire({
-  //       title: "Would you like to re-use information from previous sample(s)?",
-  //       showCancelButton: true,
-  //       cancelButtonText: `No, start fresh!`,
-  //       cancelButtonColor: "#f44336",
-  //       confirmButtonColor: "#3085d6",
-  //       confirmButtonText: "Yes!",
-  //     }).then((boolean) => {
-  //       if (boolean.isConfirmed) {
-  //         promptImportPrevInfoSamples(
-  //           subjectsDropdownOptions,
-  //           samplesDropdownOptions
-  //         );
-  //       } else {
-  //         clearAllSubjectFormFields(samplesFormDiv);
-  //       }
-  //     });
-  //   }
-  // } else {
   if (type !== "edit") {
     clearAllSubjectFormFields(samplesFormDiv);
   }
-  // }
   samplesFormDiv.style.display = "flex";
   $("#create_samples-tab").removeClass("show");
   $("#create_samples-tab").css("display", "none");
@@ -98,7 +69,7 @@ function promptImportPrevInfoSamples(arr1, arr2) {
         populateFormsSamples(prevSubID, prevSamID, "import");
       }
     } else {
-      hideSamplesForm();
+      hideForm("sample");
     }
   });
 }
@@ -140,6 +111,9 @@ function addSubject() {
   if (subjectsTableData.length !== 0) {
     $("#div-import-primary-folder-sub").hide();
   }
+  if (subjectsTableData.length === 2) {
+    onboardingMetadata("subject");
+  }
 }
 
 // for "Done adding" button - samples
@@ -149,6 +123,9 @@ function addSample() {
   addSampleIDtoDataBase(sampleID, subjectID);
   if (samplesTableData.length !== 0) {
     $("#div-import-primary-folder-sam").hide();
+  }
+  if (samplesTableData.length === 2) {
+    onboardingMetadata("sample");
   }
 }
 
@@ -166,32 +143,28 @@ function warningBeforeHideForm(type) {
   }).then((result) => {
     if (result.isConfirmed) {
       if (type === "subjects") {
-        hideSubjectsForm();
+        hideForm("subject");
       } else {
-        hideSamplesForm();
+        hideForm("sample");
       }
     }
   });
 }
 
-function hideSubjectsForm() {
-  subjectsFormDiv.style.display = "none";
-  $("#create_subjects-tab").addClass("show");
-  $("#create_subjects-tab").css("display", "flex");
-  $("#footer-div-subjects").css("display", "flex");
+function hideForm(type) {
+  var formDiv;
+  if (type === "subject") {
+    formDiv = subjectsFormDiv;
+  } else if (type === "sample") {
+    formDiv = samplesFormDiv;
+  }
+  formDiv.style.display = "none";
+  $("#create_" + type + "s-tab").addClass("show");
+  $("#create_" + type + "s-tab").css("display", "flex");
+  $("#footer-div-" + type + "s").css("display", "flex");
   $("#sidebarCollapse").prop("disabled", false);
-  $("#btn-edit-subject").css("display", "none");
-  $("#btn-add-subject").css("display", "inline-block");
-}
-
-function hideSamplesForm() {
-  samplesFormDiv.style.display = "none";
-  $("#create_samples-tab").addClass("show");
-  $("#create_samples-tab").css("display", "flex");
-  $("#footer-div-samples").css("display", "flex");
-  $("#sidebarCollapse").prop("disabled", false);
-  $("#btn-edit-sample").css("display", "none");
-  $("#btn-add-sample").css("display", "inline-block");
+  $("#btn-edit-" + type + "").css("display", "none");
+  $("#btn-add-" + type + "").css("display", "inline-block");
 }
 
 function validateSubSamID(ev) {
@@ -364,6 +337,22 @@ function clearAllSubjectFormFields(form) {
   for (var field of $(form).children().find("select")) {
     $(field).val("Select");
   }
+
+  // hide Strains and Species
+  if (form === subjectsFormDiv) {
+    var keyword = "subject";
+  } else if (form === samplesFormDiv) {
+    var keyword = "sample";
+  }
+  $("#bootbox-" + keyword + "-species").css("display", "none");
+  $("#bootbox-" + keyword + "-strain").css("display", "none");
+
+  $("#button-add-species-" + keyword + "").html(
+    `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
+  );
+  $("#button-add-strain-" + keyword + "").html(
+    `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
+  );
 }
 
 // add new subject ID to JSON file (main file to be converted to excel)
@@ -402,23 +391,10 @@ async function addSpecies(ev, type) {
   if (value) {
     if (value !== "") {
       $("#bootbox-" + type + "-species").val(value);
-      $("#bootbox-" + type + "-species").css("display", "block");
-      $("#bootbox-" + type + "-species").attr("readonly", true);
-      $("#bootbox-" + type + "-species").css("background", "#f5f5f5");
-      $(ev).html("<i class='pen icon'></i>Edit");
+      switchSpeciesStrainInput(type, "species", "edit");
     }
   } else {
-    $("#bootbox-" + type + "-species").css("display", "none");
-    $("#bootbox-" + type + "-species").val("");
-    if (type.includes("subject")) {
-      $("#button-add-species-subject").html(
-        `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
-      );
-    } else {
-      $("#button-add-species-sample").html(
-        `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
-      );
-    }
+    switchSpeciesStrainInput(type, "species", "add");
   }
 }
 
@@ -450,23 +426,119 @@ async function addStrain(ev, type) {
   if (value) {
     if (value !== "") {
       $("#bootbox-" + type + "-strain").val(value);
-      $("#bootbox-" + type + "-strain").css("display", "block");
-      $("#bootbox-" + type + "-strain").attr("readonly", true);
-      $("#bootbox-" + type + "-strain").css("background", "#f5f5f5");
-      $(ev).html("<i class='pen icon'></i>Edit");
+      switchSpeciesStrainInput(type, "strain", "edit");
     }
   } else {
-    $("#bootbox-" + type + "-strain").css("display", "none");
-    $("#bootbox-" + type + "-strain-RRID").val("");
-    if (type.includes("subject")) {
-      $("#button-add-strain-subject").html(
-        `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
-      );
-    } else {
-      $("#button-add-strain-sample").html(
-        `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
-      );
+    switchSpeciesStrainInput(type, "strain", "add");
+  }
+}
+
+
+$("#table-subjects").mousedown(function (e) {
+  var length = document.getElementById("table-subjects").rows.length;
+  var tr = $(e.target).closest("tr"),
+    sy = e.pageY,
+    drag;
+  if ($(e.target).is("tr")) tr = $(e.target);
+  var index = tr.index();
+  $(tr).addClass("grabbed");
+  function move(e) {
+    if (!drag && Math.abs(e.pageY - sy) < 10) return;
+    drag = true;
+    tr.siblings().each(function () {
+      var s = $(this),
+        i = s.index(),
+        y = s.offset().top;
+      if (e.pageY >= y && e.pageY < y + s.outerHeight()) {
+        if (i !== 0) {
+          if ($(e.target).closest("tr")[0].rowIndex !== length) {
+            if (i < tr.index()) {
+              s.insertAfter(tr);
+            } else {
+              s.insertBefore(tr);
+            }
+            return false;
+          }
+        }
+      }
+    });
+  }
+  function up(e) {
+    if (drag && index != tr.index() && tr.index() !== length) {
+      drag = false;
     }
+    $(document).unbind("mousemove", move).unbind("mouseup", up);
+    $(tr).removeClass("grabbed");
+    // the below functions updates the row index accordingly and update the order of subject IDs in json
+    updateIndexForTable(document.getElementById("table-subjects"));
+    updateOrderIDTable(
+      document.getElementById("table-subjects"),
+      subjectsTableData,
+      "subjects"
+    );
+  }
+  $(document).mousemove(move).mouseup(up);
+});
+
+$("#table-samples").mousedown(function (e) {
+  var length = document.getElementById("table-samples").rows.length - 1;
+  var tr = $(e.target).closest("tr"),
+    sy = e.pageY,
+    drag;
+  if ($(e.target).is("tr")) tr = $(e.target);
+  var index = tr.index();
+  $(tr).addClass("grabbed");
+  function move(e) {
+    if (!drag && Math.abs(e.pageY - sy) < 10) return;
+    drag = true;
+    tr.siblings().each(function () {
+      var s = $(this),
+        i = s.index(),
+        y = s.offset().top;
+      if (e.pageY >= y && e.pageY < y + s.outerHeight()) {
+        if (i !== 0) {
+          if ($(e.target).closest("tr")[0].rowIndex !== length) {
+            if (i < tr.index()) {
+              s.insertAfter(tr);
+            } else {
+              s.insertBefore(tr);
+            }
+            return false;
+          }
+        }
+      }
+    });
+  }
+  function up(e) {
+    if (drag && index != tr.index() && tr.index() !== length) {
+      drag = false;
+    }
+    $(document).unbind("mousemove", move).unbind("mouseup", up);
+    $(tr).removeClass("grabbed");
+    // the below functions updates the row index accordingly and update the order of sample IDs in json
+    updateIndexForTable(document.getElementById("table-samples"));
+    updateOrderIDTable(
+      document.getElementById("table-samples"),
+      samplesTableData,
+      "samples"
+    );
+  }
+  $(document).mousemove(move).mouseup(up);
+});
+
+// display/hide strain/species input fields based on edit/add mode
+function switchSpeciesStrainInput(type, field, mode) {
+  if (mode === "add") {
+    $(`#button-add-${field}-${type}`).html(
+      `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add ${field}`
+    );
+    $(`#bootbox-${type}-${field}`).css("display", "none");
+    $(`#bootbox-${type}-${field}`).val("");
+  } else if (mode === "edit") {
+    $(`#bootbox-${type}-${field}`).css("display", "block");
+    $(`#bootbox-${type}-${field}`).attr("readonly", true);
+    $(`#bootbox-${type}-${field}`).css("background", "#f5f5f5");
+    $(`#button-add-${field}-${type}`).html("<i class='pen icon'></i>Edit");
   }
 }
 
@@ -535,11 +607,12 @@ function populateRRID(strain, type) {
           } else {
             $("#button-add-strain-sample").html("<i class='pen icon'></i>Edit");
           }
-          Swal.fire(
-            `Successfully retrieved the RRID for "${strain}".`,
-            "",
-            "success"
-          );
+          Swal.fire({
+            title: `Successfully retrieved the RRID for "${strain}".`,
+            icon: "success",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
         }
       });
     } else {
@@ -595,7 +668,7 @@ function addTheRestSubjectEntriesToJSON() {
   $("#table-subjects").css("display", "block");
   $("#button-generate-subjects").css("display", "block");
   clearAllSubjectFormFields(subjectsFormDiv);
-  hideSubjectsForm();
+  hideForm("subject");
 }
 
 function addTheRestSampleEntriesToJSON() {
@@ -637,7 +710,7 @@ function addTheRestSampleEntriesToJSON() {
   $("#table-samples").css("display", "block");
   $("#button-generate-samples").css("display", "block");
   clearAllSubjectFormFields(samplesFormDiv);
-  hideSamplesForm();
+  hideForm("sample");
 }
 
 function addSampleIDtoJSON(sampleID) {
@@ -788,6 +861,13 @@ function populateForms(subjectID, type) {
                 $("#bootbox-subject-age-info").val("N/A");
               }
             }
+          } else if (field.name === "Species" && infoJson[i] !== "") {
+            $("#bootbox-subject-species").val(infoJson[i]);
+            // manipulate the Add Strains/Species UI accordingly
+            switchSpeciesStrainInput("subject", "species", "edit");
+          } else if (field.name === "Strain" && infoJson[i] !== "") {
+            $("#bootbox-subject-strain").val(infoJson[i]);
+            switchSpeciesStrainInput("subject", "strain", "edit");
           } else {
             if (type === "import") {
               if (field.name === "subject_id") {
@@ -846,6 +926,13 @@ function populateFormsSamples(subjectID, sampleID, type) {
             } else {
               $("#bootbox-sample-age-info").val("N/A");
             }
+          } else if (field.name === "Species" && infoJson[i] !== "") {
+            $("#bootbox-sample-species").val(infoJson[i]);
+            // manipulate the Add Strains/Species UI accordingly
+            switchSpeciesStrainInput("sample", "species", "edit");
+          } else if (field.name === "Strain" && infoJson[i] !== "") {
+            $("#bootbox-sample-strain").val(infoJson[i]);
+            switchSpeciesStrainInput("sample", "strain", "edit");
           } else {
             if (type === "import") {
               if (field.name === "subject_id") {
@@ -899,7 +986,8 @@ function editSubject(ev, subjectID) {
     ) {
       // if it's age, then add age info input (day/week/month/year)
       if (field.name === "Age") {
-        if ($("#bootbox-subject-age-info").val() !== "Select") {
+        if ($("#bootbox-subject-age-info").val() !== "Select" &&
+            $("#bootbox-subject-age-info").val() !== "N/A") {
           field.value =
             field.value + " " + $("#bootbox-subject-age-info").val();
         }
@@ -918,7 +1006,7 @@ function editSubject(ev, subjectID) {
         break;
       }
     }
-    hideSubjectsForm();
+    hideForm("subject");
   } else {
     var table = document.getElementById("table-subjects");
     var duplicate = false;
@@ -942,7 +1030,7 @@ function editSubject(ev, subjectID) {
         }
       }
       $(currentRow)[0].cells[1].innerText = newID;
-      hideSubjectsForm();
+      hideForm("subject");
     }
   }
   subjectsFileData = [];
@@ -981,7 +1069,7 @@ function editSample(ev, sampleID) {
       }
     }
     $(currentRow)[0].cells[1].innerText = samplesFileData[0];
-    hideSamplesForm();
+    hideForm("sample");
   } else {
     var table = document.getElementById("table-samples");
     var duplicate = false;
@@ -1006,7 +1094,7 @@ function editSample(ev, sampleID) {
       }
       $(currentRow)[0].cells[2].innerText = newID;
       $(currentRow)[0].cells[1].innerText = samplesFileData[0];
-      hideSamplesForm();
+      hideForm("sample");
     }
   }
   samplesFileData = [];
@@ -1288,6 +1376,488 @@ function generateSamples() {
   ipcRenderer.send("open-folder-dialog-save-samples", "samples.xlsx");
 }
 
+function generateSubjectsFileHelper(mypath) {
+  // new client that has a longer timeout
+  let clientLongTimeout = new zerorpc.Client({
+    timeout: 300000,
+    heartbeatInterval: 60000,
+  });
+  clientLongTimeout.connect("tcp://127.0.0.1:4242");
+  clientLongTimeout.invoke(
+    "api_save_subjects_file",
+    mypath,
+    subjectsTableData,
+    (error, res) => {
+      if (error) {
+        var emessage = userError(error);
+        log.error(error);
+        console.error(error);
+        Swal.fire(
+          "Failed to generate the subjects.xlsx file.",
+          `${emessage}`,
+          "error"
+        );
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Prepare Metadata - Create subjects.xlsx",
+          subjectsTableData
+        );
+      } else {
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Prepare Metadata - Create subjects.xlsx",
+          subjectsTableData
+        );
+        Swal.fire({
+          title:
+            "The subjects.xlsx file has been successfully generated at the specified location.",
+          icon: "success",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+      }
+    }
+  );
+}
+
+function generateSamplesFileHelper(mypath) {
+  // new client that has a longer timeout
+  let clientLongTimeout = new zerorpc.Client({
+    timeout: 300000,
+    heartbeatInterval: 60000,
+  });
+  clientLongTimeout.connect("tcp://127.0.0.1:4242");
+  clientLongTimeout.invoke(
+    "api_save_samples_file",
+    mypath,
+    samplesTableData,
+    (error, res) => {
+      if (error) {
+        var emessage = userError(error);
+        log.error(error);
+        console.error(error);
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Prepare Metadata - Create samples.xlsx",
+          samplesTableData
+        );
+        Swal.fire(
+          "Failed to generate the samples.xlsx file.",
+          `${emessage}`,
+          "error"
+        );
+      } else {
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Prepare Metadata - Create samples.xlsx",
+          samplesTableData
+        );
+        Swal.fire({
+          title:
+            "The samples.xlsx file has been successfully generated at the specified location.",
+          icon: "success",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+      }
+    }
+  );
+}
+
+function transformImportedExcelFile(type, result) {
+  for (var column of result.slice(1)) {
+    var indices = getAllIndexes(column, "nan");
+    for (var ind of indices) {
+      column[ind] = "";
+    }
+    if (type === "samples") {
+      if (!specimenType.includes(column[5])) {
+        column[5] = "";
+      }
+    }
+  }
+  return result;
+}
+
+function getAllIndexes(arr, val) {
+  var indexes = [],
+    i = -1;
+  while ((i = arr.indexOf(val, i + 1)) != -1) {
+    indexes.push(i);
+  }
+  return indexes;
+}
+
+// import existing subjects.xlsx info (calling python to load info to a dataframe)
+function loadSubjectsFileToDataframe(filePath) {
+  var fieldSubjectEntries = [];
+  for (var field of $("#form-add-a-subject")
+    .children()
+    .find(".subjects-form-entry")) {
+    fieldSubjectEntries.push(field.name.toLowerCase());
+  }
+  client.invoke(
+    "api_convert_subjects_samples_file_to_df",
+    "subjects",
+    filePath,
+    fieldSubjectEntries,
+    (error, res) => {
+      if (error) {
+        log.error(error);
+        console.error(error);
+        var emessage = userError(error);
+        Swal.fire({
+          title: "Couldn't load existing subjects.xlsx file",
+          text: emessage,
+          icon: "error",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+      } else {
+        // res is a dataframe, now we load it into our subjectsTableData in order to populate the UI
+        if (res.length > 1) {
+          subjectsTableData = transformImportedExcelFile("subjects", res);
+          loadDataFrametoUI();
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Prepare Metadata - Create subjects.xlsx - Load existing subjects.xlsx file",
+            ""
+          );
+        } else {
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Prepare Metadata - Create subjects.xlsx - Load existing subjects.xlsx file",
+            error
+          );
+
+          Swal.fire({
+            title: "Couldn't load existing subjects.xlsx file",
+            text: "Please make sure there is at least one subject in the subjects.xlsx file.",
+            icon: "error",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+        }
+      }
+    }
+  );
+}
+
+// import existing subjects.xlsx info (calling python to load info to a dataframe)
+function loadSamplesFileToDataframe(filePath) {
+  var fieldSampleEntries = [];
+  for (var field of $("#form-add-a-sample")
+    .children()
+    .find(".samples-form-entry")) {
+    fieldSampleEntries.push(field.name.toLowerCase());
+  }
+  client.invoke(
+    "api_convert_subjects_samples_file_to_df",
+    "samples",
+    filePath,
+    fieldSampleEntries,
+    (error, res) => {
+      if (error) {
+        log.error(error);
+        console.error(error);
+        var emessage = userError(error);
+        Swal.fire({
+          title: "Couldn't load existing samples.xlsx file",
+          text: emessage,
+          icon: "error",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+      } else {
+        // res is a dataframe, now we load it into our samplesTableData in order to populate the UI
+        if (res.length > 1) {
+          samplesTableData = transformImportedExcelFile("samples", res);
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Prepare Metadata - Create samples.xlsx - Load existing samples.xlsx file",
+            samplesTableData
+          );
+          loadDataFrametoUISamples();
+        } else {
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Prepare Metadata - Create samples.xlsx - Load existing samples.xlsx file",
+            samplesTableData
+          );
+          Swal.fire({
+            title: "Couldn't load existing samples.xlsx file",
+            text: "Please make sure there is at least one sample in the samples.xlsx file.",
+            icon: "error",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+        }
+      }
+    }
+  );
+}
+
+const specimenType = [
+  "whole organism",
+  "whole organ",
+  "fluid specimen",
+  "tissue",
+  "nerve",
+  "slice",
+  "section",
+  "cryosection",
+  "cell",
+  "nucleus",
+  "nucleic acid",
+  "slide",
+  "whole mount",
+];
+function createSpecimenTypeAutocomplete(id) {
+  var autoCompleteJS3 = new autoComplete({
+    selector: "#" + id,
+    data: {
+      cache: true,
+      src: specimenType,
+    },
+    onSelection: (feedback) => {
+      var selection = feedback.selection.value;
+      document.querySelector("#" + id).value = selection;
+    },
+    trigger: {
+      event: ["input", "focus"],
+      // condition: () => true
+    },
+    resultItem: {
+      destination: "#" + id,
+      highlight: {
+        render: true,
+      },
+    },
+    resultsList: {
+      // id: listID,
+      maxResults: 5,
+    },
+  });
+}
+
+function createSpeciesAutocomplete(id) {
+  // var listID = "autocomplete" + id;
+  var autoCompleteJS2 = new autoComplete({
+    selector: "#" + id,
+    data: {
+      src: [
+        {
+          "Canis lupus familiaris": "dogs, beagle dogs",
+          "Mustela putorius furo": "ferrets, black ferrets",
+          "Mus sp.": "mice",
+          "Mus musculus": "mouse, house mouse",
+          "Rattus norvegicus": "Norway rats",
+          Rattus: "rats",
+          "Sus scrofa": "pigs, swine, wild boar",
+          "Sus scrofa domesticus": "domestic pigs",
+          "Homo sapiens": "humans",
+          "Felis catus": "domestic cat",
+        },
+      ],
+      keys: [
+        "Canis lupus familiaris",
+        "Mustela putorius furo",
+        "Mus sp.",
+        "Mus musculus",
+        "Sus scrofa",
+        "Sus scrofa domesticus",
+        "Homo sapiens",
+        "Rattus",
+        "Felis catus",
+        "Rattus norvegicus",
+      ],
+    },
+    resultItem: {
+      element: (item, data) => {
+        // Modify Results Item Style
+        item.style = "display: flex; justify-content: space-between;";
+        // Modify Results Item Content
+        item.innerHTML = `
+        <span style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+          ${data.match}
+        </span>
+        <span style="display: flex; align-items: center; font-size: 13px; font-weight: 100; text-transform: uppercase; color: rgba(0,0,0,.2);">
+          ${data.key}
+        </span>`;
+      },
+      highlight: true,
+    },
+    events: {
+      input: {
+        focus: () => {
+          autoCompleteJS2.start();
+        },
+      },
+    },
+    threshold: 0,
+    resultsList: {
+      element: (list, data) => {
+        const info = document.createElement("div");
+
+        if (data.results.length === 0) {
+          info.setAttribute("class", "no_results_species");
+          info.setAttribute(
+            "onclick",
+            "loadTaxonomySpecies('" + data.query + "', '" + id + "')"
+          );
+          info.innerHTML = `Find the scientific name for <strong>"${data.query}"</strong>`;
+        }
+        list.prepend(info);
+      },
+      noResults: true,
+      maxResults: 5,
+      tabSelect: true,
+    },
+  });
+
+  autoCompleteJS2.input.addEventListener("selection", function (event) {
+    var feedback = event.detail;
+    var selection = feedback.selection.key;
+    // Render selected choice to selection div
+    document.getElementById(id).value = selection;
+    // Replace Input value with the selected value
+    autoCompleteJS2.input.value = selection;
+    $("#btn-confirm-species").removeClass("confirm-disabled");
+  });
+}
+
+function createStrain(id, type) {
+  var autoCompleteJS4 = new autoComplete({
+    selector: "#" + id,
+    data: {
+      src: [
+        "Wistar",
+        "Yucatan",
+        "C57/B6J",
+        "C57 BL/6J",
+        "mixed background",
+        "Sprague-Dawley",
+      ],
+    },
+    events: {
+      input: {
+        focus: () => {
+          autoCompleteJS4.start();
+        },
+      },
+    },
+    resultItem: {
+      element: (item, data) => {
+        // Modify Results Item Style
+        item.style = "display: flex; justify-content: space-between;";
+        // Modify Results Item Content
+        item.innerHTML = `
+        <span style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+          ${data.match}
+        </span>`;
+      },
+      highlight: true,
+    },
+    threshold: 0,
+    resultsList: {
+      element: (list, data) => {
+        const info = document.createElement("div");
+
+        if (data.results.length === 0) {
+          info.setAttribute("class", "no_results_species");
+          info.setAttribute(
+            "onclick",
+            "populateRRID('" + data.query + "', '" + type + "')"
+          );
+          info.innerHTML = `Click here to check <strong>"${data.query}"</strong>`;
+        }
+        list.prepend(info);
+      },
+      noResults: true,
+      maxResults: 5,
+      tabSelect: true,
+    },
+  });
+
+  autoCompleteJS4.input.addEventListener("selection", function (event) {
+    var feedback = event.detail;
+    var selection = feedback.selection.value;
+    document.querySelector("#" + id).value = selection;
+    var strain = $("#sweetalert-" + type + "-strain").val();
+    if (strain !== "") {
+      populateRRID(strain, type);
+    }
+    autoCompleteJS4.input.value = selection;
+  });
+}
+
+async function loadTaxonomySpecies(commonName, destinationInput) {
+  Swal.fire({
+    title: "Finding the scientific name for " + commonName + "...",
+    html: "Please wait...",
+    heightAuto: false,
+    allowOutsideClick: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {});
+  await client.invoke(
+    "api_load_taxonomy_species",
+    [commonName],
+    (error, res) => {
+      if (error) {
+        log.error(error);
+        console.error(error);
+      } else {
+        if (Object.keys(res).length === 0) {
+          Swal.fire({
+            title: "Cannot find a scientific name for '" + commonName + "'",
+            text: "Make sure you enter a correct species name.",
+            icon: "error",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+          if (!$("#btn-confirm-species").hasClass("confirm-disabled")) {
+            $("#btn-confirm-species").addClass("confirm-disabled");
+          }
+          if (destinationInput.includes("subject")) {
+            if ($("#bootbox-subject-species").val() === "") {
+              $("#bootbox-subject-species").css("display", "none");
+            }
+            // set the Edit species button back to "+ Add species"
+            $("#button-add-species-subject").html(
+              `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
+            );
+          }
+          if (destinationInput.includes("sample")) {
+            if ($("#bootbox-sample-species").val() === "") {
+              $("#bootbox-sample-species").css("display", "none");
+            }
+            // set the Edit species button back to "+ Add species"
+            $("#button-add-species-sample").html(
+              `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
+            );
+          }
+        } else {
+          $("#" + destinationInput).val(res[commonName]["ScientificName"]);
+          $("#btn-confirm-species").removeClass("confirm-disabled");
+        }
+      }
+    }
+  );
+}
+
+
 function showPrimaryBrowseFolder() {
   ipcRenderer.send("open-file-dialog-local-primary-folder");
 }
@@ -1517,8 +2087,59 @@ function loadSubjectsDataToTable() {
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
   });
+  // onboardingMetadata("subject")
   $("#button-generate-subjects").css("display", "block");
   $("#div-import-primary-folder-sub").hide();
+}
+
+function onboardingMetadata(type) {
+  var helperButtons = $(
+    $($(`#table-${type}s`).children()[1]).find(`.row-${type}s`)[0]
+  ).find(".contributor-helper-buttons")[0];
+  introJs()
+    .setOptions({
+      steps: [
+        {
+          title: "Buttons",
+          element: helperButtons,
+          intro: "Click on these buttons to manipulate a " + type + ".",
+        },
+        {
+          title: `1. Edit a ${type}`,
+          element: $(helperButtons).children()[0],
+          intro:
+            "Click here to edit the information about a corresponding " +
+            type +
+            ".",
+        },
+        {
+          title: `2. Copy a ${type}`,
+          element: $(helperButtons).children()[1],
+          intro:
+            "Click here to copy information from the corresponding " +
+            type +
+            " onto a new " +
+            type +
+            ". Note: You have to enter an ID for the new " +
+            type +
+            " after clicking on this.",
+        },
+        {
+          title: `3. Delete a ${type}`,
+          element: $(helperButtons).children()[2],
+          intro:
+            "Click here to delete a corresponding " +
+            type +
+            " from the table. This will permanently delete the " +
+            type +
+            " from SODA and cannot be reverted.",
+        },
+      ],
+      exitOnEsc: false,
+      exitOnOverlayClick: false,
+      disableInteraction: false,
+    })
+    .start();
 }
 
 function loadSamplesDataToTable() {
@@ -1811,6 +2432,65 @@ function addExistingCustomHeaderSamples(customName) {
 }
 
 $(document).ready(function () {
+  // generate subjects file
+  ipcRenderer.on(
+    "selected-generate-metadata-subjects",
+    (event, dirpath, filename) => {
+      if (dirpath.length > 0) {
+        var destinationPath = path.join(dirpath[0], filename);
+        if (fs.existsSync(destinationPath)) {
+          var emessage =
+            "File '" +
+            filename +
+            "' already exists in " +
+            dirpath[0] +
+            ". Do you want to replace it?";
+          Swal.fire({
+            icon: "warning",
+            title: "Metadata file already exists",
+            text: `${emessage}`,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            showConfirmButton: true,
+            showCancelButton: true,
+            cancelButtonText: "No",
+            confirmButtonText: "Yes",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              Swal.fire({
+                title: "Generating the subjects.xlsx file",
+                html: "Please wait...",
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                heightAuto: false,
+                backdrop: "rgba(0,0,0, 0.4)",
+                timerProgressBar: false,
+                didOpen: () => {
+                  Swal.showLoading();
+                },
+              }).then((result) => {});
+              generateSubjectsFileHelper(destinationPath);
+            }
+          });
+        } else {
+          Swal.fire({
+            title: "Generating the subjects.xlsx file",
+            html: "Please wait...",
+            allowEscapeKey: false,
+            allowOutsideClick: false,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            timerProgressBar: false,
+            didOpen: () => {
+              Swal.showLoading();
+            },
+          }).then((result) => {});
+          generateSubjectsFileHelper(destinationPath);
+        }
+      }
+    }
+  );
+
   loadExistingProtocolInfo();
   for (var field of $("#form-add-a-subject")
     .children()
@@ -1836,6 +2516,80 @@ $(document).ready(function () {
     }
     headersArrSamples.push(field.name);
   }
+
+  // import Primary folder
+  ipcRenderer.on("selected-local-primary-folder", (event, primaryFolderPath) => {
+    if (primaryFolderPath.length > 0) {
+      importPrimaryFolderSubjects(primaryFolderPath[0]);
+    }
+  });
+  ipcRenderer.on(
+    "selected-local-primary-folder-samples",
+    (event, primaryFolderPath) => {
+      if (primaryFolderPath.length > 0) {
+        importPrimaryFolderSamples(primaryFolderPath[0]);
+      }
+    }
+  );
+
+  // generate samples file
+  ipcRenderer.on(
+    "selected-generate-metadata-samples",
+    (event, dirpath, filename) => {
+      if (dirpath.length > 0) {
+        var destinationPath = path.join(dirpath[0], filename);
+        if (fs.existsSync(destinationPath)) {
+          var emessage =
+            "File '" +
+            filename +
+            "' already exists in " +
+            dirpath[0] +
+            ". Do you want to replace it?";
+          Swal.fire({
+            icon: "warning",
+            title: "Metadata file already exists",
+            text: `${emessage}`,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            showConfirmButton: true,
+            showCancelButton: true,
+            cancelButtonText: "No",
+            confirmButtonText: "Yes",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              Swal.fire({
+                title: "Generating the samples.xlsx file",
+                html: "Please wait...",
+                heightAuto: false,
+                backdrop: "rgba(0,0,0, 0.4)",
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                timerProgressBar: false,
+                didOpen: () => {
+                  Swal.showLoading();
+                },
+              }).then((result) => {});
+              generateSamplesFileHelper(destinationPath);
+            }
+          });
+        } else {
+          Swal.fire({
+            title: "Generating the samples.xlsx file",
+            html: "Please wait...",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            allowEscapeKey: false,
+            allowOutsideClick: false,
+            timerProgressBar: false,
+            didOpen: () => {
+              Swal.showLoading();
+            },
+          }).then((result) => {});
+          generateSamplesFileHelper(destinationPath);
+        }
+      }
+    }
+  );
 
   ipcRenderer.on("selected-existing-subjects", (event, filepath) => {
     if (filepath.length > 0) {
@@ -2444,929 +3198,4 @@ function readXMLScicrunch(xml, type) {
     res = false;
   }
   return res;
-}
-
-// add protocol function for DD file
-async function addProtocol() {
-  const { value: values } = await Swal.fire({
-    title: "Add a protocol",
-    html: '<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one "Protocol URLs or DOIs" link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL">',
-    focusConfirm: false,
-    confirmButtonText: "Add",
-    cancelButtonText: "Cancel",
-    customClass: "swal-content-additional-link",
-    showCancelButton: true,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    didOpen: () => {
-      $(".swal-popover").popover();
-    },
-    preConfirm: () => {
-      var link = $("#DD-protocol-link").val();
-      if (link === "") {
-        Swal.showValidationMessage(`Please enter a link!`);
-      }
-      if (checkDuplicateLink(link, "protocol-link-table-dd")) {
-        Swal.showValidationMessage(
-          "The link provided is already added to the table. Please provide a different protocol."
-        );
-      }
-      return [$("#DD-protocol-link").val()];
-    },
-  });
-  if (values) {
-    addProtocolLinktoTableDD(values[0]);
-  }
-}
-
-function addExistingProtocol() {
-  var credentials = loadExistingProtocolInfo();
-  if (credentials[0]) {
-    // show email for protocol account
-    showProtocolCredentials(credentials[1], "DD");
-  } else {
-    protocolAccountQuestion("DD", false);
-  }
-}
-
-function addProtocolLinktoTableDD(protocolLink) {
-  var protocolTable = document.getElementById("protocol-link-table-dd");
-  protocolTable.style.display = "block";
-  var rowcount = protocolTable.rows.length;
-  /// append row to table from the bottom
-  var rowIndex = rowcount;
-  var currentRow = protocolTable.rows[protocolTable.rows.length];
-  // check for unique row id in case users delete old rows and append new rows (same IDs!)
-  var newRowIndex = checkForUniqueRowID("row-current-protocol", rowIndex);
-  var indexNumber = rowIndex;
-  var row = (protocolTable.insertRow(rowIndex).outerHTML =
-    "<tr id='row-current-protocol" +
-    newRowIndex +
-    "' class='row-protocol'><td class='contributor-table-row'>" +
-    indexNumber +
-    "</td><td><a href='" +
-    protocolLink +
-    "' target='_blank'>" +
-    protocolLink +
-    "</a></td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_protocol_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_protocol_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
-}
-
-function addAdditionalLinktoTableDD(linkType, link, description) {
-  var linkTable = document.getElementById("additional-link-table-dd");
-  linkTable.style.display = "block";
-  var rowcount = linkTable.rows.length;
-  /// append row to table from the bottom
-  var rowIndex = rowcount;
-  var currentRow = linkTable.rows[linkTable.rows.length];
-  // check for unique row id in case users delete old rows and append new rows (same IDs!)
-  var newRowIndex = checkForUniqueRowID(
-    "row-current-additional-link",
-    rowIndex
-  );
-  var indexNumber = rowIndex;
-  var row = (linkTable.insertRow(rowIndex).outerHTML =
-    "<tr id='row-current-additional-link" +
-    newRowIndex +
-    "' class='row-protocol'><td class='contributor-table-row'>" +
-    indexNumber +
-    "</td><td>" +
-    linkType +
-    "</td><td><a href='" +
-    link +
-    "' target='_blank'>" +
-    link +
-    "</a></td><td class='contributor-table-row' style='display:none'>" +
-    description +
-    "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_additional_link_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_additional_link_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
-}
-
-async function helpSPARCAward(filetype) {
-  var award = "";
-  if (filetype === "dd") {
-    var res = airtableRes;
-    $("#select-sparc-award-dd-spinner").css("display", "block");
-    if (res[0]) {
-      var keyname = res[1];
-      var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'dd\')" style="font-weight:500;text-decoration: underline">Change</a></span></h4><h4 style="text-align:left">Select your award: </h4><div
-        class="search-select-box"><select id="select-SPARC-award" class="w-100" data-live-search="true"style="width: 450px;border-radius: 7px;padding: 8px;"data-none-selected-text="Loading awards..."></select></div></div>`;
-      const { value: awardVal } = await Swal.fire({
-        html: htmlEle,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        inputPlaceholder: "Select an award",
-        showCancelButton: true,
-        confirmButtonText: "Confirm",
-        didOpen: () => {
-          $("#select-sparc-award-dd-spinner").css("display", "none");
-          populateSelectSPARCAward(awardObj, "select-SPARC-award");
-          $("#select-SPARC-award").selectpicker();
-          $("#bf_list_users_pi").selectpicker("refresh");
-        },
-        preConfirm: () => {
-          if ($("#select-SPARC-award").val() === "Select") {
-            Swal.showValidationMessage("Please select an award.");
-          } else {
-            award = $("#select-SPARC-award").val();
-          }
-        },
-      });
-      if (awardVal) {
-        if (contributorObject.length !== 0) {
-          Swal.fire({
-            title:
-              "Are you sure you want to delete all of the previous contributor information?",
-            showCancelButton: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            cancelButtonText: `No!`,
-            cancelButtonColor: "#f44336",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "Yes",
-          }).then((boolean) => {
-            if (boolean.isConfirmed) {
-              changeAward(award);
-            }
-          });
-        } else {
-          changeAward(award);
-        }
-      }
-    } else {
-      Swal.fire({
-        title:
-          "At this moment, SODA is not connected with your Airtable account.",
-        text: "Would you like to connect your Airtable account with SODA?",
-        showCancelButton: true,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        cancelButtonText: `No!`,
-        cancelButtonColor: "#f44336",
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: "Yes",
-      }).then((boolean) => {
-        if (boolean.isConfirmed) {
-          showAddAirtableAccountSweetalert("dd");
-        }
-      });
-      $("#select-sparc-award-dd-spinner").css("display", "none");
-    }
-  } else {
-    var res = airtableRes;
-    $("#select-sparc-award-submission-spinner").css("display", "block");
-    if (res[0]) {
-      var keyname = res[1];
-      var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'submission\')" style="font-weight:500;text-decoration: underline">Change</a></span></h4><h4 style="text-align:left">Select your award: </h4><div
-        class="search-select-box"><select id="select-SPARC-award-submission" class="w-100" data-live-search="true"style="width: 450px;border-radius: 7px;padding: 8px;"data-none-selected-text="Loading awards..."></select></div></div>`;
-      const { value: awardVal } = await Swal.fire({
-        html: htmlEle,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        inputPlaceholder: "Select an award",
-        showCancelButton: true,
-        confirmButtonText: "Confirm",
-        didOpen: () => {
-          $("#select-sparc-award-submission-spinner").css("display", "none");
-          populateSelectSPARCAward(awardObj, "select-SPARC-award-submission");
-          $("#select-SPARC-award-submission").selectpicker();
-          $("#bf_list_users_pi").selectpicker("refresh");
-        },
-        preConfirm: () => {
-          if ($("#select-SPARC-award-submission").val() === "Select") {
-            Swal.showValidationMessage("Please select an award.");
-          } else {
-            award = $("#select-SPARC-award-submission").val();
-          }
-        },
-      });
-      if (awardVal) {
-        if ($("#selected-milestone-1").val() !== "") {
-          Swal.fire({
-            title:
-              "Are you sure you want to delete all of the previous milestone information?",
-            showCancelButton: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            cancelButtonText: `No!`,
-            cancelButtonColor: "#f44336",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "Yes",
-          }).then((boolean) => {
-            if (boolean.isConfirmed) {
-              milestoneTagify1.removeAllTags();
-              $("#submission-sparc-award").val(award);
-              $("#ds-description-award-input").val(award);
-              loadContributorInfofromAirtable(award);
-            }
-          });
-        } else {
-          milestoneTagify1.removeAllTags();
-          $("#submission-sparc-award").val(award);
-          $("#ds-description-award-input").val(award);
-          loadContributorInfofromAirtable(award);
-        }
-      }
-    } else {
-      Swal.fire({
-        title:
-          "At this moment, SODA is not connected with your Airtable account.",
-        text: "Would you like to connect your Airtable account with SODA?",
-        showCancelButton: true,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        cancelButtonText: `No!`,
-        cancelButtonColor: "#f44336",
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: "Yes",
-      }).then((boolean) => {
-        if (boolean.isConfirmed) {
-          showAddAirtableAccountSweetalert("submission");
-        }
-      });
-      $("#select-sparc-award-submission-spinner").css("display", "none");
-    }
-  }
-}
-
-function populateSelectSPARCAward(object, id) {
-  removeOptions(document.getElementById(id));
-  addOption(document.getElementById(id), "Select an award", "Select");
-  for (var award of Object.keys(object)) {
-    addOption(document.getElementById(id), object[award], award);
-  }
-}
-
-function changeAward(award) {
-  Swal.fire({
-    title: "Loading your award and contributor information.",
-    html: "Please wait...",
-    timer: 3000,
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  }).then((result) => {});
-  $("#ds-description-award-input").val(award);
-  $("#submission-sparc-award").val(award);
-  loadContributorInfofromAirtable(award);
-}
-
-function loadContributorInfofromAirtable(award) {
-  globalContributorNameObject = {};
-  currentContributorsLastNames = [];
-  $("#contributor-table-dd tr:gt(0)").remove();
-  $("#div-contributor-table-dd").css("display", "none");
-  contributorObject = [];
-  var airKeyContent = parseJson(airtableConfigPath);
-  if (Object.keys(airKeyContent).length !== 0) {
-    var airKeyInput = airKeyContent["api-key"];
-    Airtable.configure({
-      endpointUrl: "https://" + airtableHostname,
-      apiKey: airKeyInput,
-    });
-    var base = Airtable.base("appiYd1Tz9Sv857GZ");
-    base("sparc_members")
-      .select({
-        filterByFormula: `({SPARC_Award_#} = "${award}")`,
-      })
-      .eachPage(function page(records, fetchNextPage) {
-        records.forEach(function (record) {
-          var firstName = record.get("First_name");
-          var lastName = record.get("Last_name");
-          if (firstName !== undefined && lastName !== undefined) {
-            globalContributorNameObject[lastName] = firstName;
-            currentContributorsLastNames.push(lastName);
-          }
-        }),
-          fetchNextPage();
-      });
-    function done(err) {
-      if (err) {
-        log.error(err);
-        console.error(err);
-        return;
-      }
-    }
-  }
-}
-
-function addContributortoTableDD(name, contactStatus) {
-  var conTable = document.getElementById("contributor-table-dd");
-  document.getElementById("div-contributor-table-dd").style.display = "block";
-  var rowcount = conTable.rows.length;
-  /// append row to table from the bottom
-  var rowIndex = rowcount;
-  var currentRow = conTable.rows[conTable.rows.length - 1];
-  // check for unique row id in case users delete old rows and append new rows (same IDs!)
-  var newRowIndex = checkForUniqueRowID("row-current-con", rowIndex);
-  var indexNumber = rowIndex;
-
-  var conName = name;
-  var conContactPerson = contactStatus;
-  var row = (conTable.insertRow(rowIndex).outerHTML =
-    "<tr id='row-current-con" +
-    newRowIndex +
-    "' class='row-protocol'><td class='contributor-table-row'>" +
-    indexNumber +
-    "</td><td>" +
-    conName +
-    "</td><td class='contributor-table-row'>" +
-    conContactPerson +
-    "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_con_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_con_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
-}
-
-var contributorElement =
-  '<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><select id="dd-contributor-last-name" class="form-container-input-bf" onchange="onchangeLastNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div><div class="div-child"><label>First name </label><select id="dd-contributor-first-name" disabled class="form-container-input-bf" onchange="onchangeFirstNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div></div><div><label>ORCID ID <i class="fas fa-info-circle swal-popover" data-tippy-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle swal-popover" data-tippy-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle swal-popover" data-tippy-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div><div style="margin-top:15px;display:flex;flex-direction:column"><label>Contact Person <i class="fas fa-info-circle swal-popover" data-tippy-content="Check if the contributor is a contact person for the dataset. At least one and only one of the contributors should be the contact person." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><label class="switch" style="margin-top: 15px"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"></input><span class="slider round"></span></label></div></div>';
-
-var contributorElementRaw =
-  '<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><input id="dd-contributor-last-name" class="form-container-input-bf" style="line-height: 2"></input></div><div class="div-child"><label>First name</label><input id="dd-contributor-first-name" class="form-container-input-bf" style="line-height: 2"></input></div></div><div><label>ORCID ID <i class="fas fa-info-circle swal-popover" data-tippy-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\'  target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle swal-popover" data-tippy-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle swal-popover" data-tippy-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div><div style="margin-top:15px;display:flex;flex-direction:column"><label>Contact Person <i class="fas fa-info-circle swal-popover" data-tippy-content="Check if the contributor is a contact person for the dataset. At least one and only one of the contributors should be the contact person." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><label class="switch" style="margin-top: 15px"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"></input><span class="slider round"></span></label></div></div>';
-
-var contributorObject = [];
-
-function showContributorSweetalert(key) {
-  var currentContributortagify;
-  var currentAffliationtagify;
-  if (key === false) {
-    if (Object.keys(globalContributorNameObject).length !== 0) {
-      var footer =
-        "<a style='text-decoration: none !important' onclick='showContributorSweetalert(\"pass\")' target='_blank'>I want to add a contributor not listed above</a>";
-      var element = contributorElement;
-    } else {
-      var footer = "";
-      var element = contributorElementRaw;
-    }
-  } else if (key === "pass") {
-    var element = contributorElementRaw;
-    var footer = "";
-  }
-  Swal.fire({
-    title: "Add a contributor",
-    html: element,
-    showCancelButton: true,
-    focusCancel: true,
-    cancelButtonText: "Cancel",
-    confirmButtonText: "Add contributor",
-    width: "max-content",
-    reverseButtons: reverseSwalButtons,
-    backdrop: "rgba(0,0,0, 0.4)",
-    heightAuto: false,
-    allowOutsideClick: false,
-    footer: footer,
-    didOpen: () => {
-      $(".swal-popover").popover();
-      tippy("[data-tippy-content]", {
-        allowHTML: true,
-        interactive: true,
-        placement: "right",
-        theme: "light",
-        interactiveBorder: 30,
-      });
-      // first destroy old tagify
-      $($("#input-con-affiliation").siblings()[0]).remove();
-      $($("#input-con-role").siblings()[0]).remove();
-      /// initiate tagify for contributor roles
-      currentContributortagify = new Tagify(
-        document.getElementById("input-con-role"),
-        {
-          whitelist: [
-            "PrincipleInvestigator",
-            "Creator",
-            "CoInvestigator",
-            "DataCollector",
-            "DataCurator",
-            "DataManager",
-            "Distributor",
-            "Editor",
-            "Producer",
-            "ProjectLeader",
-            "ProjectManager",
-            "ProjectMember",
-            "RelatedPerson",
-            "Researcher",
-            "ResearchGroup",
-            "Sponsor",
-            "Supervisor",
-            "WorkPackageLeader",
-            "Other",
-          ],
-          dropdown: {
-            classname: "color-blue",
-            enabled: 0, // show the dropdown immediately on focus
-            maxItems: 25,
-            closeOnSelect: true, // keep the dropdown open after selecting a suggestion
-          },
-          enforceWhitelist: true,
-          duplicates: false,
-        }
-      );
-      currentAffliationtagify = new Tagify(
-        document.getElementById("input-con-affiliation"),
-        {
-          dropdown: {
-            classname: "color-blue",
-            enabled: 0, // show the dropdown immediately on focus
-            maxItems: 25,
-            closeOnSelect: true, // keep the dropdown open after selecting a suggestion
-          },
-          delimiters: null,
-          duplicates: false,
-        }
-      );
-      // load contributor names onto Select
-      if (Object.keys(globalContributorNameObject).length !== 0) {
-        if (key === false) {
-          cloneConNamesSelect("dd-contributor-last-name");
-        }
-      }
-    },
-    showClass: {
-      popup: "animate__animated animate__fadeInDown animate__faster",
-    },
-    hideClass: {
-      popup: "animate__animated animate__fadeOutUp animate__faster",
-    },
-    preConfirm: () => {
-      var affiliationVals = grabCurrentTagifyContributor(
-        currentAffliationtagify
-      ).join(", ");
-      var roleVals = grabCurrentTagifyContributor(
-        currentContributortagify
-      ).join(", ");
-
-      var firstName = $("#dd-contributor-first-name").val().trim();
-      var lastName = $("#dd-contributor-last-name").val().trim();
-      if (
-        $("#input-con-ID").val().trim() === "" ||
-        $("#input-con-affiliation").val().trim() === "" ||
-        $("#input-con-role").val().trim() === "" ||
-        firstName === "Select" ||
-        lastName === "Select" ||
-        firstName === "" ||
-        lastName === ""
-      ) {
-        Swal.showValidationMessage(`Please fill in all required fields!`);
-      } else {
-        var duplicateConName = checkDuplicateContributorName(
-          firstName,
-          lastName
-        );
-        if (!duplicateConName) {
-          if ($("#ds-contact-person").prop("checked")) {
-            var contactPersonExists = checkContactPersonStatus("add", null);
-            if (contactPersonExists) {
-              Swal.showValidationMessage(
-                "One contact person is already added. Only one contact person is allowed for a dataset."
-              );
-            } else {
-              var myCurrentCon = {
-                conName: lastName + ", " + firstName,
-                conID: $("#input-con-ID").val().trim(),
-                conAffliation: affiliationVals,
-                conRole: roleVals,
-                conContact: "Yes",
-              };
-              contributorObject.push(myCurrentCon);
-              return [myCurrentCon.conName, myCurrentCon.conContact];
-            }
-          } else {
-            var myCurrentCon = {
-              conName: lastName + ", " + firstName,
-              conID: $("#input-con-ID").val().trim(),
-              conAffliation: affiliationVals,
-              conRole: roleVals,
-              conContact: "No",
-            };
-            contributorObject.push(myCurrentCon);
-            return [myCurrentCon.conName, myCurrentCon.conContact];
-          }
-        } else {
-          Swal.showValidationMessage(
-            `The contributor ${lastName + ", " + firstName} is already added.`
-          );
-        }
-      }
-    },
-  }).then((result) => {
-    if (result.isConfirmed) {
-      addContributortoTableDD(result.value[0], result.value[1]);
-    }
-  });
-}
-
-function delete_current_con_id(ev) {
-  Swal.fire({
-    title: "Are you sure you want to delete this contributor?",
-    showCancelButton: true,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    cancelButtonText: `No!`,
-    cancelButtonColor: "#f44336",
-    confirmButtonColor: "#3085d6",
-    confirmButtonText: "Yes",
-  }).then((boolean) => {
-    if (boolean.isConfirmed) {
-      // 1. Delete from table
-      var currentRow = $(ev).parents()[2];
-      var currentRowid = $(currentRow).prop("id");
-      document.getElementById(currentRowid).outerHTML = "";
-      updateIndexForTable(document.getElementById("contributor-table-dd"));
-      // 2. Delete from JSON
-      var contributorName = $(currentRow)[0].cells[1].innerText;
-      for (var i = 0; i < contributorObject.length; i++) {
-        if (contributorObject[i].conName === contributorName) {
-          contributorObject.splice(i, 1);
-          break;
-        }
-      }
-    }
-  });
-}
-
-function edit_current_con_id(ev) {
-  var currentContributortagify;
-  var currentAffliationtagify;
-  var element = contributorElementRaw;
-  var currentRow = $(ev).parents()[2];
-  var name = $(currentRow)[0].cells[1].innerText;
-  Swal.fire({
-    title: "Edit contributor",
-    html: element,
-    showCancelButton: true,
-    focusCancel: true,
-    cancelButtonText: "Cancel",
-    confirmButtonText: "Edit",
-    width: "max-content",
-    customClass: "contributor-popup",
-    reverseButtons: reverseSwalButtons,
-    backdrop: "rgba(0,0,0, 0.4)",
-    heightAuto: false,
-    allowOutsideClick: false,
-    didOpen: () => {
-      $(".swal-popover").popover();
-      tippy("[data-tippy-content]", {
-        allowHTML: true,
-        interactive: true,
-        placement: "right",
-        theme: "light",
-        interactiveBorder: 30,
-      });
-      // disable first and last names (cannot edit these fields)
-      // first destroy old tagify
-      $($("#input-con-affiliation").siblings()[0]).remove();
-      $($("#input-con-role").siblings()[0]).remove();
-      /// initiate tagify for contributor roles
-      currentContributortagify = new Tagify(
-        document.getElementById("input-con-role"),
-        {
-          whitelist: [
-            "PrincipleInvestigator",
-            "Creator",
-            "CoInvestigator",
-            "DataCollector",
-            "DataCurator",
-            "DataManager",
-            "Distributor",
-            "Editor",
-            "Producer",
-            "ProjectLeader",
-            "ProjectManager",
-            "ProjectMember",
-            "RelatedPerson",
-            "Researcher",
-            "ResearchGroup",
-            "Sponsor",
-            "Supervisor",
-            "WorkPackageLeader",
-            "Other",
-          ],
-          dropdown: {
-            classname: "color-blue",
-            enabled: 0, // show the dropdown immediately on focus
-            maxItems: 25,
-            closeOnSelect: true, // keep the dropdown open after selecting a suggestion
-          },
-          enforceWhitelist: true,
-          duplicates: false,
-        }
-      );
-      currentAffliationtagify = new Tagify(
-        document.getElementById("input-con-affiliation"),
-        {
-          dropdown: {
-            classname: "color-blue",
-            enabled: 0, // show the dropdown immediately on focus
-            maxItems: 25,
-            closeOnSelect: true, // keep the dropdown open after selecting a suggestion
-          },
-          delimiters: null,
-          duplicates: false,
-        }
-      );
-      for (var contributor of contributorObject) {
-        if (contributor.conName === name) {
-          // add existing tags to tagifies
-          for (var affiliation of contributor.conAffliation.split(" ,")) {
-            currentAffliationtagify.addTags(affiliation);
-          }
-          for (var role of contributor.conRole.split(" ,")) {
-            currentContributortagify.addTags(role);
-          }
-          if (contributor.conContact === "Yes") {
-            $("#ds-contact-person").prop("checked", true);
-          } else {
-            $("#ds-contact-person").prop("checked", false);
-          }
-          var splitNames = name.split(", ");
-          $("#dd-contributor-last-name").val(splitNames[0].trim());
-          $("#dd-contributor-first-name").val(splitNames[1].trim());
-          $("#dd-contributor-last-name").attr("disabled", true);
-          $("#dd-contributor-first-name").attr("disabled", true);
-          $("#input-con-ID").val(contributor.conID);
-          break;
-        }
-      }
-    },
-    showClass: {
-      popup: "animate__animated animate__fadeInDown animate__faster",
-    },
-    hideClass: {
-      popup: "animate__animated animate__fadeOutUp animate__faster",
-    },
-    preConfirm: () => {
-      if (
-        $("#input-con-ID").val().trim() === "" ||
-        $("#input-con-affiliation").val().trim() === "" ||
-        $("#input-con-role").val().trim() === "" ||
-        $("#dd-contributor-last-name").val().trim() === "Select" ||
-        $("#dd-contributor-first-name").val().trim() === "Select" ||
-        $("#dd-contributor-last-name").val().trim() === "" ||
-        $("#dd-contributor-first-name").val().trim() === ""
-      ) {
-        Swal.showValidationMessage(`Please fill in all required fields!`);
-      } else {
-        var affiliationVals = grabCurrentTagifyContributor(
-          currentAffliationtagify
-        ).join(", ");
-        var roleVals = grabCurrentTagifyContributor(
-          currentContributortagify
-        ).join(", ");
-        if ($("#ds-contact-person").prop("checked")) {
-          var contactPersonExists = checkContactPersonStatus("edit", ev);
-          if (contactPersonExists) {
-            Swal.showValidationMessage(
-              "One contact person is already added. Only one contact person is allowed for a dataset."
-            );
-          } else {
-            var myCurrentCon = {
-              conName:
-                $("#dd-contributor-last-name").val().trim() +
-                ", " +
-                $("#dd-contributor-first-name").val().trim(),
-              conID: $("#input-con-ID").val().trim(),
-              conAffliation: affiliationVals,
-              conRole: roleVals,
-              conContact: "Yes",
-            };
-            for (var contributor of contributorObject) {
-              if (contributor.conName === name) {
-                contributorObject[contributorObject.indexOf(contributor)] =
-                  myCurrentCon;
-                break;
-              }
-            }
-            return [myCurrentCon.conName, myCurrentCon.conContact];
-          }
-        } else {
-          var myCurrentCon = {
-            conName:
-              $("#dd-contributor-last-name").val().trim() +
-              ", " +
-              $("#dd-contributor-first-name").val().trim(),
-            conID: $("#input-con-ID").val().trim(),
-            conAffliation: affiliationVals,
-            conRole: roleVals,
-            conContact: "No",
-          };
-          for (var contributor of contributorObject) {
-            if (contributor.conName === name) {
-              contributorObject[contributorObject.indexOf(contributor)] =
-                myCurrentCon;
-              break;
-            }
-          }
-          return [myCurrentCon.conName, myCurrentCon.conContact];
-        }
-      }
-    },
-  }).then((result) => {
-    if (result.isConfirmed) {
-      $(currentRow)[0].cells[2].innerText = result.value[1];
-    }
-  });
-}
-
-function grabCurrentTagifyContributor(tagify) {
-  var infoArray = [];
-  // var element = document.getElementById(id)
-  var values = tagify.DOM.originalInput.value;
-  if (values !== "") {
-    var valuesArray = JSON.parse(values);
-    if (valuesArray.length > 0) {
-      for (var val of valuesArray) {
-        infoArray.push(val.value);
-      }
-    }
-  }
-  return infoArray;
-}
-
-function checkContactPersonStatus(type, ev) {
-  var allConTable = document.getElementById("contributor-table-dd");
-  if (type === "edit") {
-    var contactPersonExists = false;
-    var currentRow = $(ev).parents()[2];
-    var name = $(currentRow)[0].cells[1].innerText;
-    var rowcount = allConTable.rows.length;
-    for (var i = 1; i < rowcount; i++) {
-      var contactLabel = allConTable.rows[i].cells[2].innerText;
-      var currentContributorName = allConTable.rows[i].cells[1].innerText;
-      if (currentContributorName !== name) {
-        if (contactLabel === "Yes") {
-          contactPersonExists = true;
-          break;
-        }
-      }
-    }
-    return contactPersonExists;
-  } else {
-    var contactPersonExists = false;
-    var rowcount = allConTable.rows.length;
-    for (var i = 1; i < rowcount; i++) {
-      var contactLabel = allConTable.rows[i].cells[2].innerText;
-      if (contactLabel === "Yes") {
-        contactPersonExists = true;
-        break;
-      }
-    }
-    return contactPersonExists;
-  }
-}
-
-function checkAtLeastOneContactPerson() {
-  var contactPersonExists = false;
-  var allConTable = document.getElementById("contributor-table-dd");
-  var rowcount = allConTable.rows.length;
-  if (allConTable.rows.length > 1) {
-    for (var i = 1; i < rowcount; i++) {
-      var contactLabel = allConTable.rows[i].cells[2].innerText;
-      if (contactLabel === "Yes") {
-        contactPersonExists = true;
-        break;
-      }
-    }
-  }
-  return contactPersonExists;
-}
-
-function checkDuplicateContributorName(first, last) {
-  var allConTable = document.getElementById("contributor-table-dd");
-  var duplicate = false;
-  var name = last + ", " + first;
-  var rowcount = allConTable.rows.length;
-  for (var i = 1; i < rowcount; i++) {
-    var currentContributorName = allConTable.rows[i].cells[1].innerText;
-    if (currentContributorName === name) {
-      duplicate = true;
-      break;
-    }
-  }
-  return duplicate;
-}
-
-function checkDuplicateLink(link, table) {
-  var duplicate = false;
-  var rowcount = document.getElementById(table).rows.length;
-  for (var i = 1; i < rowcount; i++) {
-    var currentLink = document.getElementById(table).rows[i].cells[1].innerText;
-    if (currentLink === link) {
-      duplicate = true;
-      break;
-    }
-  }
-  return duplicate;
-}
-
-///// Functions to grab each piece of info to generate the dd file
-
-// dataset info
-function grabDSInfoEntries() {
-  var name = document.getElementById("ds-name").value;
-  var description = document.getElementById("ds-description").value;
-  var keywordArray = keywordTagify.value;
-  var samplesNo = document.getElementById("ds-samples-no").value;
-  var subjectsNo = document.getElementById("ds-subjects-no").value;
-
-  return {
-    name: name,
-    description: description,
-    keywords: keywordArray,
-    "number of samples": samplesNo,
-    "number of subjects": subjectsNo,
-  };
-}
-
-// contributor info
-function grabConInfoEntries() {
-  var funding = $("#ds-description-award-input").val();
-  var acknowledgment = $("#ds-description-acknowledgments").val();
-
-  var fundingArray = [];
-  if (funding === "") {
-    fundingArray = [""];
-  } else {
-    fundingArray = [funding];
-  }
-  /// other funding sources
-  var otherFunding = otherFundingTagify.value;
-  for (var i = 0; i < otherFunding.length; i++) {
-    fundingArray.push(otherFunding[i].value);
-  }
-
-  var contributorInfo = {};
-
-  contributorInfo["funding"] = fundingArray;
-  contributorInfo["acknowledgment"] = acknowledgment;
-  contributorInfo["contributors"] = contributorObject;
-  return contributorInfo;
-}
-
-function grabAdditionalLinkSection() {
-  var table = document.getElementById("additional-link-table-dd");
-  var rowcountLink = table.rows.length;
-  var originatingDOIArray = [];
-  var additionalLinkArray = [];
-  for (i = 1; i < rowcountLink; i++) {
-    var linkType = table.rows[i].cells[1].innerText;
-    var link = table.rows[i].cells[2].innerText;
-    if (linkType === "Originating Article DOI") {
-      originatingDOIArray.push(link);
-    } else if (linkType === "Additional Link") {
-      var linkObject = {
-        link: link,
-        description: table.rows[i].cells[3].innerText,
-      };
-      additionalLinkArray.push(linkObject);
-    }
-  }
-  return [originatingDOIArray, additionalLinkArray];
-}
-
-function grabProtocolSection() {
-  var table = document.getElementById("protocol-link-table-dd");
-  var rowcountLink = table.rows.length;
-  var protocolLinkInfo = [];
-  for (i = 1; i < rowcountLink; i++) {
-    var protocolLink = table.rows[i].cells[1].innerText;
-    protocolLinkInfo.push(protocolLink);
-  }
-  return protocolLinkInfo;
-}
-
-function combineLinksSections() {
-  var protocolLinks = grabProtocolSection();
-  var otherLinks = grabAdditionalLinkSection();
-  var miscObj = {};
-  miscObj["Originating Article DOI"] = otherLinks[0];
-  miscObj["Protocol URL or DOI*"] = protocolLinks;
-  miscObj["Additional Link"] = otherLinks[1];
-  return miscObj;
-}
-
-// completeness info
-function grabCompletenessInfo() {
-  var completeness = completenessTagify.value;
-  var parentDS = parentDSTagify.value;
-  var completeDSTitle = document.getElementById("input-completeds-title").value;
-  var optionalSectionObj = {};
-  var completenessValueArray = [];
-  for (var i = 0; i < completeness.length; i++) {
-    completenessValueArray.push(completeness[i].value);
-  }
-  optionalSectionObj["completeness"] = completenessValueArray.join(", ");
-
-  var parentDSValueArray = [];
-  for (var i = 0; i < parentDS.length; i++) {
-    parentDSValueArray.push(parentDS[i].value);
-  }
-  optionalSectionObj["parentDS"] = parentDSValueArray;
-
-  if (completeDSTitle.length === 0) {
-    optionalSectionObj["completeDSTitle"] = "";
-  } else {
-    optionalSectionObj["completeDSTitle"] = completeDSTitle;
-  }
-  return optionalSectionObj;
 }
